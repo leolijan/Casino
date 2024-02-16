@@ -143,7 +143,7 @@ async function menu(): Promise<void> {
     }
 }
 
-async function main(): Promise<void> {githgit
+async function main(): Promise<void> {
     await menu();
 }
 
