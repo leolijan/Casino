@@ -1,6 +1,5 @@
-
 export type Card = { value: number; suit: string };
-type Deck = Card[]; 
+export type Deck = Card[]; 
 
 /**
  * Creates and returns a shuffled deck of cards.
@@ -8,7 +7,8 @@ type Deck = Card[];
  */
 export function createDeck(): Deck {
     const suits: string[] = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-    const values: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; // 11-14 for J, Q, K, A
+    // 11-14 for J, Q, K, A
+    const values: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
     let cards: Deck = [];
 
     for (let suit of suits) {
@@ -16,7 +16,6 @@ export function createDeck(): Deck {
             cards.push({ value, suit });
         }
     }
-
     return shuffleDeck(cards);
 }
 
@@ -34,14 +33,16 @@ export function shuffleDeck(cards: Deck): Deck {
 }
 
 /**
- * Creates and returns a shuffled deck of cards specifically designed for Blackjack,
- * consisting of 8 standard 52-card decks combined, for a total of 416 cards.
- * This setup is commonly used in casinos to discourage card counting.
- * @returns {Deck} A large deck of shuffled cards for Blackjack, 8 times the size of a standard deck.
- */
+ * Creates and returns a shuffled deck of cards specifically designed for 
+ * Blackjack, consisting of 8 standard 52-card decks combined, 
+ * for a total of 416 cards.
+ * @returns {Deck} A large deck of shuffled cards for Blackjack, 
+ * 8 times the size of a standard deck.
+ */ 
 export function createBlackjackDeck(): Deck {
     const suits: string[] = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
-    const values: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; // 11-14 for J, Q, K, A
+    // 11-14 for J, Q, K, A
+    const values: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
     let cards: Deck = [];
 
     for (let deckIndex = 0; deckIndex < 8; deckIndex++) {
