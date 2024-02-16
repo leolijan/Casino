@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<coverage generated="1708106498811" clover="3.2.0">
+  <project timestamp="1708106498811" name="All files">
+    <metrics statements="24" coveredstatements="24" conditionals="0" coveredconditionals="0" methods="4" coveredmethods="4" elements="28" coveredelements="28" complexity="0" loc="24" ncloc="24" packages="2" files="2" classes="2"/>
+    <package name="Card Games.Deck">
+      <metrics statements="22" coveredstatements="22" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+      <file name="Deck.ts" path="/Users/leostark/Desktop/Casino/Card Games/Deck/Deck.ts">
+        <metrics statements="22" coveredstatements="22" conditionals="0" coveredconditionals="0" methods="3" coveredmethods="3"/>
+        <line num="12" count="1" type="stmt"/>
+        <line num="13" count="4" type="stmt"/>
+        <line num="14" count="4" type="stmt"/>
+        <line num="15" count="4" type="stmt"/>
+        <line num="17" count="4" type="stmt"/>
+        <line num="18" count="16" type="stmt"/>
+        <line num="19" count="208" type="stmt"/>
+        <line num="23" count="4" type="stmt"/>
+        <line num="31" count="1" type="stmt"/>
+        <line num="32" count="6" type="stmt"/>
+        <line num="33" count="670" type="stmt"/>
+        <line num="34" count="670" type="stmt"/>
+        <line num="36" count="6" type="stmt"/>
+        <line num="45" count="1" type="stmt"/>
+        <line num="46" count="1" type="stmt"/>
+        <line num="47" count="1" type="stmt"/>
+        <line num="48" count="1" type="stmt"/>
+        <line num="50" count="1" type="stmt"/>
+        <line num="51" count="8" type="stmt"/>
+        <line num="52" count="32" type="stmt"/>
+        <line num="53" count="416" type="stmt"/>
+        <line num="57" count="1" type="stmt"/>
+      </file>
+    </package>
+    <package name="Player">
+      <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+      <file name="Player.ts" path="/Users/leostark/Desktop/Casino/Player/Player.ts">
+        <metrics statements="2" coveredstatements="2" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>
+        <line num="18" count="1" type="stmt"/>
+        <line num="19" count="1" type="stmt"/>
+      </file>
+    </package>
+  </project>
+</coverage>
