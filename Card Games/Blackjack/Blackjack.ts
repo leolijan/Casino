@@ -5,9 +5,8 @@ import { Person, createPerson } from '../../Player/Player';
 
 const rl = createInterface({ input, output });
 
-// Function to ensure the deck is replenished if needed
 const ensureDeckNotEmpty = (deck: Card[]): void => {
-  if (deck.length < 10) { // Arbitrary low number to avoid running out mid-turn
+  if (deck.length < 10) {
     const newDeck = createBlackjackDeck();
     deck.push(...newDeck);
   }
@@ -18,37 +17,55 @@ async function dealInitialCards(deck: Card[], person: Person): Promise<void> {
   person.hand.push(deck.pop()!, deck.pop()!);
 }
 
-async function showHand(person: Person): Promise<void> {
+function showHand(person: Person): void {
   console.log(`${person.name}'s hand: ${person.hand.map(card => `${card.value} of ${card.suit}`).join(', ')}`);
 }
 
 async function calculateHandValue(hand: Card[]): Promise<number> {
-    let total = 0;
-    let aceCount = hand.filter(card => card.value === 14).length; // Aces
-  
-    hand.forEach(card => {
-      if (card.value >= 11 && card.value <= 13) total += 10; // Face cards
-      else if (card.value === 14) total += 11; // Aces (temporarily count as 11)
-      else total += card.value;
-    });
-  
-    // Adjust Aces from 11 to 1 as needed
-    while (total > 21 && aceCount > 0) {
-      total -= 10; // Subtract 10 if we previously counted an Ace as 11
-      aceCount--;
-    }
-  
-    return total;
-  }
-  
+  let total = 0;
+  let aceCount = hand.filter(card => card.value === 14).length;
 
-async function playerTurn(deck: Card[], player: Person): Promise<boolean> {
+  hand.forEach(card => {
+    if (card.value >= 11 && card.value <= 13) total += 10;
+    else if (card.value === 14) total += 11;
+    else total += card.value;
+  });
+
+  while (total > 21 && aceCount > 0) {
+    total -= 10;
+    aceCount--;
+  }
+
+  return total;
+}
+
+async function checkForBlackjack(hand: Card[]): Promise<boolean> {
+  const value = await calculateHandValue(hand);
+  return hand.length === 2 && value === 21;
+}
+
+async function playerTurn(deck: Card[], player: Person, bet: number): Promise<boolean> {
   let playerTotal = await calculateHandValue(player.hand);
+  let doubledDown = false;
+
+  if (await checkForBlackjack(player.hand)) {
+    console.log("Blackjack! You win 1.5x your bet.");
+    player.balance += bet * 1.5;
+    return false; // Ends player turn immediately
+  }
+
   while (playerTotal < 21) {
     console.log(`Your total is ${playerTotal}.`);
-    const hitOrStand = await rl.question('Do you want to (h)it or (s)tand? ');
+    const hitOrStand = await rl.question('Do you want to (h)it, (s)tand, or (d)ouble down? ');
 
-    if (hitOrStand.toLowerCase() === 'h') {
+    if (hitOrStand.toLowerCase() === 'd' && !doubledDown && player.hand.length === 2) {
+      player.balance -= bet; // Additional bet for doubling down
+      bet *= 2; // Double the bet
+      player.hand.push(deck.pop()!);
+      console.log(`You doubled down and drew ${player.hand.at(-1)!.value} of ${player.hand.at(-1)!.suit}.`);
+      doubledDown = true;
+      break; // Player can only receive one card after doubling down
+    } else if (hitOrStand.toLowerCase() === 'h') {
       player.hand.push(deck.pop()!);
       console.log(`You drew ${player.hand.at(-1)!.value} of ${player.hand.at(-1)!.suit}.`);
       playerTotal = await calculateHandValue(player.hand);
@@ -60,6 +77,7 @@ async function playerTurn(deck: Card[], player: Person): Promise<boolean> {
   await showHand(player);
   if (playerTotal > 21) {
     console.log('Bust! You lose.');
+    player.balance -= bet; // Adjust for double down if happened
     return false; // Player busts
   }
   return true; // Player stands
@@ -67,6 +85,12 @@ async function playerTurn(deck: Card[], player: Person): Promise<boolean> {
 
 async function dealerTurn(deck: Card[], dealer: Person): Promise<number> {
   let dealerTotal = await calculateHandValue(dealer.hand);
+
+  if (await checkForBlackjack(dealer.hand)) {
+    console.log("Dealer has Blackjack!");
+    return 21; // Indicates dealer has Blackjack
+  }
+
   while (dealerTotal < 17) {
     dealer.hand.push(deck.pop()!);
     dealerTotal = await calculateHandValue(dealer.hand);
@@ -82,7 +106,7 @@ async function getBet(player: Person): Promise<number> {
     bet = parseInt(betString, 10);
     if (isNaN(bet) || bet <= 0 || bet > player.balance) {
       console.log("Invalid bet amount. Please enter a valid number within your balance.");
-      bet = 0; // Reset bet to prompt again
+      bet = 0;
     }
   } while (bet <= 0 || bet > player.balance);
 
@@ -94,6 +118,7 @@ export async function startGame(Player: Person) {
     let playAgain = 'y';
 
     while (playAgain.toLowerCase() === 'y') {
+      Player.hand = [];
       const deck = createBlackjackDeck();
       const dealer: Person = { name: 'Dealer', password: '', balance: 0, hand: [] };
 
@@ -105,17 +130,13 @@ export async function startGame(Player: Person) {
       console.log('Welcome to Blackjack!');
       await showHand(Player);
 
-      // Player's turn
-      const playerBusts = !(await playerTurn(deck, Player));
+      const playerBusts = !(await playerTurn(deck, Player, bet));
       if (playerBusts) {
-        Player.balance -= bet;
         console.log(`You lost $${bet}. Your new balance is $${Player.balance}.`);
       } else {
-        // Continue with dealer's turn if player doesn't bust
         const dealerTotal = await dealerTurn(deck, dealer);
         const playerTotal = await calculateHandValue(Player.hand);
 
-        // Determine the outcome after both turns are complete
         if (dealerTotal > 21 || playerTotal > dealerTotal) {
           console.log('You win!');
           Player.balance += bet;
@@ -126,11 +147,9 @@ export async function startGame(Player: Person) {
           console.log(`You lost $${bet}. Your new balance is $${Player.balance}.`);
         } else {
           console.log('Push. It\'s a tie.');
-          // No balance adjustment on tie
         }
       }
 
-      // Check if player still has balance to play
       if (Player.balance <= 0) {
         console.log("You've run out of funds! Game over.");
         break;
@@ -146,4 +165,5 @@ export async function startGame(Player: Person) {
   }
 }
 
+startGame(createPerson('123', '123', 1000)); // Sample call to start the game with an example player
 
