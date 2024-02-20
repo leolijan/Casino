@@ -1,4 +1,4 @@
-import { createDeck, shuffleDeck, createBlackjackDeck } from './Deck'; // Adjust the import path as necessary
+import { createDeck, shuffleDeck, createBlackjackDeck, ensureDeckNotEmpty } from './Deck'; // Adjust the import path as necessary
 
 test('createDeck creates a deck of 52 cards', () => {
     expect(createDeck().length).toBe(52);
@@ -28,4 +28,23 @@ test('Deck contains 4 suits, each with 13 cards', () => {
 test('should create a deck of 416 cards', () => {
     const deck = createBlackjackDeck();
     expect(deck.length).toBe(416);
+});
+
+test('replenishes the deck if it has fewer than 10 cards', () => {
+  //Create a deck with fewer than 10 cards
+  let deck = [{ value: 10, suit: "spades"}];; // Example deck with 2 cards
+
+  //Ensure the deck is not running low on cards
+  ensureDeckNotEmpty(deck);
+
+  //The deck should now have at least 10 cards
+  expect(deck.length).toBeGreaterThanOrEqual(10);
+});
+
+test('does not modify the deck if it already has 10 or more cards', () => {
+  let deck = new Array(10).fill({ value: 10, suit: "Spades"}); 
+
+  ensureDeckNotEmpty(deck);
+
+  expect(deck.length).toEqual(10);
 });

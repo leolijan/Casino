@@ -1,16 +1,9 @@
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { createBlackjackDeck, Card } from '../Deck/Deck'; // Assuming this can create a suitable deck
+import { createBlackjackDeck, Card, ensureDeckNotEmpty} from '../Deck/Deck'; // Assuming this can create a suitable deck
 import { Person, createPerson } from '../../Player/Player'; // Assuming this can create a person with a balance and hand
 
 const rl = createInterface({ input, output });
-
-const ensureDeckNotEmpty = (deck: Card[]): void => {
-    if (deck.length < 10) {
-        const newDeck = createBlackjackDeck();
-        deck.push(...newDeck);
-    }
-};
 
 async function dealCards(deck: Card[], person: Person, cardCount: number = 2): Promise<void> {
     ensureDeckNotEmpty(deck);
