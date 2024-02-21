@@ -392,3 +392,4 @@ function calcDozens(dozens: Dozens, stake: stake, number: number): number {
     } 
 }
 
+playerMove({name: "h", password: "HIDSIODSHDHIOS", balance: 2000, hand: []});
