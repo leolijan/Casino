@@ -66,19 +66,45 @@ function areAdjacentNumbers(firstNumber, secondNumber) {
     }
     return booleans;
 }
-function read_user_input(prompt) {
-    var rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-    return new Promise(function (resolve) {
-        rl.question(prompt, function (answer) {
-            rl.close();
-            resolve(answer);
-            if (answer === "x" || answer === "X")
-                process.exit();
+function read_user_input(prompt, max) {
+    return __awaiter(this, void 0, void 0, function () {
+        var rl, koll, retur;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    rl = readline.createInterface({
+                        input: process.stdin,
+                        output: process.stdout
+                    });
+                    koll = true;
+                    return [4 /*yield*/, new Promise(function (resolve) {
+                            rl.question(prompt, function (answer) {
+                                rl.close();
+                                resolve(answer);
+                                if (answer === "x" || answer === "X") {
+                                    process.exit();
+                                }
+                                if (!check(answer, max)) {
+                                    koll = false;
+                                    console.log("HELLO");
+                                }
+                            });
+                        })];
+                case 1:
+                    retur = _a.sent();
+                    console.log("JDPOSJPODSJPODSJPO");
+                    return [2 /*return*/, koll ? retur : read_user_input(prompt, max)];
+            }
         });
     });
+}
+function check(answer, max) {
+    for (var i = 1; i < max + 1; i++) {
+        if (answer === i.toString()) {
+            return true;
+        }
+    }
+    return false;
 }
 function print_options(options) {
     for (var _i = 0, _a = Object.entries(options); _i < _a.length; _i++) {
@@ -94,45 +120,37 @@ function playerMove(person) {
                 case 0:
                     // could add print_options from login
                     console.log(person.name);
-                    _a.label = 1;
-                case 1:
-                    if (!true) return [3 /*break*/, 10];
                     options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
-                    return [4 /*yield*/, read_user_input(options)];
-                case 2:
+                    return [4 /*yield*/, read_user_input(options, 3)];
+                case 1:
                     userInput = _a.sent();
-                    if (!(userInput === "1")) return [3 /*break*/, 3];
+                    console.log(userInput);
+                    if (!(userInput === "1")) return [3 /*break*/, 2];
                     numberBet();
-                    return [3 /*break*/, 7];
-                case 3:
-                    if (!(userInput === "2")) return [3 /*break*/, 4];
+                    return [3 /*break*/, 5];
+                case 2:
+                    if (!(userInput === "2")) return [3 /*break*/, 3];
                     evenBets();
-                    return [3 /*break*/, 7];
+                    return [3 /*break*/, 5];
+                case 3: return [4 /*yield*/, columnsAndDozensBet(["", 0, []])];
                 case 4:
-                    if (!(userInput === "3")) return [3 /*break*/, 6];
-                    return [4 /*yield*/, columnsAndDozensBet(["", 0, []])];
-                case 5:
                     _a.sent();
-                    return [3 /*break*/, 7];
-                case 6: return [3 /*break*/, 1];
-                case 7: 
+                    _a.label = 5;
+                case 5: 
                 // place bets and register bets
                 return [4 /*yield*/, addBetAmount()];
-                case 8:
+                case 6:
                     // place bets and register bets
                     _a.sent();
-                    return [4 /*yield*/, read_user_input("want to bet more?: (Y)es or (N)o\n")];
-                case 9:
+                    return [4 /*yield*/, read_user_input("want to bet more?: Yes(1) or No(2)\n", 2)];
+                case 7:
                     userInput = _a.sent();
-                    if (userInput === "Y" || userInput === "y") {
+                    if (userInput === "1") {
                         // spin the wheel and call the calculatewinnings functions and register the payout to the account
-                        return [3 /*break*/, 1];
+                        playerMove(person);
                     }
-                    else if (userInput === "N" || userInput === "n") {
-                        return [3 /*break*/, 10];
-                    }
-                    return [3 /*break*/, 1];
-                case 10: return [2 /*return*/];
+                    else { }
+                    return [2 /*return*/];
             }
         });
     });
@@ -146,19 +164,15 @@ function columnsAndDozensBet(bet) {
         var inp;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    if (!true) return [3 /*break*/, 11];
-                    return [4 /*yield*/, read_user_input("Choose columns (1) or dozens (2)\n")];
+                case 0: return [4 /*yield*/, read_user_input("Choose columns (1) or dozens (2)\n", 2)];
                 case 1:
                     inp = _a.sent();
-                    if (!(inp === "1")) return [3 /*break*/, 5];
-                    _a.label = 2;
-                case 2:
-                    if (!true) return [3 /*break*/, 4];
+                    if (!(inp === "1")) return [3 /*break*/, 3];
                     return [4 /*yield*/, read_user_input("Choose column 1: (1,4,7,10,...,34)\n" +
                             "Choose column 2: (2,5,8,11,...,35)\n" +
-                            "Choose column 3: (3,6,9,12,...,36)\n")];
-                case 3:
+                            "Choose column 3: (3,6,9,12,...,36)\n", 3)];
+                case 2:
+                    //columns
                     inp = _a.sent();
                     if (inp === "1") {
                         bet[0] = 1;
@@ -169,20 +183,15 @@ function columnsAndDozensBet(bet) {
                     else if (inp === "3") {
                         bet[0] = 3;
                     }
-                    else {
-                        return [3 /*break*/, 2];
-                    }
-                    return [3 /*break*/, 4];
-                case 4: return [3 /*break*/, 10];
-                case 5:
-                    if (!(inp === "2")) return [3 /*break*/, 9];
-                    _a.label = 6;
-                case 6:
-                    if (!true) return [3 /*break*/, 8];
+                    else { }
+                    return [3 /*break*/, 5];
+                case 3:
+                    if (!(inp === "2")) return [3 /*break*/, 5];
                     return [4 /*yield*/, read_user_input("Choose dozen 1: (1-12)\n" +
                             "Choose dozen 2: (13-24)\n" +
-                            "Choose dozen 3: (25-36)\n")];
-                case 7:
+                            "Choose dozen 3: (25-36)\n", 3)];
+                case 4:
+                    //dozens
                     inp = _a.sent();
                     if (inp === "1") {
                         bet[0] = 4;
@@ -190,17 +199,13 @@ function columnsAndDozensBet(bet) {
                     else if (inp === "2") {
                         bet[0] = 5;
                     }
-                    else if (inp === "2") {
+                    else if (inp === "3") {
                         bet[0] = 6;
                     }
                     else {
-                        return [3 /*break*/, 6];
                     }
-                    return [3 /*break*/, 8];
-                case 8: return [3 /*break*/, 10];
-                case 9: return [3 /*break*/, 0];
-                case 10: return [3 /*break*/, 11];
-                case 11: return [2 /*return*/];
+                    return [3 /*break*/, 5];
+                case 5: return [2 /*return*/];
             }
         });
     });

@@ -67,19 +67,37 @@ function areAdjacentNumbers(firstNumber: number, secondNumber: number): boolean 
 }
 
 
-function read_user_input(prompt: string): Promise<string> {
+async function read_user_input(prompt: string, max: number): Promise<string> {
     const rl = readline.createInterface({
         input: process.stdin,
         output: process.stdout
     });
+    let koll = true;
 
-    return new Promise<string>((resolve) => {
+    const retur = await new Promise<string>((resolve) => {
         rl.question(prompt, (answer) => {
             rl.close();
             resolve(answer);
-            if(answer==="x"|| answer==="X") process. exit();
+            if(answer==="x"|| answer==="X") {
+                process.exit();
+            }
+            if(!check(answer,max)){
+                koll = false;
+            }
+            
         });
     });
+
+    return koll ? retur : read_user_input(prompt, max);
+}
+
+function check(answer: string, max: number): boolean{
+    for(let i = 1; i<max+1; i++){
+        if(answer===i.toString()){
+            return true;
+        }
+    }
+    return false;
 }
 
 
@@ -91,34 +109,30 @@ function print_options(options: {[key: string]: string}): void {
 async function playerMove(person: Person) {
     // could add print_options from login
     console.log(person.name);
-    while(true){
-        // type of bet:
-        // 1. numbers bet (single, split, street, corner, doublestreet)
-        // 2. even bets (RedBlack, EvenOdd, LowHigh)
-        // 3. Columns or dozens
+
+    // type of bet:
+    // 1. numbers bet (single, split, street, corner, doublestreet)
+    // 2. even bets (RedBlack, EvenOdd, LowHigh)
+    // 3. Columns or dozens
         const options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
-        let userInput = await read_user_input(options);
+        let userInput = await read_user_input(options,3);
+        console.log(userInput);
         if(userInput==="1"){
             numberBet();
         }else if(userInput==="2"){
             evenBets();
-        }else if(userInput==="3"){
-            await columnsAndDozensBet(["",0,[]]);
         }else{
-            continue;
+            await columnsAndDozensBet(["",0,[]]);
         }
-        // place bets and register bets
+    // place bets and register bets
 
-        await addBetAmount();
+    await addBetAmount();
 
-        userInput = await read_user_input("want to bet more?: (Y)es or (N)o\n");
-        if(userInput==="Y" || userInput==="y"){
-            // spin the wheel and call the calculatewinnings functions and register the payout to the account
-            continue;
-        }else if(userInput==="N" || userInput==="n"){
-            break;
-        }
-    }
+    userInput = await read_user_input("want to bet more?: Yes(1) or No(2)\n", 2);
+    if(userInput==="1"){
+        // spin the wheel and call the calculatewinnings functions and register the payout to the account
+        playerMove(person);
+    }else{}
 }
 
 
@@ -145,31 +159,24 @@ function evenBets(){
 
 
 async function columnsAndDozensBet(bet: bet): Promise<void>{
-    while(true){
-        let inp = await read_user_input("Choose columns (1) or dozens (2)\n");
+        let inp = await read_user_input("Choose columns (1) or dozens (2)\n", 2);
         if(inp==="1") {
             //columns
-            while(true){
                 inp = await read_user_input("Choose column 1: (1,4,7,10,...,34)\n"+
                                             "Choose column 2: (2,5,8,11,...,35)\n"+
-                                            "Choose column 3: (3,6,9,12,...,36)\n");
+                                            "Choose column 3: (3,6,9,12,...,36)\n", 3);
                 if(inp === "1"){
                     bet[0] = 1;
                 }else if(inp === "2"){
                     bet[0] = 2;
                 }else if(inp === "3"){
                     bet[0] = 3;
-                }else{
-                    continue;
-                }
-                break;
-            }
+                }else{}
         }else if(inp === "2") {
             //dozens
-            while(true){
                 inp = await read_user_input("Choose dozen 1: (1-12)\n"+
                                             "Choose dozen 2: (13-24)\n"+
-                                            "Choose dozen 3: (25-36)\n");
+                                            "Choose dozen 3: (25-36)\n", 3);
                 if(inp === "1"){
                     bet[0] = 4;
                 }else if(inp === "2"){
@@ -177,15 +184,8 @@ async function columnsAndDozensBet(bet: bet): Promise<void>{
                 }else if(inp === "3"){
                     bet[0] = 6;
                 }else{
-                    continue;
                 }
-                break;
-            }
-        }else{
-            continue;
-        } 
-        break;      
-    }
+        }else{}   
 }
 
 async function addBetAmount(): Promise<void> {
