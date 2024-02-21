@@ -88,6 +88,79 @@ function print_options(options: {[key: string]: string}): void {
         console.log(`${key}) ${value}`);
     }
 }
+async function playerMove(person: Person) {
+    // could add print_options from login
+    while(true){
+        // type of bet:
+        // 1. numbers bet (single, split, street, corner, doublestreet)
+        // 2. even bets (RedBlack, EvenOdd, LowHigh)
+        // 3. Columns or dozens
+        const options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
+        let userInput = await read_user_input(options);
+        if(userInput==="1"){
+            numberBet();
+        }else if(userInput==="2"){
+            evenBets();
+        }else if(userInput==="3"){
+            columnsAndDozensBet();
+        }else{
+            continue;
+        }
+        // place bets and register bets
+
+
+
+
+
+
+        userInput = await read_user_input("want to bet more?: (Y)es or (N)o\n");
+        if(userInput==="Y" || userInput==="y"){
+            // spin the wheel and call the calculatewinnings functions and register the payout to the account
+            continue;
+        }else if(userInput==="N" || userInput==="n"){
+            break;
+        }
+    }
+}
+
+
+
+
+function numberBet(){
+
+
+
+
+}
+
+
+
+
+function evenBets(){
+
+
+
+
+}
+
+
+
+
+async function columnsAndDozensBet(): Promise<void>{
+    while(true){
+        const inp = await read_user_input("Choose columns (1) or dozens (2)");
+        if(inp==="1"){
+            //columns
+        }else if(inp==="2"){
+            //dozens
+        }else{
+            continue;
+        }
+       
+    }
+
+
+}
 
 
 /**
