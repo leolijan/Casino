@@ -55,3 +55,15 @@ export function createBlackjackDeck(): Deck {
     return shuffleDeck(cards);
 }
 
+/**
+ * Ensures the deck is not running low on cards. If the deck has fewer than 10 cards,
+ * a new shuffled deck is created and added to the existing deck to replenish it.
+ *
+ * @param {Card[]} deck - The current deck of cards.
+ */
+export function ensureDeckNotEmpty(deck: Card[]): void {
+    if (deck.length < 10) {
+        const newDeck = createBlackjackDeck();
+        deck.push(...newDeck);
+    }
+}
