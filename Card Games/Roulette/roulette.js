@@ -85,14 +85,13 @@ function read_user_input(prompt, max) {
                                     process.exit();
                                 }
                                 if (!check(answer, max)) {
+                                    console.log("WRONG INPUT");
                                     koll = false;
-                                    console.log("HELLO");
                                 }
                             });
                         })];
                 case 1:
                     retur = _a.sent();
-                    console.log("JDPOSJPODSJPODSJPO");
                     return [2 /*return*/, koll ? retur : read_user_input(prompt, max)];
             }
         });
@@ -124,26 +123,27 @@ function playerMove(person) {
                     return [4 /*yield*/, read_user_input(options, 3)];
                 case 1:
                     userInput = _a.sent();
-                    console.log(userInput);
                     if (!(userInput === "1")) return [3 /*break*/, 2];
                     numberBet();
-                    return [3 /*break*/, 5];
+                    return [3 /*break*/, 6];
                 case 2:
-                    if (!(userInput === "2")) return [3 /*break*/, 3];
-                    evenBets();
-                    return [3 /*break*/, 5];
-                case 3: return [4 /*yield*/, columnsAndDozensBet(["", 0, []])];
-                case 4:
+                    if (!(userInput === "2")) return [3 /*break*/, 4];
+                    return [4 /*yield*/, evenBets(["", 0, []])];
+                case 3:
                     _a.sent();
-                    _a.label = 5;
-                case 5: 
+                    return [3 /*break*/, 6];
+                case 4: return [4 /*yield*/, columnsAndDozensBet(["", 0, []])];
+                case 5:
+                    _a.sent();
+                    _a.label = 6;
+                case 6: 
                 // place bets and register bets
                 return [4 /*yield*/, addBetAmount()];
-                case 6:
+                case 7:
                     // place bets and register bets
                     _a.sent();
                     return [4 /*yield*/, read_user_input("want to bet more?: Yes(1) or No(2)\n", 2)];
-                case 7:
+                case 8:
                     userInput = _a.sent();
                     if (userInput === "1") {
                         // spin the wheel and call the calculatewinnings functions and register the payout to the account
@@ -157,7 +157,63 @@ function playerMove(person) {
 }
 function numberBet() {
 }
-function evenBets() {
+function evenBets(bet) {
+    return __awaiter(this, void 0, void 0, function () {
+        var inp;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, read_user_input("Choose red/black (1), even/odd (2) or low/high (3)\n", 3)];
+                case 1:
+                    inp = _a.sent();
+                    if (!(inp === "1")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, read_user_input("Choose red numbers (1): \n(1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36)\n" +
+                            "Choose black number (2): \n(2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35)\n", 2)];
+                case 2:
+                    //red/black
+                    inp = _a.sent();
+                    if (inp === "1") {
+                        bet[0] = Color.Red;
+                    }
+                    else if (inp === "2") {
+                        bet[0] = Color.Black;
+                    }
+                    else { }
+                    return [3 /*break*/, 7];
+                case 3:
+                    if (!(inp === "2")) return [3 /*break*/, 5];
+                    return [4 /*yield*/, read_user_input("Choose even numbers (1)\n" +
+                            "Choose odd numbers (2)\n", 2)];
+                case 4:
+                    //even/odd
+                    inp = _a.sent();
+                    if (inp === "1") {
+                        bet[0] = EvenOdd.Even;
+                    }
+                    else if (inp === "2") {
+                        bet[0] = EvenOdd.Odd;
+                    }
+                    else {
+                    }
+                    return [3 /*break*/, 7];
+                case 5:
+                    if (!(inp === "3")) return [3 /*break*/, 7];
+                    return [4 /*yield*/, read_user_input("Choose low numbers (1): (1-18)\n" +
+                            "Choose odd numbers (2): (19-36)\n", 2)];
+                case 6:
+                    //low/high
+                    inp = _a.sent();
+                    if (inp === "1") {
+                        bet[0] = LowHigh.Low;
+                    }
+                    else if (inp === "2") {
+                        bet[0] = LowHigh.High;
+                    }
+                    else { }
+                    return [3 /*break*/, 7];
+                case 7: return [2 /*return*/];
+            }
+        });
+    });
 }
 function columnsAndDozensBet(bet) {
     return __awaiter(this, void 0, void 0, function () {

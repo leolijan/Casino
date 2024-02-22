@@ -82,6 +82,7 @@ async function read_user_input(prompt: string, max: number): Promise<string> {
                 process.exit();
             }
             if(!check(answer,max)){
+                console.log("WRONG INPUT");
                 koll = false;
             }
             
@@ -115,12 +116,11 @@ async function playerMove(person: Person) {
     // 2. even bets (RedBlack, EvenOdd, LowHigh)
     // 3. Columns or dozens
         const options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
-        let userInput = await read_user_input(options,3);
-        console.log(userInput);
+        let userInput = await read_user_input(options, 3);
         if(userInput==="1"){
             numberBet();
         }else if(userInput==="2"){
-            evenBets();
+            await evenBets(["",0,[]]);
         }else{
             await columnsAndDozensBet(["",0,[]]);
         }
@@ -136,27 +136,41 @@ async function playerMove(person: Person) {
 }
 
 
-
-
 function numberBet(){
-
-
-
-
 }
 
-
-
-
-function evenBets(){
-
-
-
-
+async function evenBets(bet: bet){
+    let inp = await read_user_input("Choose red/black (1), even/odd (2) or low/high (3)\n", 3);
+        if(inp==="1") {
+            //red/black
+                inp = await read_user_input("Choose red numbers (1): \n(1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36)\n"+
+                                            "Choose black number (2): \n(2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35)\n", 2);
+                if(inp === "1"){
+                    bet[0] = Color.Red;
+                }else if(inp === "2"){
+                    bet[0] = Color.Black;
+                }else{}
+        }else if(inp === "2") {
+            //even/odd
+                inp = await read_user_input("Choose even numbers (1)\n"+
+                                            "Choose odd numbers (2)\n", 2);
+                if(inp === "1"){
+                    bet[0] = EvenOdd.Even;
+                }else if(inp === "2"){
+                    bet[0] = EvenOdd.Odd;
+                }else{
+                }
+        }else if(inp === "3"){
+            //low/high
+            inp = await read_user_input("Choose low numbers (1): (1-18)\n"+
+                                        "Choose odd numbers (2): (19-36)\n", 2);
+            if(inp === "1"){
+                bet[0] = LowHigh.Low;
+            }else if(inp === "2"){
+                bet[0] = LowHigh.High;
+            }else{}
+        }else{} 
 }
-
-
-
 
 async function columnsAndDozensBet(bet: bet): Promise<void>{
         let inp = await read_user_input("Choose columns (1) or dozens (2)\n", 2);
