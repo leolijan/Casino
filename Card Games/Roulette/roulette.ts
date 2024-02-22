@@ -41,13 +41,15 @@ type numbersBet = [];
  */
 type stake = number;
 
-// rest(type of bet), money betted, numbers betted on
-export type bet = [BetType, stake, []];
+// bettype, money betted, numbers betted on
+export type bet = [BetType, stake, Array<number>];
 
 
 // Global variable to keep track of all red numbers:
 const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 
                     19, 21, 23, 25, 27, 30, 32, 34, 36];
+const streets = [[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15],[16,17,18],[19,20,21],
+                 [22,23,24],[25,26,27],[28,29,30],[31,32,33],[34,35,36]];
 
 
 function areAdjacentNumbers(firstNumber: number, secondNumber: number): boolean {
@@ -81,7 +83,7 @@ async function read_user_input(prompt: string, max: number): Promise<string> {
             if(answer==="x"|| answer==="X") {
                 process.exit();
             }
-            if(!check(answer,max)){
+            if(!check(answer, max)){
                 console.log("WRONG INPUT");
                 koll = false;
             }
@@ -109,6 +111,7 @@ function print_options(options: {[key: string]: string}): void {
 }
 async function playerMove(person: Person) {
     // could add print_options from login
+    const bet: bet = ["",0,[]];
     console.log(person.name);
 
     // type of bet:
@@ -118,12 +121,14 @@ async function playerMove(person: Person) {
         const options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
         let userInput = await read_user_input(options, 3);
         if(userInput==="1"){
-            numberBet();
+            await numberBet(bet);
         }else if(userInput==="2"){
-            await evenBets(["",0,[]]);
+            await evenBets(bet);
         }else{
-            await columnsAndDozensBet(["",0,[]]);
+            await columnsAndDozensBet(bet);
         }
+    console.log(bet);
+    
     // place bets and register bets
 
     await addBetAmount();
@@ -136,7 +141,95 @@ async function playerMove(person: Person) {
 }
 
 
-function numberBet(){
+async function numberBet(bet: bet){
+    let inp = await read_user_input("Choose single (1), split (2), street (3), corner (4) or doublestreet (5)\n", 5);
+    const availableBets = [];
+        if(inp==="1") {
+            //single
+            inp = await read_user_input("choose number: ", 36);
+            bet[0]= "Single";
+            bet[2][0] = Number(inp);
+        }else if(inp === "2") {
+            //split 
+            let amount = 0;
+            inp = await read_user_input("choose first number: ", 36);   
+            bet[0] = "Split";  
+            const first = Number(inp);
+            bet[2][0]=first;
+            const numbers: number[] = [];
+            if(first%3===0){
+                //high up
+                amount = numbers.push(first-1, first+3, first-3);
+            }else if(first%3===1){
+                //lowest
+                amount = numbers.push(first+1, first+3, first-3);
+            }else{
+                //mitten
+                amount = numbers.push(first-1, first+1, first+3, first-3);
+            }
+            let str = "choose second number: ";
+            console.log(numbers);
+            let moved = 0;
+            
+            for(let i = 0; i < amount; i++){
+                if(numbers[i]<1||numbers[i]>36){
+                    //amount--;
+                    moved++;
+                    numbers[i]=-1;
+                }else{
+                    str += "nr: " + numbers[i].toString() + " (" + (i-moved+1).toString() + "), ";
+                }
+            }
+            console.log(numbers);
+            
+            str += "\n"
+            
+            inp = await read_user_input(str, amount);  
+            const second = Number(inp); 
+            bet[2][1] = numbers[second-1]===-1 ? numbers[second] : numbers[second-1];
+            console.log(bet[2]);
+            
+        }else if(inp === "3"){
+            //street 
+            inp = await read_user_input("Choose street: (1-12): \n", 12); 
+            bet[0] = "Street"; 
+            bet[2][0] = Number(inp);
+        }else if(inp === "4"){
+            //corner
+            inp = await read_user_input("choose first number: \n", 36);
+            bet[0]= "Corner";
+            const first = Number(inp);
+            // idea:
+            // go right left to only have two options
+            // then up for option 1 and down for option 2
+            let second;
+            if(first-3<1){
+                // go right
+                second = first + 3;
+            }else if(first+3>36){
+                // go left
+                second = first - 3;
+            }else{
+                inp = await read_user_input("go left (1) or right (2): \n", 2);  
+                second = Number(inp) === 1 ? first - 3 : first + 3;
+            }
+            // up (first,first-1,second,second-1)
+            // down (first,first+1,second,second+1)
+            inp = await read_user_input("go up (1): ("+ (first).toString() + "," + (first-1).toString() + "," + (second-1).toString() + "," + (second).toString() + ")" + 
+                                        " or down (2): ("+ (first).toString() + "," + (first+1).toString() + "," + (second+1).toString() + "," + (second).toString() + "): \n", 2);
+            bet[2] = Number(inp) === 1 ? [first,first-1,second,second-1] : [first,first+1,second,second+1];
+        }else if(inp === "5"){
+            //doublestreet
+            bet[0]= "DoubleStreet";
+            inp = await read_user_input("Choose first street (1-12):\n", 12);  
+            const first = Number(inp);
+            bet[2][0]=first;
+
+            //CHECK IF STREET IS OUTSIDE OF SCOPE
+            inp = await read_user_input("Choose second street: street " + (first-1).toString() + " (1) or street " + (first+1).toString()+ " (2):\n",
+                                        2);
+            bet[2][1] = Number(inp)===1 ? first-1 : first+1;
+        }else{} 
 }
 
 async function evenBets(bet: bet){
@@ -152,14 +245,13 @@ async function evenBets(bet: bet){
                 }else{}
         }else if(inp === "2") {
             //even/odd
-                inp = await read_user_input("Choose even numbers (1)\n"+
-                                            "Choose odd numbers (2)\n", 2);
+                inp = await read_user_input("Choose even numbers (1): \n"+
+                                            "Choose odd numbers (2): \n", 2);
                 if(inp === "1"){
                     bet[0] = EvenOdd.Even;
                 }else if(inp === "2"){
                     bet[0] = EvenOdd.Odd;
-                }else{
-                }
+                }else{}
         }else if(inp === "3"){
             //low/high
             inp = await read_user_input("Choose low numbers (1): (1-18)\n"+
@@ -173,7 +265,7 @@ async function evenBets(bet: bet){
 }
 
 async function columnsAndDozensBet(bet: bet): Promise<void>{
-        let inp = await read_user_input("Choose columns (1) or dozens (2)\n", 2);
+        let inp = await read_user_input("Choose columns (1) or dozens (2): \n", 2);
         if(inp==="1") {
             //columns
                 inp = await read_user_input("Choose column 1: (1,4,7,10,...,34)\n"+
@@ -284,7 +376,7 @@ function calcSplit(bet: number[], stake: stake, number: number): number {
  * @returns The payout for the placed bet.
  */
 function calcStreet(bet: number[], stake: stake, number: number): number {
-    return (number >= bet[0] && number <= bet[0] + 3) ? stake * 12 : 0;
+    return (streets[bet[0]].includes(number)) ? stake * 12 : 0;
 }
 
 
@@ -312,7 +404,7 @@ function calcCorner(bet: number[], stake: stake, number: number): number {
  * @returns The payout for the placed bet.
  */
 function calcDoubleStreet(bet: number[], stake: stake, number: number): number {
-    return (number >= bet[0] && number <= bet[0] + 5) ? stake * 6 : 0;
+    return (streets[bet[0]].includes(number)||streets[bet[1]].includes(number)) ? stake * 6 : 0;
 }
 
 

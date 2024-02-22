@@ -55,6 +55,8 @@ var EvenOdd;
 // Global variable to keep track of all red numbers:
 var redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18,
     19, 21, 23, 25, 27, 30, 32, 34, 36];
+var streets = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12], [13, 14, 15], [16, 17, 18], [19, 20, 21],
+    [22, 23, 24], [25, 26, 27], [28, 29, 30], [31, 32, 33], [34, 35, 36]];
 function areAdjacentNumbers(firstNumber, secondNumber) {
     var booleans = false;
     var difference = firstNumber - secondNumber;
@@ -113,37 +115,40 @@ function print_options(options) {
 }
 function playerMove(person) {
     return __awaiter(this, void 0, void 0, function () {
-        var options, userInput;
+        var bet, options, userInput;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    // could add print_options from login
+                    bet = ["", 0, []];
                     console.log(person.name);
                     options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
                     return [4 /*yield*/, read_user_input(options, 3)];
                 case 1:
                     userInput = _a.sent();
-                    if (!(userInput === "1")) return [3 /*break*/, 2];
-                    numberBet();
-                    return [3 /*break*/, 6];
+                    if (!(userInput === "1")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, numberBet(bet)];
                 case 2:
-                    if (!(userInput === "2")) return [3 /*break*/, 4];
-                    return [4 /*yield*/, evenBets(["", 0, []])];
+                    _a.sent();
+                    return [3 /*break*/, 7];
                 case 3:
+                    if (!(userInput === "2")) return [3 /*break*/, 5];
+                    return [4 /*yield*/, evenBets(bet)];
+                case 4:
                     _a.sent();
-                    return [3 /*break*/, 6];
-                case 4: return [4 /*yield*/, columnsAndDozensBet(["", 0, []])];
-                case 5:
+                    return [3 /*break*/, 7];
+                case 5: return [4 /*yield*/, columnsAndDozensBet(bet)];
+                case 6:
                     _a.sent();
-                    _a.label = 6;
-                case 6: 
-                // place bets and register bets
-                return [4 /*yield*/, addBetAmount()];
+                    _a.label = 7;
                 case 7:
+                    console.log(bet);
+                    // place bets and register bets
+                    return [4 /*yield*/, addBetAmount()];
+                case 8:
                     // place bets and register bets
                     _a.sent();
                     return [4 /*yield*/, read_user_input("want to bet more?: Yes(1) or No(2)\n", 2)];
-                case 8:
+                case 9:
                     userInput = _a.sent();
                     if (userInput === "1") {
                         // spin the wheel and call the calculatewinnings functions and register the payout to the account
@@ -155,7 +160,126 @@ function playerMove(person) {
         });
     });
 }
-function numberBet() {
+function numberBet(bet) {
+    return __awaiter(this, void 0, void 0, function () {
+        var inp, availableBets, amount, first, numbers, str, moved, i, second, first, second, first;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, read_user_input("Choose single (1), split (2), street (3), corner (4) or doublestreet (5)\n", 5)];
+                case 1:
+                    inp = _a.sent();
+                    availableBets = [];
+                    if (!(inp === "1")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, read_user_input("choose number: ", 36)];
+                case 2:
+                    //single
+                    inp = _a.sent();
+                    bet[0] = "Single";
+                    bet[2][0] = Number(inp);
+                    return [3 /*break*/, 18];
+                case 3:
+                    if (!(inp === "2")) return [3 /*break*/, 6];
+                    amount = 0;
+                    return [4 /*yield*/, read_user_input("choose first number: ", 36)];
+                case 4:
+                    inp = _a.sent();
+                    bet[0] = "Split";
+                    first = Number(inp);
+                    bet[2][0] = first;
+                    numbers = [];
+                    if (first % 3 === 0) {
+                        //high up
+                        amount = numbers.push(first - 1, first + 3, first - 3);
+                    }
+                    else if (first % 3 === 1) {
+                        //lowest
+                        amount = numbers.push(first + 1, first + 3, first - 3);
+                    }
+                    else {
+                        //mitten
+                        amount = numbers.push(first - 1, first + 1, first + 3, first - 3);
+                    }
+                    str = "choose second number: ";
+                    console.log(numbers);
+                    moved = 0;
+                    for (i = 0; i < amount; i++) {
+                        if (numbers[i] < 1 || numbers[i] > 36) {
+                            //amount--;
+                            moved++;
+                            numbers[i] = -1;
+                        }
+                        else {
+                            str += "nr: " + numbers[i].toString() + " (" + (i - moved + 1).toString() + "), ";
+                        }
+                    }
+                    console.log(numbers);
+                    str += "\n";
+                    return [4 /*yield*/, read_user_input(str, amount)];
+                case 5:
+                    inp = _a.sent();
+                    second = Number(inp);
+                    bet[2][1] = numbers[second - 1] === -1 ? numbers[second] : numbers[second - 1];
+                    console.log(bet[2]);
+                    return [3 /*break*/, 18];
+                case 6:
+                    if (!(inp === "3")) return [3 /*break*/, 8];
+                    return [4 /*yield*/, read_user_input("Choose street: (1-12): \n", 12)];
+                case 7:
+                    //street 
+                    inp = _a.sent();
+                    bet[0] = "Street";
+                    bet[2][0] = Number(inp);
+                    return [3 /*break*/, 18];
+                case 8:
+                    if (!(inp === "4")) return [3 /*break*/, 15];
+                    return [4 /*yield*/, read_user_input("choose first number: ", 36)];
+                case 9:
+                    //corner
+                    inp = _a.sent();
+                    bet[0] = "Corner";
+                    first = Number(inp);
+                    second = void 0;
+                    if (!(first - 3 < 1)) return [3 /*break*/, 10];
+                    // go right
+                    second = first + 3;
+                    return [3 /*break*/, 13];
+                case 10:
+                    if (!(first + 3 > 36)) return [3 /*break*/, 11];
+                    // go left
+                    second = first - 3;
+                    return [3 /*break*/, 13];
+                case 11: return [4 /*yield*/, read_user_input("go left (1) or right (2): \n", 2)];
+                case 12:
+                    inp = _a.sent();
+                    second = Number(inp) === 1 ? first - 3 : first + 3;
+                    _a.label = 13;
+                case 13: return [4 /*yield*/, read_user_input("go up (1): (" + (first).toString() + "," + (first - 1).toString() + "," + (second - 1).toString() + "," + (second).toString() + ")" +
+                        " or down (2): (" + (first).toString() + "," + (first + 1).toString() + "," + (second + 1).toString() + "," + (second).toString() + "): \n", 2)];
+                case 14:
+                    // up (first,first-1,second,second-1)
+                    // down (first,first+1,second,second+1)
+                    inp = _a.sent();
+                    bet[2] = Number(inp) === 1 ? [first, first - 1, second, second - 1] : [first, first + 1, second, second + 1];
+                    return [3 /*break*/, 18];
+                case 15:
+                    if (!(inp === "5")) return [3 /*break*/, 18];
+                    //doublestreet
+                    bet[0] = "DoubleStreet";
+                    return [4 /*yield*/, read_user_input("Choose first street: (1-12)\n", 12)];
+                case 16:
+                    inp = _a.sent();
+                    first = Number(inp);
+                    bet[2][0] = first;
+                    return [4 /*yield*/, read_user_input("Choose second street: street " + (first - 1).toString() + " (1) or street " + (first + 1).toString() + " (2)\n", 2)];
+                case 17:
+                    //CHECK IF STREET IS OUTSIDE OF SCOPE
+                    inp = _a.sent();
+                    bet[2][1] = Number(inp) === 1 ? first - 1 : first + 1;
+                    return [3 /*break*/, 18];
+                case 18: return [2 /*return*/];
+            }
+        });
+    });
 }
 function evenBets(bet) {
     return __awaiter(this, void 0, void 0, function () {
@@ -192,8 +316,7 @@ function evenBets(bet) {
                     else if (inp === "2") {
                         bet[0] = EvenOdd.Odd;
                     }
-                    else {
-                    }
+                    else { }
                     return [3 /*break*/, 7];
                 case 5:
                     if (!(inp === "3")) return [3 /*break*/, 7];
@@ -341,7 +464,7 @@ function calcSplit(bet, stake, number) {
  * @returns The payout for the placed bet.
  */
 function calcStreet(bet, stake, number) {
-    return (number >= bet[0] && number <= bet[0] + 3) ? stake * 12 : 0;
+    return (streets[bet[0]].includes(number)) ? stake * 12 : 0;
 }
 /**
  * Calculates the payout for a bet on a corner. This is when four numbers meet
@@ -365,7 +488,7 @@ function calcCorner(bet, stake, number) {
  * @returns The payout for the placed bet.
  */
 function calcDoubleStreet(bet, stake, number) {
-    return (number >= bet[0] && number <= bet[0] + 5) ? stake * 6 : 0;
+    return (streets[bet[0]].includes(number) || streets[bet[1]].includes(number)) ? stake * 6 : 0;
 }
 /**
  * Calculates the payout for a bet placed on either red or black.
