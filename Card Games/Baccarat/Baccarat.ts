@@ -1,11 +1,6 @@
 import { readUserInput } from '../../userInput/readUserInput';
-import { createBlackjackDeck, Card, ensureDeckNotEmpty } from '../Deck/Deck';
+import { createBlackjackDeck, Card, isPair, dealInitialCards } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
-
-async function dealInitialCards(deck: Card[], person: Person): Promise<void> {
-  ensureDeckNotEmpty(deck);
-  person.hand.push(deck.pop()!, deck.pop()!);
-}
 
 function showHand(person: Person): void {
   console.log(`${person.name}'s hand: ${person.hand.map(card => `${card.value} of ${card.suit}`).join(', ')}`);
@@ -83,12 +78,6 @@ async function bankerHand(deck: Card[], banker: Person, player: Person): Promise
   }
 
   return bankerTotal;
-}
-
-
-function isPair(hand: Card[]): boolean {
-  if (hand.length !== 2) return false;
-  return hand[0].value === hand[1].value;
 }
 
 async function decideOutcome(playerValue: number, bankerValue: number, playerHand: Card[], bankerHand: Card[], betType: string): Promise<{ outcome: string; winnings: number }> {

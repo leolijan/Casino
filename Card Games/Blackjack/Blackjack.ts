@@ -1,21 +1,9 @@
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { createBlackjackDeck, Card } from '../Deck/Deck';
+import { createBlackjackDeck, Card, dealInitialCards } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
 const rl = createInterface({ input, output });
-
-const ensureDeckNotEmpty = (deck: Card[]): void => {
-  if (deck.length < 10) {
-    const newDeck = createBlackjackDeck();
-    deck.push(...newDeck);
-  }
-};
-
-async function dealInitialCards(deck: Card[], person: Person): Promise<void> {
-  ensureDeckNotEmpty(deck);
-  person.hand.push(deck.pop()!, deck.pop()!);
-}
 
 function showHand(person: Person): void {
   console.log(`${person.name}'s hand: ${person.hand.map(card => `${card.value} of ${card.suit}`).join(', ')}`);
