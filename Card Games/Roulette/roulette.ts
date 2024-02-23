@@ -1,5 +1,6 @@
 import * as readline from 'readline';
 import { Person, createPerson } from '../../Player/Player';
+import {head, list, List, pair, tail} from '../../../../lib/list'
 
 // All possible bets
 type BetType = EvenMoney | TwoToOne | RestOfBets | "";
@@ -29,6 +30,8 @@ type Dozens = 4 | 5 | 6;
 type RestOfBets = "Single" | "Split" | "Street" | "Corner" | "DoubleStreet";
 
 type numbersBet = [];
+
+let allBets: List<bet> = list();
 
 /** ODDS
  * single: 35:1
@@ -114,30 +117,59 @@ async function playerMove(person: Person) {
     const bet: bet = ["",0,[]];
     console.log(person.name);
 
+    await addBetAmount(person, bet);
+    //person add bet
+
     // type of bet:
     // 1. numbers bet (single, split, street, corner, doublestreet)
     // 2. even bets (RedBlack, EvenOdd, LowHigh)
     // 3. Columns or dozens
-        const options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
-        let userInput = await read_user_input(options, 3);
-        if(userInput==="1"){
-            await numberBet(bet);
-        }else if(userInput==="2"){
-            await evenBets(bet);
-        }else{
-            await columnsAndDozensBet(bet);
-        }
+        
     console.log(bet);
-    
+    await buildABet(bet);
     // place bets and register bets
+    allBets = pair(bet, allBets);
 
-    await addBetAmount();
+    console.log("YOUR BET: ", bet)
+    console.log("ALL BETS: ", allBets);
+    
 
-    userInput = await read_user_input("want to bet more?: Yes(1) or No(2)\n", 2);
+    
+
+    const userInput = await read_user_input("want to bet more?: Yes(1) or No(2)\n", 2);
     if(userInput==="1"){
-        // spin the wheel and call the calculatewinnings functions and register the payout to the account
         playerMove(person);
-    }else{}
+    }else{
+        // spin the wheel and call the calculatewinnings functions and register the payout to the account
+        const rand = Math.ceil(Math.random()*36);
+        console.log(rand);
+        console.log("balance before: ", person.balance);
+        console.log("balance after: ", person.balance+=calculateWinnings(allBets,rand));
+        
+
+    }
+}
+
+async function addBetAmount(person: Person, bet: bet): Promise<void> {
+    const userInput = await read_user_input("How much would you like to bet? \n",person.balance);
+    const stake = Number(userInput);
+    console.log(person.balance);
+    person.balance-=stake;
+    console.log(person.balance);
+
+    bet[1]=stake;
+}
+
+async function buildABet(bet: bet): Promise<void> {
+    const options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
+    const userInput = await read_user_input(options, 3);
+    if(userInput==="1"){
+        await numberBet(bet);
+    }else if(userInput==="2"){
+        await evenBets(bet);
+    }else{
+        await columnsAndDozensBet(bet);
+    }
 }
 
 
@@ -294,9 +326,7 @@ async function columnsAndDozensBet(bet: bet): Promise<void>{
         }else{}   
 }
 
-async function addBetAmount(): Promise<void> {
 
-}
 
 
 /**
@@ -307,13 +337,12 @@ async function addBetAmount(): Promise<void> {
  * @param number The winning number in the roulette game.
  * @returns The total payout amount.
  */
-function calculateWinnings(bets: bet[], number: number): number{
-    let payout = 0;
-    for(let i = 0; i < bets.length; i++){
-        payout += calcPayout(bets[i], number);
+function calculateWinnings(bets: List<bet>, number: number): number{
+    if(bets===null){
+        return 0;
+    }else{
+        return calcPayout(head(bets),number) + calculateWinnings(tail(bets),number);
     }
-    
-    return payout;
 }
 
 

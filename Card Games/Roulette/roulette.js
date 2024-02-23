@@ -37,6 +37,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 var readline = require("readline");
+var list_1 = require("../../../../lib/list");
 var Color;
 (function (Color) {
     Color["Red"] = "Red";
@@ -52,6 +53,7 @@ var EvenOdd;
     EvenOdd["Even"] = "Even";
     EvenOdd["Odd"] = "Odd";
 })(EvenOdd || (EvenOdd = {}));
+var allBets = (0, list_1.list)();
 // Global variable to keep track of all red numbers:
 var redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18,
     19, 21, 23, 25, 27, 30, 32, 34, 36];
@@ -115,12 +117,69 @@ function print_options(options) {
 }
 function playerMove(person) {
     return __awaiter(this, void 0, void 0, function () {
-        var bet, options, userInput;
+        var bet, userInput, rand;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     bet = ["", 0, []];
                     console.log(person.name);
+                    return [4 /*yield*/, addBetAmount(person, bet)];
+                case 1:
+                    _a.sent();
+                    //person add bet
+                    // type of bet:
+                    // 1. numbers bet (single, split, street, corner, doublestreet)
+                    // 2. even bets (RedBlack, EvenOdd, LowHigh)
+                    // 3. Columns or dozens
+                    console.log(bet);
+                    return [4 /*yield*/, buildABet(bet)];
+                case 2:
+                    _a.sent();
+                    // place bets and register bets
+                    allBets = (0, list_1.pair)(bet, allBets);
+                    console.log("YOUR BET: ", bet);
+                    console.log("ALL BETS: ", allBets);
+                    return [4 /*yield*/, read_user_input("want to bet more?: Yes(1) or No(2)\n", 2)];
+                case 3:
+                    userInput = _a.sent();
+                    if (userInput === "1") {
+                        playerMove(person);
+                    }
+                    else {
+                        rand = Math.ceil(Math.random() * 36);
+                        console.log(rand);
+                        console.log("balance before: ", person.balance);
+                        console.log("balance after: ", person.balance += calculateWinnings(allBets, rand));
+                    }
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function addBetAmount(person, bet) {
+    return __awaiter(this, void 0, void 0, function () {
+        var userInput, stake;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0: return [4 /*yield*/, read_user_input("How much would you like to bet? \n", person.balance)];
+                case 1:
+                    userInput = _a.sent();
+                    stake = Number(userInput);
+                    console.log(person.balance);
+                    person.balance -= stake;
+                    console.log(person.balance);
+                    bet[1] = stake;
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
+function buildABet(bet) {
+    return __awaiter(this, void 0, void 0, function () {
+        var options, userInput;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
                     options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
                     return [4 /*yield*/, read_user_input(options, 3)];
                 case 1:
@@ -140,22 +199,7 @@ function playerMove(person) {
                 case 6:
                     _a.sent();
                     _a.label = 7;
-                case 7:
-                    console.log(bet);
-                    // place bets and register bets
-                    return [4 /*yield*/, addBetAmount()];
-                case 8:
-                    // place bets and register bets
-                    _a.sent();
-                    return [4 /*yield*/, read_user_input("want to bet more?: Yes(1) or No(2)\n", 2)];
-                case 9:
-                    userInput = _a.sent();
-                    if (userInput === "1") {
-                        // spin the wheel and call the calculatewinnings functions and register the payout to the account
-                        playerMove(person);
-                    }
-                    else { }
-                    return [2 /*return*/];
+                case 7: return [2 /*return*/];
             }
         });
     });
@@ -232,7 +276,7 @@ function numberBet(bet) {
                     return [3 /*break*/, 18];
                 case 8:
                     if (!(inp === "4")) return [3 /*break*/, 15];
-                    return [4 /*yield*/, read_user_input("choose first number: ", 36)];
+                    return [4 /*yield*/, read_user_input("choose first number: \n", 36)];
                 case 9:
                     //corner
                     inp = _a.sent();
@@ -265,12 +309,12 @@ function numberBet(bet) {
                     if (!(inp === "5")) return [3 /*break*/, 18];
                     //doublestreet
                     bet[0] = "DoubleStreet";
-                    return [4 /*yield*/, read_user_input("Choose first street: (1-12)\n", 12)];
+                    return [4 /*yield*/, read_user_input("Choose first street (1-12):\n", 12)];
                 case 16:
                     inp = _a.sent();
                     first = Number(inp);
                     bet[2][0] = first;
-                    return [4 /*yield*/, read_user_input("Choose second street: street " + (first - 1).toString() + " (1) or street " + (first + 1).toString() + " (2)\n", 2)];
+                    return [4 /*yield*/, read_user_input("Choose second street: street " + (first - 1).toString() + " (1) or street " + (first + 1).toString() + " (2):\n", 2)];
                 case 17:
                     //CHECK IF STREET IS OUTSIDE OF SCOPE
                     inp = _a.sent();
@@ -305,8 +349,8 @@ function evenBets(bet) {
                     return [3 /*break*/, 7];
                 case 3:
                     if (!(inp === "2")) return [3 /*break*/, 5];
-                    return [4 /*yield*/, read_user_input("Choose even numbers (1)\n" +
-                            "Choose odd numbers (2)\n", 2)];
+                    return [4 /*yield*/, read_user_input("Choose even numbers (1): \n" +
+                            "Choose odd numbers (2): \n", 2)];
                 case 4:
                     //even/odd
                     inp = _a.sent();
@@ -343,7 +387,7 @@ function columnsAndDozensBet(bet) {
         var inp;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, read_user_input("Choose columns (1) or dozens (2)\n", 2)];
+                case 0: return [4 /*yield*/, read_user_input("Choose columns (1) or dozens (2): \n", 2)];
                 case 1:
                     inp = _a.sent();
                     if (!(inp === "1")) return [3 /*break*/, 3];
@@ -389,13 +433,6 @@ function columnsAndDozensBet(bet) {
         });
     });
 }
-function addBetAmount() {
-    return __awaiter(this, void 0, void 0, function () {
-        return __generator(this, function (_a) {
-            return [2 /*return*/];
-        });
-    });
-}
 /**
  * Calculates the total winnings for a player based on their bets placed
  * and the winning number each time.
@@ -405,11 +442,12 @@ function addBetAmount() {
  * @returns The total payout amount.
  */
 function calculateWinnings(bets, number) {
-    var payout = 0;
-    for (var i = 0; i < bets.length; i++) {
-        payout += calcPayout(bets[i], number);
+    if (bets === null) {
+        return 0;
     }
-    return payout;
+    else {
+        return calcPayout((0, list_1.head)(bets), number) + calculateWinnings((0, list_1.tail)(bets), number);
+    }
 }
 /**
  * Calculates the payout based on the type of bet and winning number.
