@@ -94,3 +94,14 @@ export function isPair(hand: Card[]): boolean {
     if (hand.length !== 2) return false;
     return hand[0].value === hand[1].value;
 }
+
+/**
+ * Prints a summary of a person's hand to the console.
+ *
+ * @param {Person} person - The person whose hand will be displayed.
+ */
+export function showHand(person: Person): void {
+    // Building the string representation of the hand
+    const handRepresentation = person.hand.map(card => `${card.value} of ${card.suit}`).join(', ');
+    console.log(`${person.name}'s hand: ${handRepresentation}`);
+}

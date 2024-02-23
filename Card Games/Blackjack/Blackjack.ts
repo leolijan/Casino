@@ -1,13 +1,9 @@
 import { createInterface } from 'node:readline/promises';
 import { stdin as input, stdout as output } from 'node:process';
-import { createBlackjackDeck, Card, dealInitialCards } from '../Deck/Deck';
+import { createBlackjackDeck, Card, dealInitialCards, showHand } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
 const rl = createInterface({ input, output });
-
-function showHand(person: Person): void {
-  console.log(`${person.name}'s hand: ${person.hand.map(card => `${card.value} of ${card.suit}`).join(', ')}`);
-}
 
 async function calculateHandValue(hand: Card[]): Promise<number> {
   let total = 0;

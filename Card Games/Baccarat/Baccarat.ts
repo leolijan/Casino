@@ -1,5 +1,5 @@
 import { readUserInput } from '../../userInput/readUserInput';
-import { createBlackjackDeck, Card, isPair, dealInitialCards } from '../Deck/Deck';
+import { createBlackjackDeck, Card, ensureDeckNotEmpty, isPair, dealInitialCards } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
 function showHand(person: Person): void {

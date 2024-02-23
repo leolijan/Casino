@@ -1,4 +1,4 @@
-import { createDeck, shuffleDeck, createBlackjackDeck, ensureDeckNotEmpty, dealInitialCards, isPair } from './Deck'; // Adjust the import path as necessary
+import { createDeck, shuffleDeck, createBlackjackDeck, ensureDeckNotEmpty, dealInitialCards, isPair, showHand} from './Deck'; // Adjust the import path as necessary
 
 test('createDeck creates a deck of 52 cards', () => {
     expect(createDeck().length).toBe(52);
@@ -90,4 +90,38 @@ test('isPair returns false for a hand with more than two cards', () => {
 
   // Assert that isPair returns false for this hand
   expect(isPair(moreThanTwoCardsHand)).toBe(false);
+});
+
+describe('showHand functionality', () => {
+  let consoleSpy: jest.SpyInstance;
+
+  beforeEach(() => {
+    // Spy on console.log before each test
+    consoleSpy = jest.spyOn(console, 'log');
+  });
+
+  afterEach(() => {
+    // Restore the original implementation after each test
+    consoleSpy.mockRestore();
+  });
+
+  test('correctly logs a person\'s hand', () => {
+    const mockPerson = {
+      name: 'Alice',
+      password: 'secret', // Assuming password won't be used in this test
+      balance: 100, // Assuming balance won't be used in this test
+      hand: [
+        { value: 10, suit: 'Hearts' },
+        { value: 11, suit: 'Spades' }, // Assuming 11 represents Jack
+      ]
+    };
+
+    // Expected message format
+    const expectedMessage = "Alice's hand: 10 of Hearts, 11 of Spades";
+
+    showHand(mockPerson);
+
+    // Verify console.log was called with the correct message
+    expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
+  });
 });
