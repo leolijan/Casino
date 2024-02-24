@@ -1,5 +1,9 @@
 import * as readline from 'readline';
 import * as fs from 'fs';
+import { Card } from '../Card Games/Deck/Deck';
+import { Person } from '../Player/Player';
+import { startGame as startBaccarat } from '../Card Games/Baccarat/Baccarat';
+import { startGame as startBlackjack } from '../Card Games/Blackjack/Blackjack';
 
 // Global variable
 const textfile: string = "user_information.json";
@@ -39,32 +43,32 @@ function read_user_input(prompt: string): Promise<string> {
 async function logged_in(user: string): Promise<void> {
     console.log();
 
-    const options: {[key: string]: string} = {"b": "Black jack", "r": "Roulette", "q": "Return to menu"};
+    const all_users = read_login_credentials(textfile);
+    const options: {[key: string]: string} = {"1": "Black jack", "2" : "Baccarat" , "3": "Roulette", "4": "Return to menu"};
     print_options(options);
 
     const choice: string = await read_user_input("Option: ");
 
     console.log(); // Add a newline for better formatting
 
-    if (choice === "a") {
+    if (choice === "1") {
+    
+    } else if (choice === "2") {
+
+    } else if (choice === "3") {
         
-    } else if (choice === "s") {
-        
-    } else if (choice === "g") {
-        
-    } else if (choice === "r") {
+    } else if (choice === "4") {
         splash_screen();
         await menu();
     }
 }
 
-
-async function login(users: {[key: string]: string}): Promise<void> {
+async function login(users: {[key: string]: {password: string}}): Promise<void> {
     while (true) {
         const username = await read_user_input("Username: ");
         const password = await read_user_input("Password: ");
 
-        if (users[username] && password === users[username]) {
+        if (users[username] && password === users[username].password) {
             console.log(`Welcome ${username}`);
             await logged_in(username);
         } else {
@@ -83,16 +87,19 @@ async function new_user(): Promise<void> {
         const confirmedPassword = await read_user_input("Confirm your password: ");
 
         if (password === confirmedPassword) {
-            const all_users: {[key: string]: string} = read_login_credentials(textfile);
-            all_users[username] = confirmedPassword;
+            const all_users = read_login_credentials(textfile);
+            if (all_users[username]) {
+                console.log("Username already exists. Choose a different username.");
+                continue;
+            }
+            all_users[username] = {
+                name: username,
+                password: confirmedPassword,
+                balance: 1000, // Default starting balance
+                hand: [] // Empty hand at the start
+            };
             write_login_credentials(textfile, all_users);
             console.log("Registration successful");
-
-            // Reload user credentials after registration
-            const updated_users: {[key: string]: string} = read_login_credentials(textfile);
-
-            // Proceed to login with updated credentials
-            await login(updated_users);
 
             break;
         } else {
@@ -103,29 +110,31 @@ async function new_user(): Promise<void> {
     }
 }
 
-function write_login_credentials(filename: string, login_credentials: {[key: string]: string}): void {
+function write_login_credentials(filename: string, users: { [key: string]: { name: string; password: string; balance: number; hand: Card[]; } }): void {
     try {
-        const data: string = JSON.stringify(login_credentials, null, 2);
+        const data: string = JSON.stringify(users, null, 2);
         fs.writeFileSync(filename, data);
     } catch (err) {
         console.error(`An error occurred: ${err}`);
     }
 }
 
-function read_login_credentials(filename: string): {[key: string]: string} {
+function read_login_credentials(filename: string): { [key: string]: { name: string; password: string; balance: number; hand: Card[]; } } {
     try {
         const data: string = fs.readFileSync(filename, 'utf8');
         return JSON.parse(data);
     } catch (err) {
+        console.error(`Error reading the file: ${err}`);
         fs.writeFileSync(filename, '{}');
         return {};
     }
 }
 
+
 async function menu(): Promise<void> {
     splash_screen();
     console.log();
-    const all_users_saved: {[key: string]: string} = read_login_credentials(textfile);
+    const all_users_saved: {[key: string]: Person} = read_login_credentials(textfile);
     const menu_options: {[key: string]: string} = {"l": "Login", "r": "Register", "q": "Quit"};
     print_options(menu_options);
 
