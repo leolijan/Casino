@@ -5,14 +5,24 @@ import { Person, createPerson } from '../../Player/Player';
 
 const rl = createInterface({ input, output });
 
-async function calculateHandValue(hand: Card[]): Promise<number> {
+/**
+ * Calculates the total value of a hand in Blackjack, taking into account the 
+ * special rules for Aces (value of 11 or 1 to avoid busting if possible).
+ * @param {Card[]} hand - The array of cards in the hand.
+ * @returns {number} The total value of the hand.
+ */
+export function calculateHandValue(hand: Card[]): number {
   let total = 0;
   let aceCount = hand.filter(card => card.value === 14).length;
 
   hand.forEach(card => {
-    if (card.value >= 11 && card.value <= 13) total += 10;
-    else if (card.value === 14) total += 11;
-    else total += card.value;
+    if (card.value >= 11 && card.value <= 13) {
+      total += 10;
+    } else if (card.value === 14) {
+      total += 11;
+    } else {
+      total += card.value;
+    }
   });
 
   while (total > 21 && aceCount > 0) {
@@ -23,19 +33,31 @@ async function calculateHandValue(hand: Card[]): Promise<number> {
   return total;
 }
 
-async function checkForBlackjack(hand: Card[]): Promise<boolean> {
-  const value = await calculateHandValue(hand);
+/**
+ * Checks if a hand is a blackjack (a total value of 21 with exactly two cards).
+ * @param {Card[]} hand - The hand to check.
+ * @returns {boolean} True if the hand is a blackjack, false otherwise.
+ */
+export function checkForBlackjack(hand: Card[]): boolean {
+  const value = calculateHandValue(hand);
   return hand.length === 2 && value === 21;
 }
 
-async function playerTurn(deck: Card[], player: Person, bet: number): Promise<boolean> {
-  let playerTotal = await calculateHandValue(player.hand);
+/**
+ * Handles the player's turn in a game of Blackjack, allowing them to hit, stand, or double down.
+ * @param {Card[]} deck - The current deck of cards.
+ * @param {Person} player - The player object.
+ * @param {number} bet - The current bet amount.
+ * @returns {Promise<boolean>} - Returns false if the player's turn ends (blackjack or bust) or true if the player stands.
+ */
+export async function playerTurn(deck: Card[], player: Person, bet: number): Promise<boolean> {
+  let playerTotal = calculateHandValue(player.hand); 
   let doubledDown = false;
 
-  if (await checkForBlackjack(player.hand)) {
+  if (checkForBlackjack(player.hand)) { 
     console.log("Blackjack! You win 1.5x your bet.");
     player.balance += bet * 1.5;
-    return false; // Ends player turn immediately
+    return false;
   }
 
   while (playerTotal < 21) {
@@ -43,16 +65,16 @@ async function playerTurn(deck: Card[], player: Person, bet: number): Promise<bo
     const hitOrStand = await rl.question('Do you want to (h)it, (s)tand, or (d)ouble down? ');
 
     if (hitOrStand.toLowerCase() === 'd' && !doubledDown && player.hand.length === 2) {
-      player.balance -= bet; // Additional bet for doubling down
-      bet *= 2; // Double the bet
+      player.balance -= bet;
+      bet *= 2;
       player.hand.push(deck.pop()!);
       console.log(`You doubled down and drew ${player.hand.at(-1)!.value} of ${player.hand.at(-1)!.suit}.`);
       doubledDown = true;
-      break; // Player can only receive one card after doubling down
+      break;
     } else if (hitOrStand.toLowerCase() === 'h') {
       player.hand.push(deck.pop()!);
       console.log(`You drew ${player.hand.at(-1)!.value} of ${player.hand.at(-1)!.suit}.`);
-      playerTotal = await calculateHandValue(player.hand);
+      playerTotal = calculateHandValue(player.hand); 
     } else {
       break;
     }
@@ -61,29 +83,40 @@ async function playerTurn(deck: Card[], player: Person, bet: number): Promise<bo
   await showHand(player);
   if (playerTotal > 21) {
     console.log('Bust! You lose.');
-    player.balance -= bet; // Adjust for double down if happened
-    return false; // Player busts
+    player.balance -= bet;
+    return false;
   }
-  return true; // Player stands
+  return true;
 }
 
-async function dealerTurn(deck: Card[], dealer: Person): Promise<number> {
-  let dealerTotal = await calculateHandValue(dealer.hand);
+/**
+ * Handles the dealer's turn in Blackjack, drawing cards until the total value is 17 or higher.
+ * @param {Card[]} deck - The deck of cards used in the game.
+ * @param {Person} dealer - The dealer's hand.
+ * @returns {Promise<number>} The total value of the dealer's hand at the end of their turn.
+ */
+export async function dealerTurn(deck: Card[], dealer: Person): Promise<number> {
+  let dealerTotal = calculateHandValue(dealer.hand); 
 
-  if (await checkForBlackjack(dealer.hand)) {
+  if (checkForBlackjack(dealer.hand)) {
     console.log("Dealer has Blackjack!");
-    return 21; // Indicates dealer has Blackjack
+    return 21;
   }
 
   while (dealerTotal < 17) {
     dealer.hand.push(deck.pop()!);
-    dealerTotal = await calculateHandValue(dealer.hand);
+    dealerTotal = calculateHandValue(dealer.hand); 
   }
   await showHand(dealer);
   return dealerTotal;
 }
 
-async function getBet(player: Person): Promise<number> {
+/**
+ * Prompts the player to place a bet, ensuring the bet is within their available balance.
+ * @param {Person} player - The player making the bet.
+ * @returns {Promise<number>} The amount bet by the player.
+ */
+export async function getBet(player: Person): Promise<number> {
   let bet = 0;
   do {
     const betString = await rl.question(`You have $${player.balance}. How much would you like to bet? `);
