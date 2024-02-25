@@ -41,7 +41,7 @@ describe('checkForBlackjack', () => {
   
   describe('getBet', () => {
     test('validates player bet correctly', async () => {
-      const player = { name: 'Test', password : "123", balance: 500, hand: [] };
+      const player = { name: 'Test', password : "123" ,balance: 500, hand: [] };
       const bet = await getBet(player);
       expect(bet).toBe(100); // Assuming the mock response is '100'
     });

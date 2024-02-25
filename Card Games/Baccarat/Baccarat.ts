@@ -1,12 +1,8 @@
 import { readUserInput } from '../../userInput/readUserInput';
-import { createBlackjackDeck, Card, ensureDeckNotEmpty, isPair, dealInitialCards } from '../Deck/Deck';
+import { createBlackjackDeck, Card, ensureDeckNotEmpty, isPair, dealInitialCards, showHand } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
-function showHand(person: Person): void {
-  console.log(`${person.name}'s hand: ${person.hand.map(card => `${card.value} of ${card.suit}`).join(', ')}`);
-}
-
-async function calculateHandValue(hand: Card[]): Promise<number> {
+export async function calculateHandValue(hand: Card[]): Promise<number> {
   let total = 0;
 
   hand.forEach(card => {
@@ -19,7 +15,7 @@ async function calculateHandValue(hand: Card[]): Promise<number> {
   return (total % 10);
 }
 
-async function playerHand(deck: Card[], player: Person): Promise<number> {
+export async function playerHand(deck: Card[], player: Person): Promise<number> {
   let playerTotal = await calculateHandValue(player.hand);
   
   if (playerTotal >= 6) {
@@ -30,7 +26,7 @@ async function playerHand(deck: Card[], player: Person): Promise<number> {
   }
 }
 
-async function bankerHand(deck: Card[], banker: Person, player: Person): Promise<number> {
+export async function bankerHand(deck: Card[], banker: Person, player: Person): Promise<number> {
   let bankerTotal = await calculateHandValue(banker.hand);
 
   // Draws a third card for the banker and calculates the new card values
@@ -48,7 +44,7 @@ async function bankerHand(deck: Card[], banker: Person, player: Person): Promise
   If the banker total is 6, they draw a third card if the player's third card is a 6 or 7.
   If the banker total is 7, they stand.
   */
-  async function bankerRules(): Promise<number> {
+async function bankerRules(): Promise<number> {
     const playerThirdCard = player.hand[2].value;
     if (bankerTotal <= 2) {
       return bankerThirdCard();
@@ -80,7 +76,7 @@ async function bankerHand(deck: Card[], banker: Person, player: Person): Promise
   return bankerTotal;
 }
 
-async function decideOutcome(playerValue: number, bankerValue: number, playerHand: Card[], bankerHand: Card[], betType: string): Promise<{ outcome: string; winnings: number }> {
+export async function decideOutcome(playerValue: number, bankerValue: number, playerHand: Card[], bankerHand: Card[], betType: string): Promise<{ outcome: string; winnings: number }> {
   let outcome = '';
   let winnings = 0;
 
@@ -186,4 +182,4 @@ export async function startGame(player: Person) {
 
 }
 
-startGame(createPerson('123', '123', 1000));
+//startGame(createPerson('123', '123', 1000));
