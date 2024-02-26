@@ -9,7 +9,7 @@ type BetType = EvenMoney | TwoToOne | RestOfBets | "";
 
 
 // All of the bets where you win the same amount you bet.
-type EvenMoney = Color | LowHigh| EvenOdd;
+type EvenMoney = Color | LowHigh | EvenOdd;
 enum Color {
     Red = 'Red',
     Black = 'Black'
@@ -64,7 +64,7 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
  */
 async function playerMove(person: Person): Promise<void> {
     // could add print_options from login
-    const bet: bet = ["",0,[]];
+    const bet: bet = ["", 0, []];
     console.log(person);
 
     await addBetAmount(person, bet);
@@ -83,16 +83,20 @@ async function playerMove(person: Person): Promise<void> {
     console.log("YOUR BET: ", bet)
     console.log("ALL BETS: ", allBets);
     
-    const userInput = await readUserInput("want to bet more?: Yes(1) or No(2)\n", 2);
+    const prompt = "want to bet more?: Yes(1) or No(2)\n";
+    const userInput = await readUserInput(prompt, 2);
+
     if (userInput === "1") {
         playerMove(person);
     } else {
-        // spin the wheel and call the calculatewinnings functions and register the payout to the account
-        const rand = Math.ceil(Math.random()*36);
+        // Spin the wheel and call the calculatewinnings functions 
+        // and register the payout to the account
+        const rand = Math.ceil(Math.random() * 36);
         console.log(rand);
-        console.log("balance after: ", person.balance += calculateWinnings(allBets,rand));
+        console.log("balance after: ", 
+                    person.balance += calculateWinnings(allBets,rand));
         
-        // choose to continue or leave to other games
+        // Choose to continue or leave to other games
     }
 }
 
@@ -120,7 +124,9 @@ async function addBetAmount(person: Person, bet: bet): Promise<void> {
  * @param bet The bet details according to the bet type.
  */
 async function buildABet(bet: bet): Promise<void> {
-    const prompt = "1. Numbers bet (single, split, street, corner, doublestreet)\n2. Even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
+    const prompt = "1. Numbers bet (single, split, street, corner, doublestreet)" +
+                   "\n2. Even bets (RedBlack, EvenOdd, LowHigh)" +
+                   "\n3. Columns or dozens\n";
     const userInput = await readUserInput(prompt, 3);
 
     if (userInput === "1"){
@@ -178,7 +184,8 @@ async function numberBet(bet: bet): Promise<void> {
                 moved++;
                 numbers[i] = -1;
             } else {
-                str += "nr: " + numbers[i].toString() + " (" + (i-moved+1).toString() + "), ";
+                str += "nr: " + numbers[i].toString() + 
+                       " (" + (i - moved + 1).toString() + "), ";
             }
         }
         console.log(numbers);
@@ -192,7 +199,6 @@ async function numberBet(bet: bet): Promise<void> {
                     : numbers[second - 1];
 
         console.log(bet[2]);
-        
     } else if (inp === "3") {
         // Street 
         inp = await readUserInput("Choose street: (1-12): \n", 12); 
@@ -218,11 +224,18 @@ async function numberBet(bet: bet): Promise<void> {
 
         // Up (first, first - 1, second, second - 1)
         // Down (first, first + 1, second, second + 1)
-        inp = await readUserInput("go up (1): ("+ (first).toString() + "," + (first-1).toString() + "," + (second-1).toString() + "," + (second).toString() + ")" + 
-                                    " or down (2): ("+ (first).toString() + "," + (first+1).toString() + "," + (second+1).toString() + "," + (second).toString() + "): \n", 2);
+        inp = await readUserInput("go up (1): ("+ (first).toString() + "," + 
+                                  (first - 1).toString() + "," + 
+                                  (second - 1).toString() + "," + 
+                                  (second).toString() + ")" + " or down (2): (" + 
+                                  (first).toString() + "," + 
+                                  (first + 1).toString() + "," + 
+                                  (second + 1).toString() + "," + 
+                                  (second).toString() + "): \n", 2);
+                                                       
         bet[2] = Number(inp) === 1 
-                    ? [first, first - 1, second, second - 1] 
-                    : [first, first + 1, second, second + 1];
+                 ? [first, first - 1, second, second - 1] 
+                 : [first, first + 1, second, second + 1];
     } else if (inp === "5") {
         // Doublestreet
         bet[0] = "DoubleStreet";
@@ -231,8 +244,10 @@ async function numberBet(bet: bet): Promise<void> {
         bet[2][0] = first;
 
         // CHECK IF STREET IS OUTSIDE OF SCOPE
-        inp = await readUserInput("Choose second street: street " + (first-1).toString() + " (1) or street " + (first+1).toString()+ " (2):\n",
-                                    2);
+        inp = await readUserInput("Choose second street: street " + 
+                                  (first - 1).toString() + " (1) or street " + 
+                                  (first + 1).toString()+ " (2):\n", 2);
+
         bet[2][1] = Number(inp) === 1 ? first - 1 : first + 1;
     } else {} 
 }
@@ -253,7 +268,8 @@ async function evenBets(bet: bet): Promise<void> {
         const black = "(2, 4, 6, 8, 10, 11, 13, 15, 17, 20," + 
                       " 22, 24, 26, 28, 29, 31, 33, 35)";
         inp = await readUserInput("Choose red numbers (1): \n" + red + "\n" +
-                                  "Choose black number (2): \n"+ black + "\n", 2);
+                                  "Choose black number (2): \n"+ black + "\n",
+                                  2);
         if (inp === "1") {
             bet[0] = Color.Red;
         } else if (inp === "2") {
@@ -262,7 +278,7 @@ async function evenBets(bet: bet): Promise<void> {
     } else if (inp === "2") {
         // Even/Odd
         inp = await readUserInput("Choose even numbers (1): \n"+
-                                    "Choose odd numbers (2): \n", 2);
+                                  "Choose odd numbers (2): \n", 2);
         if (inp === "1") {
             bet[0] = EvenOdd.Even;
         } else if (inp === "2") {
@@ -342,17 +358,27 @@ function calculateWinnings(bets: List<bet>, number: number): number {
  */
 function calcPayout(bet: bet, number: number): number {
     const typeOfBet: BetType = bet[0];
-    return typeOfBet === "Single" ? calcSingle(bet[2], bet[1], number) :
-           typeOfBet === "Split" ? calcSplit(bet[2], bet[1], number) :
-           typeOfBet === "Street" ? calcStreet(bet[2], bet[1], number) :
-           typeOfBet === "Corner" ? calcCorner(bet[2], bet[1], number) :
-           typeOfBet === "DoubleStreet" ? calcDoubleStreet(bet[2], bet[1], number) :
-           typeOfBet === ("Red" || "Black") ? calcRedOrBlack(typeOfBet, bet[1], number) :
-           typeOfBet === ("Even" || "Odd") ? calcEvenOrOdd(typeOfBet, bet[1], number) :
-           typeOfBet === ("Low" || "High") ? calcLowOrHigh(typeOfBet, bet[1], number) :
-           typeOfBet ===  (1 || 2 || 3) ? calcColumns(typeOfBet, bet[1], number) :
-           typeOfBet ===  (4 || 5 || 6) ? calcDozens(typeOfBet, bet[1], number) :
-           0;
+    return typeOfBet === "Single" 
+           ? calcSingle(bet[2], bet[1], number) 
+           : typeOfBet === "Split" 
+           ? calcSplit(bet[2], bet[1], number) 
+           : typeOfBet === "Street" 
+           ? calcStreet(bet[2], bet[1], number) 
+           : typeOfBet === "Corner" 
+           ? calcCorner(bet[2], bet[1], number) 
+           : typeOfBet === "DoubleStreet" 
+           ? calcDoubleStreet(bet[2], bet[1], number) 
+           : typeOfBet === ("Red" || "Black") 
+           ? calcRedOrBlack(typeOfBet, bet[1], number) 
+           : typeOfBet === ("Even" || "Odd") 
+           ? calcEvenOrOdd(typeOfBet, bet[1], number) 
+           : typeOfBet === ("Low" || "High") 
+           ? calcLowOrHigh(typeOfBet, bet[1], number) 
+           : typeOfBet ===  (1 || 2 || 3) 
+           ? calcColumns(typeOfBet, bet[1], number) 
+           : typeOfBet ===  (4 || 5 || 6) 
+           ? calcDozens(typeOfBet, bet[1], number) 
+           : 0;
 }
 
 
