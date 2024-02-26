@@ -1,9 +1,7 @@
-import { createInterface } from 'node:readline/promises';
-import { stdin as input, stdout as output } from 'node:process';
+import { readUserInput } from '../../userInput/readUserInput';
 import { createBlackjackDeck, Card, dealInitialCards, showHand } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
-const rl = createInterface({ input, output });
 
 /**
  * Calculates the total value of a hand in Blackjack, taking into account the 
@@ -62,31 +60,32 @@ export async function playerTurn(deck: Card[], player: Person, bet: number): Pro
 
   while (playerTotal < 21) {
     console.log(`Your total is ${playerTotal}.`);
-    const hitOrStand = await rl.question('Do you want to (h)it, (s)tand, or (d)ouble down? ');
+    const hitOrStand = await readUserInput('Do you want to hit(1), stand(2), or double down(3)? ', 3);
 
     if (hitOrStand.toLowerCase() === 'd' && !doubledDown && player.hand.length === 2) {
       player.balance -= bet;
       bet *= 2;
       player.hand.push(deck.pop()!);
-      console.log(`You doubled down and drew ${player.hand.at(-1)!.value} of ${player.hand.at(-1)!.suit}.`);
+      console.log(`You doubled down and drew a card.`);
       doubledDown = true;
-      break;
+      playerTotal = calculateHandValue(player.hand); 
+      break; // Exit loop since player decided to double down
     } else if (hitOrStand.toLowerCase() === 'h') {
       player.hand.push(deck.pop()!);
-      console.log(`You drew ${player.hand.at(-1)!.value} of ${player.hand.at(-1)!.suit}.`);
+      console.log(`You drew a card.`);
       playerTotal = calculateHandValue(player.hand); 
     } else {
-      break;
+      break; // Player stands
     }
   }
 
-  await showHand(player);
+  await showHand(player); // Ensure you have a function to display the player's hand
   if (playerTotal > 21) {
     console.log('Bust! You lose.');
     player.balance -= bet;
     return false;
   }
-  return true;
+  return true; // Player stands
 }
 
 /**
@@ -119,68 +118,63 @@ export async function dealerTurn(deck: Card[], dealer: Person): Promise<number> 
 export async function getBet(player: Person): Promise<number> {
   let bet = 0;
   do {
-    const betString = await rl.question(`You have $${player.balance}. How much would you like to bet? `);
+    const betString = await readUserInput(`You have $${player.balance}. How much would you like to bet? `, player.balance); 
     bet = parseInt(betString, 10);
     if (isNaN(bet) || bet <= 0 || bet > player.balance) {
       console.log("Invalid bet amount. Please enter a valid number within your balance.");
-      bet = 0;
     }
-  } while (bet <= 0 || bet > player.balance);
+  } while (isNaN(bet) || bet <= 0 || bet > player.balance);
 
   return bet;
 }
 
-export async function startGame(Player: Person) {
-  try {
-    let playAgain = 'y';
 
-    while (playAgain.toLowerCase() === 'y') {
-      Player.hand = [];
-      const deck = createBlackjackDeck();
-      const dealer: Person = { name: 'Dealer', password: '', balance: 0, hand: [] };
+export async function startGame(player: Person) {
+  let deck, dealer, bet, playerBusts, dealerTotal, playerTotal, playAgain;
 
-      const bet = await getBet(Player);
+  do {
+    player.hand = [];
+    deck = createBlackjackDeck();
+    dealer = { name: 'Dealer', password : '123', balance: 0, hand: [] };
 
-      await dealInitialCards(deck, Player);
-      await dealInitialCards(deck, dealer);
+    console.log('Welcome to Blackjack!');
+    bet = await getBet(player); 
+    await dealInitialCards(deck, player);
+    await dealInitialCards(deck, dealer);
+    await showHand(player);
 
-      console.log('Welcome to Blackjack!');
-      await showHand(Player);
+    playerBusts = !(await playerTurn(deck, player, bet));
+    if (playerBusts) {
+      console.log(`You lost $${bet}. Your new balance is $${player.balance}.`);
+    } else {
+      dealerTotal = await dealerTurn(deck, dealer);
+      playerTotal = calculateHandValue(player.hand);
 
-      const playerBusts = !(await playerTurn(deck, Player, bet));
-      if (playerBusts) {
-        console.log(`You lost $${bet}. Your new balance is $${Player.balance}.`);
+      if (dealerTotal > 21 || playerTotal > dealerTotal) {
+        console.log('You win!');
+        player.balance += bet;
+        console.log(`You won $${bet}. Your new balance is $${player.balance}.`);
+      } else if (playerTotal < dealerTotal) {
+        console.log('Dealer wins.');
+        player.balance -= bet;
+        console.log(`You lost $${bet}. Your new balance is $${player.balance}.`);
       } else {
-        const dealerTotal = await dealerTurn(deck, dealer);
-        const playerTotal = await calculateHandValue(Player.hand);
-
-        if (dealerTotal > 21 || playerTotal > dealerTotal) {
-          console.log('You win!');
-          Player.balance += bet;
-          console.log(`You won $${bet}. Your new balance is $${Player.balance}.`);
-        } else if (playerTotal < dealerTotal) {
-          console.log('Dealer wins.');
-          Player.balance -= bet;
-          console.log(`You lost $${bet}. Your new balance is $${Player.balance}.`);
-        } else {
-          console.log('Push. It\'s a tie.');
-        }
+        console.log("It's a tie (push).");
       }
-
-      if (Player.balance <= 0) {
-        console.log("You've run out of funds! Game over.");
-        break;
-      }
-
-      playAgain = await rl.question("Would you like to play again? (y/n): ");
     }
-  } catch (error) {
-    console.error("An error occurred:", error);
-  } finally {
-    console.log("Thank you for playing!");
-    await rl.close();
-  }
+
+    if (player.balance <= 0) {
+      console.log("You've run out of funds! Game over.");
+      break;
+    }
+
+    const playAgainOptions = "Would you like to play again? Yes(1) or No(2): "
+    playAgain = await readUserInput(playAgainOptions, 2);
+  } while (playAgain.toLowerCase() === '1');
+
+  console.log("Thank you for playing!");
 }
+
 
 startGame(createPerson('123', '123', 1000)); // Sample call to start the game with an example player
 
