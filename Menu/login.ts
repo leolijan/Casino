@@ -4,6 +4,7 @@ import { Card } from '../Card Games/Deck/Deck';
 import { Person } from '../Player/Player';
 import { startGame as startBaccarat } from '../Card Games/Baccarat/Baccarat';
 import { startGame as startBlackjack } from '../Card Games/Blackjack/Blackjack';
+import { readUserInputBasic as read_user_input } from '../userInput/readUserInput';
 import { playerMove as startRoulette } from '../Card Games/Roulette/roulette';
 
 // Global variable
@@ -26,22 +27,7 @@ function print_options(options: {[key: string]: string}): void {
     }
 }
 
-// To be able to read user input effectively
-function read_user_input(prompt: string): Promise<string> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    return new Promise<string>((resolve) => {
-        rl.question(prompt, (answer) => {
-            rl.close();
-            resolve(answer);
-        });
-    });
-}
-
-async function logged_in(user: string): Promise<void> {
+export async function logged_in(user: string): Promise<void> {
     const all_users = read_login_credentials(textfile);
     const options: {[key: string]: string} = {"1": "Black jack", "2" : "Baccarat" , "3": "Roulette", "4": "Return to menu"};
     print_options(options);
@@ -66,7 +52,7 @@ async function logged_in(user: string): Promise<void> {
    // test person: {name: "VB", password: "VB21", balance: 2000, hand: []}
 }
 
-async function login(users: {[key: string]: {password: string}}): Promise<void> {
+export async function login(users: {[key: string]: {password: string}}): Promise<void> {
     while (true) {
         const username = await read_user_input("Username: ");
         const password = await read_user_input("Password: ");
@@ -83,7 +69,7 @@ async function login(users: {[key: string]: {password: string}}): Promise<void> 
     }
 }
 
-async function new_user(): Promise<void> {
+export async function new_user(): Promise<void> {
     while (true) {
         const username = await read_user_input("Choose your username: ");
         const password = await read_user_input("Choose your password: ");
@@ -113,7 +99,7 @@ async function new_user(): Promise<void> {
     }
 }
 
-function write_login_credentials(filename: string, users: { [key: string]: { name: string; password: string; balance: number; hand: Card[]; } }): void {
+export function write_login_credentials(filename: string, users: { [key: string]: { name: string; password: string; balance: number; hand: Card[]; } }): void {
     try {
         const data: string = JSON.stringify(users, null, 2);
         fs.writeFileSync(filename, data);
@@ -122,7 +108,7 @@ function write_login_credentials(filename: string, users: { [key: string]: { nam
     }
 }
 
-function read_login_credentials(filename: string): { [key: string]: { name: string; password: string; balance: number; hand: Card[]; } } {
+export function read_login_credentials(filename: string): { [key: string]: { name: string; password: string; balance: number; hand: Card[]; } } {
     try {
         const data: string = fs.readFileSync(filename, 'utf8');
         return JSON.parse(data);
@@ -134,7 +120,7 @@ function read_login_credentials(filename: string): { [key: string]: { name: stri
 }
 
 
-async function menu(): Promise<void> {
+export async function menu(): Promise<void> {
     splash_screen();
     console.log();
     const all_users_saved: {[key: string]: Person} = read_login_credentials(textfile);

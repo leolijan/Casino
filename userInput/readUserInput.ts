@@ -33,6 +33,30 @@ export async function readUserInput(prompt: string, max: number): Promise<string
     return koll ? retur : readUserInput(prompt, max);
 }
 
+/**
+ * Asynchronously reads user input from the console with a specified prompt.
+ * This version is simplified and does not include checks for maximum input length or specific exit commands.
+ * It's designed to provide a basic interface for user input in console applications.
+ * 
+ * @example
+ * readUserInputBasic("Please enter your name: ").then(name => console.log(`Hello, ${name}!`));
+ *
+ * @param {string} prompt - The message displayed to the user before waiting for input.
+ * @returns {Promise<string>} A promise that resolves to the user input as a string.
+ */
+export function readUserInputBasic(prompt: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    return new Promise<string>((resolve) => {
+        rl.question(prompt, (answer) => {
+            rl.close();
+            resolve(answer);
+        });
+    });
+}
 
 /**
  * Checks if the provided answer is within the valid range of input.
@@ -49,3 +73,4 @@ function check(answer: string, max: number): boolean{
     }
     return false;
 }
+
