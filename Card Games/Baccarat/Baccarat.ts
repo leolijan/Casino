@@ -8,7 +8,7 @@ import { Person, createPerson } from '../../Player/Player';
  * @param hand An array of Card objects representing the hand.
  * @returns A Promise resolving to the calculated hand value.
  */
-async function calculateHandValue(hand: Card[]): Promise<number> {
+export async function calculateHandValue(hand: Card[]): Promise<number> {
   let total = 0;
 
   hand.forEach(card => {
@@ -34,7 +34,7 @@ async function calculateHandValue(hand: Card[]): Promise<number> {
  * @param player A Person object representing the player.
  * @returns The total value of the player hand.
  */
-async function playerHand(deck: Card[], player: Person): Promise<number> {
+export async function playerHand(deck: Card[], player: Person): Promise<number> {
   let playerTotal = await calculateHandValue(player.hand);
   
   if (playerTotal >= 6) {
@@ -54,7 +54,7 @@ async function playerHand(deck: Card[], player: Person): Promise<number> {
  * @param player A Person object representing the player.
  * @returns The total value of the banker's hand.
  */
-async function bankerHand(deck: Card[], 
+export async function bankerHand(deck: Card[], 
                           banker: Person, 
                           player: Person): Promise<number> {
   let bankerTotal = await calculateHandValue(banker.hand);
@@ -109,7 +109,7 @@ async function bankerHand(deck: Card[],
  * @param betType Type of bet made by the player.
  * @returns An object containing the outcome and potential winnings.
  */
-async function decideOutcome(playerValue: number, 
+export async function decideOutcome(playerValue: number, 
                              bankerValue: number, 
                              playerHand: Card[], 
                              bankerHand: Card[], 
