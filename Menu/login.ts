@@ -4,6 +4,7 @@ import { Card } from '../Card Games/Deck/Deck';
 import { Person } from '../Player/Player';
 import { startGame as startBaccarat } from '../Card Games/Baccarat/Baccarat';
 import { startGame as startBlackjack } from '../Card Games/Blackjack/Blackjack';
+import { playerMove as startRoulette } from '../Card Games/Roulette/roulette';
 
 // Global variable
 const textfile: string = "user_information.json";
@@ -41,8 +42,6 @@ function read_user_input(prompt: string): Promise<string> {
 }
 
 async function logged_in(user: string): Promise<void> {
-    console.log();
-
     const all_users = read_login_credentials(textfile);
     const options: {[key: string]: string} = {"1": "Black jack", "2" : "Baccarat" , "3": "Roulette", "4": "Return to menu"};
     print_options(options);
@@ -50,17 +49,21 @@ async function logged_in(user: string): Promise<void> {
     const choice: string = await read_user_input("Option: ");
 
     console.log(); // Add a newline for better formatting
+    
 
     if (choice === "1") {
-    
+        console.log("DSHDSHIODSHOIDSHIODHISODSHIODOSIIODSH");
+        await startBlackjack(all_users[user]);
     } else if (choice === "2") {
-
+        await startBaccarat(all_users[user]);
     } else if (choice === "3") {
-        
+        await startRoulette(all_users[user]);
     } else if (choice === "4") {
         splash_screen();
         await menu();
     }
+
+   // test person: {name: "VB", password: "VB21", balance: 2000, hand: []}
 }
 
 async function login(users: {[key: string]: {password: string}}): Promise<void> {
@@ -141,6 +144,7 @@ async function menu(): Promise<void> {
     const user_input: string = await read_user_input("Option: ");
 
     console.log(); // Add a newline for better formatting
+    
 
     if (user_input === "l") {
         await login(all_users_saved);
