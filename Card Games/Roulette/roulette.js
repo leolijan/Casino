@@ -67,15 +67,15 @@ var streets = [[1, 2, 3], [4, 5, 6], [7, 8, 9], [10, 11, 12],
  */
 function playerMove(person) {
     return __awaiter(this, void 0, void 0, function () {
-        var bet, userInput, rand;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var bet, userInput, _a, rand;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     bet = ["", 0, []];
-                    console.log(person.name);
+                    console.log(person);
                     return [4 /*yield*/, addBetAmount(person, bet)];
                 case 1:
-                    _a.sent();
+                    _b.sent();
                     //person add bet
                     // type of bet:
                     // 1. numbers bet (single, split, street, corner, doublestreet)
@@ -84,22 +84,34 @@ function playerMove(person) {
                     console.log(bet);
                     return [4 /*yield*/, buildABet(bet)];
                 case 2:
-                    _a.sent();
+                    _b.sent();
                     // place bets and register bets
                     allBets = (0, list__1_1.pair)(bet, allBets);
                     console.log("YOUR BET: ", bet);
                     console.log("ALL BETS: ", allBets);
+<<<<<<< HEAD
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("want to bet more?: Yes(1) or No(2)\n", 2)];
                 case 3:
                     userInput = _a.sent();
+=======
+                    if (!(person.balance === 0)) return [3 /*break*/, 3];
+                    _a = "2";
+                    return [3 /*break*/, 5];
+                case 3: return [4 /*yield*/, read_user_input("Want to add a bet?: Yes(1) or No(2)\n", 2)];
+                case 4:
+                    _a = _b.sent();
+                    _b.label = 5;
+                case 5:
+                    userInput = _a;
+>>>>>>> 19c90394e94aa8ae78215f760a7ecf0b8144ead7
                     if (userInput === "1") {
                         playerMove(person);
                     }
                     else {
                         rand = Math.ceil(Math.random() * 36);
                         console.log(rand);
-                        console.log("balance before: ", person.balance);
                         console.log("balance after: ", person.balance += calculateWinnings(allBets, rand));
+                        // choose to continue or leave to other games
                     }
                     return [2 /*return*/];
             }
@@ -141,8 +153,13 @@ function buildABet(bet) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
+<<<<<<< HEAD
                     prompt = "1. Numbers bet (single, split, street, corner, doublestreet)\n2. Even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)(prompt, 3)];
+=======
+                    options = "1. Numbers bet (single, split, street, corner, doublestreet)\n2. Even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
+                    return [4 /*yield*/, read_user_input(options, 3)];
+>>>>>>> 19c90394e94aa8ae78215f760a7ecf0b8144ead7
                 case 1:
                     userInput = _a.sent();
                     if (!(userInput === "1")) return [3 /*break*/, 3];
@@ -261,7 +278,11 @@ function numberBet(bet) {
                     // Go left
                     second = first - 3;
                     return [3 /*break*/, 13];
+<<<<<<< HEAD
                 case 11: return [4 /*yield*/, (0, readUserInput_1.readUserInput)("go left (1) or right (2): \n", 2)];
+=======
+                case 11: return [4 /*yield*/, read_user_input("go left to " + (first - 3).toString() + "(1) or right to " + (first + 3).toString() + "(2): \n", 2)];
+>>>>>>> 19c90394e94aa8ae78215f760a7ecf0b8144ead7
                 case 12:
                     inp = _a.sent();
                     second = Number(inp) === 1 ? first - 3 : first + 3;

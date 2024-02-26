@@ -65,7 +65,7 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
 async function playerMove(person: Person): Promise<void> {
     // could add print_options from login
     const bet: bet = ["",0,[]];
-    console.log(person.name);
+    console.log(person);
 
     await addBetAmount(person, bet);
     //person add bet
@@ -90,8 +90,9 @@ async function playerMove(person: Person): Promise<void> {
         // spin the wheel and call the calculatewinnings functions and register the payout to the account
         const rand = Math.ceil(Math.random()*36);
         console.log(rand);
-        console.log("balance before: ", person.balance);
-        console.log("balance after: ", person.balance+=calculateWinnings(allBets,rand));
+        console.log("balance after: ", person.balance += calculateWinnings(allBets,rand));
+        
+        // choose to continue or leave to other games
     }
 }
 
