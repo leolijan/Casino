@@ -117,15 +117,15 @@ function print_options(options) {
 }
 function playerMove(person) {
     return __awaiter(this, void 0, void 0, function () {
-        var bet, userInput, rand;
-        return __generator(this, function (_a) {
-            switch (_a.label) {
+        var bet, userInput, _a, rand;
+        return __generator(this, function (_b) {
+            switch (_b.label) {
                 case 0:
                     bet = ["", 0, []];
-                    console.log(person.name);
+                    console.log(person);
                     return [4 /*yield*/, addBetAmount(person, bet)];
                 case 1:
-                    _a.sent();
+                    _b.sent();
                     //person add bet
                     // type of bet:
                     // 1. numbers bet (single, split, street, corner, doublestreet)
@@ -134,22 +134,28 @@ function playerMove(person) {
                     console.log(bet);
                     return [4 /*yield*/, buildABet(bet)];
                 case 2:
-                    _a.sent();
+                    _b.sent();
                     // place bets and register bets
                     allBets = (0, list_1.pair)(bet, allBets);
                     console.log("YOUR BET: ", bet);
                     console.log("ALL BETS: ", allBets);
-                    return [4 /*yield*/, read_user_input("want to bet more?: Yes(1) or No(2)\n", 2)];
-                case 3:
-                    userInput = _a.sent();
+                    if (!(person.balance === 0)) return [3 /*break*/, 3];
+                    _a = "2";
+                    return [3 /*break*/, 5];
+                case 3: return [4 /*yield*/, read_user_input("Want to add a bet?: Yes(1) or No(2)\n", 2)];
+                case 4:
+                    _a = _b.sent();
+                    _b.label = 5;
+                case 5:
+                    userInput = _a;
                     if (userInput === "1") {
                         playerMove(person);
                     }
                     else {
                         rand = Math.ceil(Math.random() * 36);
                         console.log(rand);
-                        console.log("balance before: ", person.balance);
                         console.log("balance after: ", person.balance += calculateWinnings(allBets, rand));
+                        // choose to continue or leave to other games
                     }
                     return [2 /*return*/];
             }
@@ -180,7 +186,7 @@ function buildABet(bet) {
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
+                    options = "1. Numbers bet (single, split, street, corner, doublestreet)\n2. Even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
                     return [4 /*yield*/, read_user_input(options, 3)];
                 case 1:
                     userInput = _a.sent();
@@ -292,7 +298,7 @@ function numberBet(bet) {
                     // go left
                     second = first - 3;
                     return [3 /*break*/, 13];
-                case 11: return [4 /*yield*/, read_user_input("go left (1) or right (2): \n", 2)];
+                case 11: return [4 /*yield*/, read_user_input("go left to " + (first - 3).toString() + "(1) or right to " + (first + 3).toString() + "(2): \n", 2)];
                 case 12:
                     inp = _a.sent();
                     second = Number(inp) === 1 ? first - 3 : first + 3;

@@ -51,6 +51,7 @@ export type bet = [BetType, stake, Array<number>];
 // Global variable to keep track of all red numbers:
 const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 
                     19, 21, 23, 25, 27, 30, 32, 34, 36];
+                    
 const streets = [[1,2,3],[4,5,6],[7,8,9],[10,11,12],[13,14,15],[16,17,18],[19,20,21],
                  [22,23,24],[25,26,27],[28,29,30],[31,32,33],[34,35,36]];
 
@@ -115,7 +116,7 @@ function print_options(options: {[key: string]: string}): void {
 async function playerMove(person: Person) {
     // could add print_options from login
     const bet: bet = ["",0,[]];
-    console.log(person.name);
+    console.log(person);
 
     await addBetAmount(person, bet);
     //person add bet
@@ -136,17 +137,16 @@ async function playerMove(person: Person) {
 
     
 
-    const userInput = await read_user_input("want to bet more?: Yes(1) or No(2)\n", 2);
+    const userInput = person.balance === 0 ? "2" : await read_user_input("Want to add a bet?: Yes(1) or No(2)\n", 2);
     if(userInput==="1"){
         playerMove(person);
     }else{
         // spin the wheel and call the calculatewinnings functions and register the payout to the account
         const rand = Math.ceil(Math.random()*36);
         console.log(rand);
-        console.log("balance before: ", person.balance);
-        console.log("balance after: ", person.balance+=calculateWinnings(allBets,rand));
+        console.log("balance after: ", person.balance += calculateWinnings(allBets,rand));
         
-
+        // choose to continue or leave to other games
     }
 }
 
@@ -161,7 +161,7 @@ async function addBetAmount(person: Person, bet: bet): Promise<void> {
 }
 
 async function buildABet(bet: bet): Promise<void> {
-    const options = "1. numbers bet (single, split, street, corner, doublestreet)\n2. even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
+    const options = "1. Numbers bet (single, split, street, corner, doublestreet)\n2. Even bets (RedBlack, EvenOdd, LowHigh)\n3. Columns or dozens\n";
     const userInput = await read_user_input(options, 3);
     if(userInput==="1"){
         await numberBet(bet);
@@ -242,7 +242,7 @@ async function numberBet(bet: bet){
                 // go left
                 second = first - 3;
             }else{
-                inp = await read_user_input("go left (1) or right (2): \n", 2);  
+                inp = await read_user_input("go left to " + (first-3).toString() + " (1) or right to " +(first+3).toString() + " (2): \n", 2);  
                 second = Number(inp) === 1 ? first - 3 : first + 3;
             }
             // up (first,first-1,second,second-1)
