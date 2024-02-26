@@ -1,21 +1,40 @@
 import { readUserInput } from '../../userInput/readUserInput';
-import { createBlackjackDeck, Card, ensureDeckNotEmpty, isPair, dealInitialCards, showHand } from '../Deck/Deck';
+import { createBlackjackDeck, Card, 
+         isPair, dealInitialCards, showHand } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
-export async function calculateHandValue(hand: Card[]): Promise<number> {
+/**
+ * Calculates the total value of the hand, according to the rules of baccarat.
+ * @param hand An array of Card objects representing the hand.
+ * @returns A Promise resolving to the calculated hand value.
+ */
+async function calculateHandValue(hand: Card[]): Promise<number> {
   let total = 0;
 
   hand.forEach(card => {
-    if (card.value >= 10 && card.value <= 13) total += 0;
-    else if (card.value === 14) total += 1;
-    else total += card.value;
+    if (card.value >= 10 && card.value <= 13) {
+      total += 0;
+    }
+    else if (card.value === 14) {
+      total += 1;
+    }
+    else {
+      total += card.value;
+    }
   });
 
   // Hands are valued modulo 10.
   return (total % 10);
 }
 
-export async function playerHand(deck: Card[], player: Person): Promise<number> {
+
+/**
+ * Manages the player's hand according to the rules of baccarat
+ * @param deck An array of Card objects representing the deck.
+ * @param player A Person object representing the player.
+ * @returns The total value of the player hand.
+ */
+async function playerHand(deck: Card[], player: Person): Promise<number> {
   let playerTotal = await calculateHandValue(player.hand);
   
   if (playerTotal >= 6) {
@@ -26,7 +45,18 @@ export async function playerHand(deck: Card[], player: Person): Promise<number> 
   }
 }
 
-export async function bankerHand(deck: Card[], banker: Person, player: Person): Promise<number> {
+
+/**
+ * Manages the banker's hand by following specific drawing rules that are based
+ * on the value of the banker's hand and the player's third card.
+ * @param deck The deck of cards that are represented as an array of type Card.
+ * @param banker A Person object representing the banker.
+ * @param player A Person object representing the player.
+ * @returns The total value of the banker's hand.
+ */
+async function bankerHand(deck: Card[], 
+                          banker: Person, 
+                          player: Person): Promise<number> {
   let bankerTotal = await calculateHandValue(banker.hand);
 
   // Draws a third card for the banker and calculates the new card values
@@ -35,16 +65,8 @@ export async function bankerHand(deck: Card[], banker: Person, player: Person): 
     return (await calculateHandValue(banker.hand));
   }
 
-  // Specific rules for the banker's third card
-  /*
-  If the banker total is 2 or less, they draw a third card regardless of what the player's third card is.
-  If the banker total is 3, they draw a third card unless the player's third card is an 8.
-  If the banker total is 4, they draw a third card if the player's third card is 2, 3, 4, 5, 6, or 7.
-  If the banker total is 5, they draw a third card if the player's third card is 4, 5, 6, or 7.
-  If the banker total is 6, they draw a third card if the player's third card is a 6 or 7.
-  If the banker total is 7, they stand.
-  */
-async function bankerRules(): Promise<number> {
+  // Specific rules for drawing of banker's third card
+  async function bankerRules(): Promise<number> {
     const playerThirdCard = player.hand[2].value;
     if (bankerTotal <= 2) {
       return bankerThirdCard();
@@ -71,12 +93,28 @@ async function bankerRules(): Promise<number> {
       } else {
         return bankerThirdCard();
       }
-  }
+  } else {}
 
   return bankerTotal;
 }
 
-export async function decideOutcome(playerValue: number, bankerValue: number, playerHand: Card[], bankerHand: Card[], betType: string): Promise<{ outcome: string; winnings: number }> {
+
+/**
+ * Decides the outcome of the game based on the type of bet made and
+ * the player and banker hands.
+ * @param playerValue Total value of the player's hand.
+ * @param bankerValue Total value of the banker's hand.
+ * @param playerHand The player's hand.
+ * @param bankerHand The banker's hand.
+ * @param betType Type of bet made by the player.
+ * @returns An object containing the outcome and potential winnings.
+ */
+async function decideOutcome(playerValue: number, 
+                             bankerValue: number, 
+                             playerHand: Card[], 
+                             bankerHand: Card[], 
+                             betType: string)
+                             : Promise<{ outcome: string; winnings: number }> {
   let outcome = '';
   let winnings = 0;
 
@@ -130,14 +168,19 @@ export async function decideOutcome(playerValue: number, bankerValue: number, pl
 }
 
 
+/**
+ * Starts and manages the Baccarat game.
+ * @param player The player represented as a Person object.
+ */
 export async function startGame(player: Person) {
   player.hand = [];
   const deck = createBlackjackDeck();
-  const banker: Person = { name: 'Banker', password: '', balance: 0, hand: [] };
+  const banker: Person = { name: "Banker", password: "", balance: 0, hand: [] };
 
-  const bet = await readUserInput(`You have $${player.balance}. How much would you like to bet? `, player.balance);
+  const prompt = "You have $" + player.balance + ". How much would you like to bet? ";
+  const bet = await readUserInput(prompt, player.balance);
   
-  console.log('Welcome to Baccarat!');
+  console.log("Welcome to Baccarat!");
   
   const options = "1. Bet on Player hand\n" +
                   "2. Bet on Banker hand\n" +
@@ -172,7 +215,7 @@ export async function startGame(player: Person) {
   if (player.balance <= 0) {
     console.log("You've run out of funds! Game over.");
     
-  }
+  } else {}
 
   const playAgainOptions = "Would you like to play again? Yes(1) or No(2): "
   userInput = await readUserInput(playAgainOptions, 2);
