@@ -1,6 +1,6 @@
 // Menu.test.ts
 import * as fs from 'fs';
-import { write_login_credentials, read_login_credentials, read_user_input, new_user} from './login';
+import { write_login_credentials, read_login_credentials, new_user} from './login';
 
 jest.mock('fs');
 

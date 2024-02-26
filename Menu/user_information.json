@@ -2,19 +2,16 @@
   "1": {
     "name": "1",
     "password": "1",
-    "balance": 1000,
-    "hand": []
-  },
-  "2": {
-    "name": "2",
-    "password": "2",
-    "balance": 1000,
-    "hand": []
-  },
-  "a": {
-    "name": "a",
-    "password": "a",
-    "balance": 1000,
-    "hand": []
+    "balance": 500,
+    "hand": [
+      {
+        "value": 7,
+        "suit": "Diamonds"
+      },
+      {
+        "value": 11,
+        "suit": "Hearts"
+      }
+    ]
   }
 }

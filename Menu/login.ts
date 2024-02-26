@@ -4,7 +4,6 @@ import { Card } from '../Card Games/Deck/Deck';
 import { Person } from '../Player/Player';
 import { startGame as startBaccarat } from '../Card Games/Baccarat/Baccarat';
 import { startGame as startBlackjack } from '../Card Games/Blackjack/Blackjack';
-import { readUserInputBasic as read_user_input } from '../userInput/readUserInput';
 import { playerMove as startRoulette } from '../Card Games/Roulette/roulette';
 
 // Global variable
@@ -21,6 +20,20 @@ function splash_screen(): void {
     console.log(logo);
 }
 
+export function read_user_input(prompt: string): Promise<string> {
+    const rl = readline.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    return new Promise<string>((resolve) => {
+        rl.question(prompt, (answer) => {
+            rl.close();
+            resolve(answer);
+        });
+    });
+} 
+
 function print_options(options: {[key: string]: string}): void {
     for (const [key, value] of Object.entries(options)) {
         console.log(`${key}) ${value}`);
@@ -28,7 +41,7 @@ function print_options(options: {[key: string]: string}): void {
 }
 
 export async function logged_in(user: string): Promise<void> {
-    const all_users = read_login_credentials(textfile);
+    let all_users = read_login_credentials(textfile);
     const options: {[key: string]: string} = {"1": "Black jack", "2" : "Baccarat" , "3": "Roulette", "4": "Return to menu"};
     print_options(options);
 
@@ -38,12 +51,14 @@ export async function logged_in(user: string): Promise<void> {
     
 
     if (choice === "1") {
-        console.log("DSHDSHIODSHOIDSHIODHISODSHIODOSIIODSH");
         await startBlackjack(all_users[user]);
-    } else if (choice === "2") {
+        write_login_credentials(textfile, all_users); 
+    }else if (choice === "2") {
         await startBaccarat(all_users[user]);
+        write_login_credentials(textfile, all_users); 
     } else if (choice === "3") {
         await startRoulette(all_users[user]);
+        write_login_credentials(textfile, all_users); 
     } else if (choice === "4") {
         splash_screen();
         await menu();
