@@ -8,7 +8,7 @@ import { Person, createPerson } from '../../Player/Player';
  * @param hand An array of Card objects representing the hand.
  * @returns A Promise resolving to the calculated hand value.
  */
-function calculateHandValue(hand: Array<Card>): number {
+export function calculateHandValue(hand: Array<Card>): number {
   let total = 0;
 
   // Calculates card values according to the rules of Baccarat.
@@ -35,7 +35,7 @@ function calculateHandValue(hand: Array<Card>): number {
  * @param player A Person object representing the player.
  * @returns The total value of the player hand.
  */
-async function playerHand(deck: Array<Card>, player: Person): Promise<number> {
+export async function playerHand(deck: Array<Card>, player: Person): Promise<number> {
   let playerTotal = await calculateHandValue(player.hand);
   
   // Depending on the value of the first two cards, either no more cards 
@@ -57,7 +57,7 @@ async function playerHand(deck: Array<Card>, player: Person): Promise<number> {
  * @param player A Person object representing the player.
  * @returns The total value of the banker's hand.
  */
-async function bankerHand(deck: Array<Card>, 
+export async function bankerHand(deck: Array<Card>, 
                           banker: Person, 
                           player: Person): Promise<number> {
 
@@ -115,7 +115,7 @@ async function bankerHand(deck: Array<Card>,
  * @param betType Type of bet made by the player.
  * @returns An object containing the outcome and potential winnings.
  */
-function decideOutcome(playerValue: number, 
+export function decideOutcome(playerValue: number, 
                        bankerValue: number, 
                        playerHand: Array<Card>, 
                        bankerHand: Array<Card>, 
