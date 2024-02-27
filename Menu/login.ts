@@ -1,10 +1,10 @@
-import * as readline from 'readline';
 import * as fs from 'fs';
 import { Card } from '../Card Games/Deck/Deck';
 import { Person } from '../Player/Player';
 import { startGame as startBaccarat } from '../Card Games/Baccarat/Baccarat';
 import { startGame as startBlackjack } from '../Card Games/Blackjack/Blackjack';
 import { playerMove as startRoulette } from '../Card Games/Roulette/roulette';
+import { readUserInput, readUserInputBasic } from '../userInput/readUserInput';
 
 // Global variable
 const textfile: string = "user_information.json";
@@ -20,20 +20,6 @@ function splash_screen(): void {
     console.log(logo);
 }
 
-export function read_user_input(prompt: string): Promise<string> {
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
-
-    return new Promise<string>((resolve) => {
-        rl.question(prompt, (answer) => {
-            rl.close();
-            resolve(answer);
-        });
-    });
-} 
-
 function print_options(options: {[key: string]: string}): void {
     for (const [key, value] of Object.entries(options)) {
         console.log(`${key}) ${value}`);
@@ -42,10 +28,10 @@ function print_options(options: {[key: string]: string}): void {
 
 export async function logged_in(user: string): Promise<void> {
     let all_users = read_login_credentials(textfile);
-    const options: {[key: string]: string} = {"1": "Black jack", "2" : "Baccarat" , "3": "Roulette", "4": "Return to menu"};
+    const options: {[key: string]: string} = {"1": "Black jack", "2" : "Baccarat" , "3": "Roulette", "4": "Log out"};
     print_options(options);
 
-    const choice: string = await read_user_input("Option: ");
+    const choice: string = await readUserInput("Option: ", 4);
 
     console.log(); // Add a newline for better formatting
     
@@ -60,17 +46,17 @@ export async function logged_in(user: string): Promise<void> {
         await startRoulette(all_users[user]);
         write_login_credentials(textfile, all_users); 
     } else if (choice === "4") {
-        splash_screen();
         await menu();
     }
+    await logged_in(user);
 
    // test person: {name: "VB", password: "VB21", balance: 2000, hand: []}
 }
 
 export async function login(users: {[key: string]: {password: string}}): Promise<void> {
     while (true) {
-        const username = await read_user_input("Username: ");
-        const password = await read_user_input("Password: ");
+        const username = await readUserInputBasic("Username: ");
+        const password = await readUserInputBasic("Password: ");
 
         if (users[username] && password === users[username].password) {
             console.log(`Welcome ${username}`);
@@ -86,9 +72,9 @@ export async function login(users: {[key: string]: {password: string}}): Promise
 
 export async function new_user(): Promise<void> {
     while (true) {
-        const username = await read_user_input("Choose your username: ");
-        const password = await read_user_input("Choose your password: ");
-        const confirmedPassword = await read_user_input("Confirm your password: ");
+        const username = await readUserInputBasic("Choose your username: ");
+        const password = await readUserInputBasic("Choose your password: ");
+        const confirmedPassword = await readUserInputBasic("Confirm your password: ");
 
         if (password === confirmedPassword) {
             const all_users = read_login_credentials(textfile);
@@ -139,20 +125,20 @@ export async function menu(): Promise<void> {
     splash_screen();
     console.log();
     const all_users_saved: {[key: string]: Person} = read_login_credentials(textfile);
-    const menu_options: {[key: string]: string} = {"l": "Login", "r": "Register", "q": "Quit"};
+    const menu_options: {[key: string]: string} = {"1": "Login", "2": "Register", "3": "Quit"};
     print_options(menu_options);
 
-    const user_input: string = await read_user_input("Option: ");
+    const user_input: string = await readUserInput("Option: ", 3);
 
     console.log(); // Add a newline for better formatting
     
 
-    if (user_input === "l") {
+    if (user_input === "1") {
         await login(all_users_saved);
-    } else if (user_input === "r") {
+    } else if (user_input === "2") {
         await new_user();
         await login(all_users_saved);
-    } else if (user_input === "q") {
+    } else if (user_input === "3") {
         process.exit();
     }
 }
