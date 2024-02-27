@@ -1,7 +1,7 @@
 import * as readline from 'readline';
 import { readUserInput } from '../../userInput/readUserInput';
 import { Person, createPerson } from '../../Player/Player';
-import { head, list, List, pair, tail, is_null } from '../../lib/list';
+import { head, list, List, pair, tail, is_null, to_string as display_list } from '../../lib/list';
 
 
 // All possible bets
@@ -63,7 +63,7 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
 export async function playerMove(person: Person): Promise<void> {
     // could add print_options from login
     const bet: bet = ["", 0, []];
-    console.log(person);
+    console.log("WELCOME TO ROULETTE YOU HAVE " + person.balance.toString() + " DOLLARS");
 
     await addBetAmount(person, bet);
     //person add bet
@@ -72,20 +72,19 @@ export async function playerMove(person: Person): Promise<void> {
     // 1. numbers bet (single, split, street, corner, doublestreet)
     // 2. even bets (RedBlack, EvenOdd, LowHigh)
     // 3. Columns or dozens
-        
-    console.log(bet);
+
     await buildABet(bet);
     // place bets and register bets
     allBets = pair(bet, allBets);
 
     console.log("YOUR BET: ", bet)
-    console.log("ALL BETS: ", allBets);
+    console.log("ALL BETS: ", display_list(allBets));
     
-    const prompt = "want to bet more?: Yes(1) or No(2)\n";
+    const prompt = "want to add a bet?: Yes(1) or No(2)\n";
     const userInput = await readUserInput(prompt, 2);
 
     if (userInput === "1") {
-        playerMove(person);
+        await playerMove(person);
     } else {
         // Spin the wheel and call the calculatewinnings functions 
         // and register the payout to the account
@@ -93,6 +92,13 @@ export async function playerMove(person: Person): Promise<void> {
         console.log(rand);
         console.log("balance after: ", 
                     person.balance += calculateWinnings(allBets,rand));
+
+        const prompt = "want to play more?: Yes(1) or No(2)\n";
+        const userInput = await readUserInput(prompt, 2);
+
+        if(userInput === "1") {
+            await playerMove(person);
+        }else{}
         
         // Choose to continue or leave to other games
     }
@@ -549,6 +555,7 @@ function calcColumns(column: Columns, stake: stake, number: number): number {
 function calcDozens(dozens: Dozens, stake: stake, number: number): number {
     // To match the indexes of the dozens.
     dozens -= 3;
+    
     if (dozens === 1) {
         if (number <= 12) {
             return stake * 3;
@@ -569,5 +576,3 @@ function calcDozens(dozens: Dozens, stake: stake, number: number): number {
         }
     } 
 }
-
-playerMove({name: "Viktor", password: "HIDSIODSHDHIOS", balance: 2000, hand: []});
