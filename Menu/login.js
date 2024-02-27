@@ -36,7 +36,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.menu = exports.read_login_credentials = exports.write_login_credentials = exports.new_user = exports.login = exports.logged_in = void 0;
+exports.menu = exports.readLoginCredentials = exports.writeLoginCredentials = exports.newUser = exports.login = exports.loggedIn = void 0;
 var fs = require("fs");
 var Baccarat_1 = require("../Card Games/Baccarat/Baccarat");
 var Blackjack_1 = require("../Card Games/Blackjack/Blackjack");
@@ -44,25 +44,28 @@ var roulette_1 = require("../Card Games/Roulette/roulette");
 var readUserInput_1 = require("../userInput/readUserInput");
 // Global variable
 var textfile = "user_information.json";
-function splash_screen() {
+function splashScreen() {
     var logo = "\n            \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n          \u2588\u2588                                   \u2588\u2588\n        \u2588\u2588                \uD835\uDE44\uD835\uDE4F\uD835\uDE3E\uD835\uDE56\uD835\uDE68\uD835\uDE5E\uD835\uDE63\uD835\uDE64                \u2588\u2588\n          \u2588\u2588                                   \u2588\u2588\n            \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n            ";
     console.log(logo);
 }
-function print_options(options) {
+function printOptions(options) {
     for (var _i = 0, _a = Object.entries(options); _i < _a.length; _i++) {
         var _b = _a[_i], key = _b[0], value = _b[1];
         console.log("".concat(key, ") ").concat(value));
     }
 }
-function logged_in(user) {
+function loggedIn(user) {
     return __awaiter(this, void 0, void 0, function () {
         var all_users, options, choice;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    all_users = read_login_credentials(textfile);
-                    options = { "1": "Black jack", "2": "Baccarat", "3": "Roulette", "4": "Return to menu" };
-                    print_options(options);
+                    all_users = readLoginCredentials(textfile);
+                    options = { "1": "Black jack",
+                        "2": "Baccarat",
+                        "3": "Roulette",
+                        "4": "Log Out" };
+                    printOptions(options);
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 4)];
                 case 1:
                     choice = _a.sent();
@@ -71,21 +74,21 @@ function logged_in(user) {
                     return [4 /*yield*/, (0, Blackjack_1.startGame)(all_users[user])];
                 case 2:
                     _a.sent();
-                    write_login_credentials(textfile, all_users);
+                    writeLoginCredentials(textfile, all_users);
                     return [3 /*break*/, 9];
                 case 3:
                     if (!(choice === "2")) return [3 /*break*/, 5];
                     return [4 /*yield*/, (0, Baccarat_1.startGame)(all_users[user])];
                 case 4:
                     _a.sent();
-                    write_login_credentials(textfile, all_users);
+                    writeLoginCredentials(textfile, all_users);
                     return [3 /*break*/, 9];
                 case 5:
                     if (!(choice === "3")) return [3 /*break*/, 7];
                     return [4 /*yield*/, (0, roulette_1.playerMove)(all_users[user])];
                 case 6:
                     _a.sent();
-                    write_login_credentials(textfile, all_users);
+                    writeLoginCredentials(textfile, all_users);
                     return [3 /*break*/, 9];
                 case 7:
                     if (!(choice === "4")) return [3 /*break*/, 9];
@@ -93,7 +96,7 @@ function logged_in(user) {
                 case 8:
                     _a.sent();
                     _a.label = 9;
-                case 9: return [4 /*yield*/, logged_in(user)];
+                case 9: return [4 /*yield*/, loggedIn(user)];
                 case 10:
                     _a.sent();
                     return [2 /*return*/];
@@ -101,7 +104,7 @@ function logged_in(user) {
         });
     });
 }
-exports.logged_in = logged_in;
+exports.loggedIn = loggedIn;
 function login(users) {
     return __awaiter(this, void 0, void 0, function () {
         var username, password;
@@ -117,7 +120,7 @@ function login(users) {
                     password = _a.sent();
                     if (!(users[username] && password === users[username].password)) return [3 /*break*/, 4];
                     console.log("Welcome ".concat(username));
-                    return [4 /*yield*/, logged_in(username)];
+                    return [4 /*yield*/, loggedIn(username)];
                 case 3:
                     _a.sent();
                     return [3 /*break*/, 6];
@@ -136,7 +139,7 @@ function login(users) {
     });
 }
 exports.login = login;
-function new_user() {
+function newUser() {
     return __awaiter(this, void 0, void 0, function () {
         var username, password, confirmedPassword, all_users;
         return __generator(this, function (_a) {
@@ -153,7 +156,7 @@ function new_user() {
                 case 3:
                     confirmedPassword = _a.sent();
                     if (password === confirmedPassword) {
-                        all_users = read_login_credentials(textfile);
+                        all_users = readLoginCredentials(textfile);
                         if (all_users[username]) {
                             console.log("Username already exists. Choose a different username.");
                             return [3 /*break*/, 0];
@@ -164,7 +167,7 @@ function new_user() {
                             balance: 1000, // Default starting balance
                             hand: [] // Empty hand at the start
                         };
-                        write_login_credentials(textfile, all_users);
+                        writeLoginCredentials(textfile, all_users);
                         console.log("Registration successful");
                         return [3 /*break*/, 4];
                     }
@@ -179,8 +182,8 @@ function new_user() {
         });
     });
 }
-exports.new_user = new_user;
-function write_login_credentials(filename, users) {
+exports.newUser = newUser;
+function writeLoginCredentials(filename, users) {
     try {
         var data = JSON.stringify(users, null, 2);
         fs.writeFileSync(filename, data);
@@ -189,8 +192,8 @@ function write_login_credentials(filename, users) {
         console.error("An error occurred: ".concat(err));
     }
 }
-exports.write_login_credentials = write_login_credentials;
-function read_login_credentials(filename) {
+exports.writeLoginCredentials = writeLoginCredentials;
+function readLoginCredentials(filename) {
     try {
         var data = fs.readFileSync(filename, 'utf8');
         return JSON.parse(data);
@@ -201,18 +204,20 @@ function read_login_credentials(filename) {
         return {};
     }
 }
-exports.read_login_credentials = read_login_credentials;
+exports.readLoginCredentials = readLoginCredentials;
 function menu() {
     return __awaiter(this, void 0, void 0, function () {
         var all_users_saved, menu_options, user_input;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    splash_screen();
+                    splashScreen();
                     console.log();
-                    all_users_saved = read_login_credentials(textfile);
-                    menu_options = { "1": "Login", "2": "Register", "3": "Quit" };
-                    print_options(menu_options);
+                    all_users_saved = readLoginCredentials(textfile);
+                    menu_options = { "1": "Login",
+                        "2": "Register",
+                        "3": "Quit" };
+                    printOptions(menu_options);
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 3)];
                 case 1:
                     user_input = _a.sent();
@@ -224,7 +229,7 @@ function menu() {
                     return [3 /*break*/, 7];
                 case 3:
                     if (!(user_input === "2")) return [3 /*break*/, 6];
-                    return [4 /*yield*/, new_user()];
+                    return [4 /*yield*/, newUser()];
                 case 4:
                     _a.sent();
                     return [4 /*yield*/, login(all_users_saved)];
@@ -244,9 +249,12 @@ function menu() {
 exports.menu = menu;
 function main() {
     return __awaiter(this, void 0, void 0, function () {
+        var hej;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, menu()];
+                case 0:
+                    hej = prompt("HEJ");
+                    return [4 /*yield*/, menu()];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];

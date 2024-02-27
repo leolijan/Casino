@@ -31,7 +31,7 @@ export async function loggedIn(user: string): Promise<void> {
     const options: {[key: string]: string} = {"1": "Black jack", 
                                               "2" : "Baccarat" , 
                                               "3": "Roulette", 
-                                              "4": "Return to menu"};
+                                              "4": "Log Out"};
     printOptions(options);
 
     const choice: string = await readUserInput("Option: ", 4);
@@ -151,13 +151,14 @@ export async function menu(): Promise<void> {
 
     if (user_input === "1") {
         await login(all_users_saved);
-    } else if (user_input === "r") {
+    } else if (user_input === "2") {
         await newUser();
         await login(all_users_saved);
     } else if (user_input === "3") {
         process.exit();
     }
 }
+
 
 async function main(): Promise<void> {
     await menu();
