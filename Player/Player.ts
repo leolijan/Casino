@@ -4,7 +4,7 @@ export type Person = {
     name: string,
     password: string, 
     balance: number,
-    hand : Card[],
+    hand : Array<Card>,
 
   }
   
