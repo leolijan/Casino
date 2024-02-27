@@ -1,7 +1,7 @@
 import * as readline from 'readline';
 import { readUserInput } from '../../userInput/readUserInput';
 import { Person, createPerson } from '../../Player/Player';
-import {head, list, List, pair, tail, is_null} from '../../../../lib/list';
+import { head, list, List, pair, tail, is_null } from '../../lib/list';
 
 
 // All possible bets

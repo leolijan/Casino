@@ -7,9 +7,9 @@ export type Deck = Array<Card>;
  * @returns {Deck} A deck of shuffled cards.
  */
 export function createDeck(): Deck {
-    const suits: string[] = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+    const suits: Array<string> = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
     // 11-14 for J, Q, K, A
-    const values: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
+    const values: Array<number> = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
     let cards: Deck = [];
 
     for (let suit of suits) {
@@ -41,9 +41,9 @@ export function shuffleDeck(cards: Deck): Deck {
  * 8 times the size of a standard deck.
  */ 
 export function createBlackjackDeck(): Deck {
-    const suits: string[] = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
+    const suits: Array<string> = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
     // 11-14 for J, Q, K, A
-    const values: number[] = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
+    const values: Array<number> = [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14]; 
     let cards: Deck = [];
 
     for (let deckIndex = 0; deckIndex < 8; deckIndex++) {

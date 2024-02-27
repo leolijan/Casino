@@ -1,5 +1,5 @@
 import { readUserInput } from '../../userInput/readUserInput';
-import { createBlackjackDeck, Card, 
+import { createBlackjackDeck as createBaccaratDeck, Card, 
          isPair, dealInitialCards, showHand } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
@@ -175,7 +175,7 @@ export async function decideOutcome(playerValue: number,
  */
 export async function startGame(player: Person) {
   player.hand = [];
-  const deck = createBlackjackDeck();
+  const deck = createBaccaratDeck();
   const banker: Person = { name: "Banker", password: "", balance: 0, hand: [] };
 
   const prompt = "You have $" + player.balance + ". How much would you like to bet? ";
