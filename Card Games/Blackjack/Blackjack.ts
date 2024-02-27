@@ -7,7 +7,7 @@ import { Person} from "../../Player/Player";
 /**
  * Calculates the total value of a hand in Blackjack, taking into account the 
  * special rules for Aces (value of 11 or 1 to avoid busting if possible).
- * @param {Array<Card>} hand - The array of cards in the hand.
+ * @param {Array<Card>} hand An array of Card objects representing the hand.
  * @returns {number} The total value of the hand.
  */
 export function calculateHandValue(hand: Array<Card>): number {
@@ -41,7 +41,7 @@ export function calculateHandValue(hand: Array<Card>): number {
 
 /**
  * Checks if a hand is a blackjack (a total value of 21 with exactly two cards)
- * @param {Array<Card>} hand - The hand to check.
+ * @param {Array<Card>} hand The hand to check.
  * @returns {boolean} True if the hand is a blackjack, false otherwise.
  */
 export function checkForBlackjack(hand: Array<Card>): boolean {
@@ -52,10 +52,10 @@ export function checkForBlackjack(hand: Array<Card>): boolean {
 /**
  * Handles the player's turn in a game of Blackjack, 
  * allowing them to hit, stand, or double down.
- * @param {Array<Card>} deck - The current deck of cards.
- * @param {Person} player - The player object.
- * @param {number} bet - The current bet amount.
- * @returns {Promise<boolean>} - Returns false if the player's turn 
+ * @param {Array<Card>} deck The current deck of cards.
+ * @param {Person} player A Person object representing the player..
+ * @param {number} bet The current bet amount.
+ * @returns {Promise<boolean>} Returns false if the player's turn 
  * ends (blackjack or bust) or true if the player stands.
  */
 export async function playerTurn(deck: Array<Card>, 
@@ -110,8 +110,8 @@ export async function playerTurn(deck: Array<Card>,
 /**
  * Handles the dealer's turn in Blackjack, 
  * drawing cards until the total value is 17 or higher.
- * @param {Array<Card>} deck - The deck of cards used in the game.
- * @param {Person} dealer - The dealer's hand.
+ * @param {Array<Card>} deck The deck of cards used in the game.
+ * @param {Person} dealer A Person object representing the dealer.
  * @returns {Promise<number>} The total value of the dealer's hand at 
  * the end of their turn.
  */
@@ -144,7 +144,7 @@ export async function dealerTurn(deck: Array<Card>,
 /**
  * Prompts the player to place a bet, ensuring the bet is within their 
  * available balance.
- * @param {Person} player - The player making the bet.
+ * @param {Person} player The player making the bet.
  * @returns {Promise<number>} The amount bet by the player.
  */
 export async function getBet(player: Person): Promise<number> {

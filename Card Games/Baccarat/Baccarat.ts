@@ -4,9 +4,9 @@ import { createBlackjackDeck as createBaccaratDeck, Card,
 import { Person, createPerson } from '../../Player/Player';
 
 /**
- * Calculates the total value of the hand, according to the rules of baccarat.
+ * Calculates the total value of a hand, according to the rules of baccarat.
  * @param hand An array of Card objects representing the hand.
- * @returns A Promise resolving to the calculated hand value.
+ * @returns The total value of the hand.
  */
 export function calculateHandValue(hand: Array<Card>): number {
   let total = 0;
@@ -31,7 +31,7 @@ export function calculateHandValue(hand: Array<Card>): number {
 
 /**
  * Manages the player's hand according to the rules of baccarat
- * @param deck An array of Card objects representing the deck.
+ * @param deck The current deck of cards.
  * @param player A Person object representing the player.
  * @returns The total value of the player hand.
  */
@@ -58,8 +58,8 @@ export async function playerHand(deck: Array<Card>, player: Person): Promise<num
  * @returns The total value of the banker's hand.
  */
 export async function bankerHand(deck: Array<Card>, 
-                          banker: Person, 
-                          player: Person): Promise<number> {
+                                 banker: Person, 
+                                 player: Person): Promise<number> {
 
   let bankerTotal = await calculateHandValue(banker.hand);
 
@@ -116,11 +116,11 @@ export async function bankerHand(deck: Array<Card>,
  * @returns An object containing the outcome and potential winnings.
  */
 export function decideOutcome(playerValue: number, 
-                       bankerValue: number, 
-                       playerHand: Array<Card>, 
-                       bankerHand: Array<Card>, 
-                       betType: string)
-                       : { outcome: string; winnings: number } {
+                              bankerValue: number, 
+                              playerHand: Array<Card>, 
+                              bankerHand: Array<Card>, 
+                              betType: string)
+                              : { outcome: string; winnings: number } {
                         
   let outcome = "";
   let winnings = 0;
