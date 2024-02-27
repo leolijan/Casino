@@ -111,58 +111,52 @@ export async function bankerHand(deck: Array<Card>,
  * @returns An object containing the outcome and potential winnings.
  */
 export async function decideOutcome(playerValue: number, 
-                             bankerValue: number, 
-                             playerHand: Array<Card>, 
-                             bankerHand: Array<Card>, 
-                             betType: string)
-                             : Promise<{ outcome: string; winnings: number }> {
+                                    bankerValue: number, 
+                                    playerHand: Array<Card>, 
+                                    bankerHand: Array<Card>, 
+                                    betType: string)
+                                    : Promise<{ outcome: string; 
+                                                winnings: number }> {
   let outcome = '';
   let winnings = 0;
 
-  switch (betType) {
-      case "1":
-          if (playerValue > bankerValue) {
-              outcome = 'Win';
-              winnings = 2;
-          } else {
-              outcome = 'Lose';
-          }
-          break;
-      case "2":
-          if (bankerValue > playerValue) {
-              outcome = 'Win';
-              winnings = 1.95; // 5% commission
-          } else {
-              outcome = 'Lose';
-          }
-          break;
-      case "3":
-          if (playerValue === bankerValue) {
-              outcome = 'Win';
-              winnings = 8;
-          } else {
-              outcome = 'Lose';
-          }
-          break;
-      case "4":
-          if (isPair(playerHand)) {
-              outcome = 'Win';
-              winnings = 11;
-          } else {
-              outcome = 'Lose';
-          }
-          break;
-      case "5":
-          if (isPair(bankerHand)) {
-              outcome = 'Win';
-              winnings = 11;
-          } else {
-              outcome = 'Lose';
-          }
-          break;
-      default:
-          outcome = 'Lose';
-          break;
+  if (betType === "1") {
+    if (playerValue > bankerValue) {
+        outcome = 'Win';
+        winnings = 2;
+    } else {
+        outcome = 'Lose';
+    }
+  } else if (betType === "2") {
+    if (bankerValue > playerValue) {
+        outcome = 'Win';
+        winnings = 1.95; // 5% commission
+    } else {
+        outcome = 'Lose';
+    }
+  } else if (betType === "3") {
+    if (playerValue === bankerValue) {
+        outcome = 'Win';
+        winnings = 8;
+    } else {
+        outcome = 'Lose';
+    }
+  } else if (betType === "4") {
+    if (isPair(playerHand)) {
+        outcome = 'Win';
+        winnings = 11;
+    } else {
+        outcome = 'Lose';
+    }
+  } else if (betType === "5") {
+    if (isPair(bankerHand)) {
+        outcome = 'Win';
+        winnings = 11;
+    } else {
+        outcome = 'Lose';
+    }
+  } else {
+    outcome = 'Lose';
   }
 
   return { outcome, winnings };
@@ -178,7 +172,8 @@ export async function startGame(player: Person) {
   const deck = createBaccaratDeck();
   const banker: Person = { name: "Banker", password: "", balance: 0, hand: [] };
 
-  const prompt = "You have $" + player.balance + ". How much would you like to bet? ";
+  const prompt = "You have $" + player.balance + 
+                 ". How much would you like to bet? ";
   const bet = await readUserInput(prompt, player.balance);
   
   console.log("Welcome to Baccarat!");
@@ -215,15 +210,13 @@ export async function startGame(player: Person) {
   
   if (player.balance <= 0) {
     console.log("You've run out of funds! Game over.");
-    
   } else {}
 
-  const playAgainOptions = "Would you like to play again? Yes(1) or No(2): "
+  const playAgainOptions = "Would you like to play again? Yes(1) or No(2): ";
   userInput = await readUserInput(playAgainOptions, 2);
   if(userInput==="1"){
     startGame(player);  
   } else {}
-
 }
 
 //startGame(createPerson('123', '123', 1000));
