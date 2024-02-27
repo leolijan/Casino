@@ -62,7 +62,7 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
  * Manages the player's move in the roulette game.
  * @param person The player represented as a Person object.
  */
-async function playerMove(person: Person): Promise<void> {
+export async function playerMove(person: Person): Promise<void> {
     // could add print_options from login
     const bet: bet = ["", 0, []];
     console.log(person);
