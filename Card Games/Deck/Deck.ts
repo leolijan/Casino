@@ -1,6 +1,6 @@
 import { Person } from "../../Player/Player";
 export type Card = { value: number; suit: string };
-export type Deck = Card[]; 
+export type Deck = Array<Card>; 
 
 /**
  * Creates and returns a shuffled deck of cards.
@@ -60,9 +60,9 @@ export function createBlackjackDeck(): Deck {
  * Ensures the deck is not running low on cards. If the deck has fewer than 10 cards,
  * a new shuffled deck is created and added to the existing deck to replenish it.
  *
- * @param {Card[]} deck - The current deck of cards.
+ * @param {Array<Card>} deck - The current deck of cards.
  */
-export function ensureDeckNotEmpty(deck: Card[]): void {
+export function ensureDeckNotEmpty(deck: Array<Card>): void {
     if (deck.length < 10) {
         const newDeck = createBlackjackDeck();
         deck.push(...newDeck);
@@ -73,10 +73,10 @@ export function ensureDeckNotEmpty(deck: Card[]): void {
  * Deals two initial cards from the deck to a person's hand.
  * This function assumes that the deck has at least two cards.
  *
- * @param {Card[]} deck - The deck of cards to deal from.
+ * @param {Array<Card>} deck - The deck of cards to deal from.
  * @param {Person} person - The person receiving the initial cards.
  */
-export function dealInitialCards(deck: Card[], person: Person): void {
+export function dealInitialCards(deck: Array<Card>, person: Person): void {
     ensureDeckNotEmpty(deck); // Ensures the deck is not empty
     person.hand.push(deck.pop()!, deck.pop()!); // Adds two cards to the person's hand
   }
@@ -87,10 +87,10 @@ export function dealInitialCards(deck: Card[], person: Person): void {
  * @example
  * isPair(hand); // returns true
  *
- * @param {Card[]} hand - The hand to check for a pair.
+ * @param {Array<Card>} hand - The hand to check for a pair.
  * @returns {boolean} - Returns true if the hand is a pair; otherwise, false.
  */
-export function isPair(hand: Card[]): boolean {
+export function isPair(hand: Array<Card>): boolean {
     if (hand.length !== 2) return false;
     return hand[0].value === hand[1].value;
 }

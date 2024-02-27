@@ -1,15 +1,16 @@
 import { readUserInput } from '../../userInput/readUserInput';
-import { createBlackjackDeck, Card, dealInitialCards, showHand } from '../Deck/Deck';
+import { createBlackjackDeck, Card, 
+         dealInitialCards, showHand } from '../Deck/Deck';
 import { Person, createPerson } from '../../Player/Player';
 
 
 /**
  * Calculates the total value of a hand in Blackjack, taking into account the 
  * special rules for Aces (value of 11 or 1 to avoid busting if possible).
- * @param {Card[]} hand - The array of cards in the hand.
+ * @param {Array<Card>} hand - The array of cards in the hand.
  * @returns {number} The total value of the hand.
  */
-export function calculateHandValue(hand: Card[]): number {
+export function calculateHandValue(hand: Array<Card>): number {
   let total = 0;
   let aceCount = hand.filter(card => card.value === 14).length;
 
@@ -33,22 +34,24 @@ export function calculateHandValue(hand: Card[]): number {
 
 /**
  * Checks if a hand is a blackjack (a total value of 21 with exactly two cards).
- * @param {Card[]} hand - The hand to check.
+ * @param {Array<Card>} hand - The hand to check.
  * @returns {boolean} True if the hand is a blackjack, false otherwise.
  */
-export function checkForBlackjack(hand: Card[]): boolean {
+export function checkForBlackjack(hand: Array<Card>): boolean {
   const value = calculateHandValue(hand);
   return hand.length === 2 && value === 21;
 }
 
 /**
  * Handles the player's turn in a game of Blackjack, allowing them to hit, stand, or double down.
- * @param {Card[]} deck - The current deck of cards.
+ * @param {Array<Card>} deck - The current deck of cards.
  * @param {Person} player - The player object.
  * @param {number} bet - The current bet amount.
  * @returns {Promise<boolean>} - Returns false if the player's turn ends (blackjack or bust) or true if the player stands.
  */
-export async function playerTurn(deck: Card[], player: Person, bet: number): Promise<boolean> {
+export async function playerTurn(deck: Array<Card>, 
+                                 player: Person,  
+                                 bet: number): Promise<boolean> {
   let playerTotal = calculateHandValue(player.hand); 
   let doubledDown = false;
 
@@ -60,9 +63,11 @@ export async function playerTurn(deck: Card[], player: Person, bet: number): Pro
 
   while (playerTotal < 21) {
     console.log(`Your total is ${playerTotal}.`);
-    const hitOrStand = await readUserInput('Do you want to hit(1), stand(2), or double down(3)? ', 3);
+    const prompt = 'Do you want to hit(1), stand(2), or double down(3)? ';
+    const hitOrStand = await readUserInput(prompt, 3);
 
-    if (hitOrStand.toLowerCase() === 'd' && !doubledDown && player.hand.length === 2) {
+    if (hitOrStand.toLowerCase() === 'd' && 
+        !doubledDown && player.hand.length === 2) {
       player.balance -= bet;
       bet *= 2;
       player.hand.push(deck.pop()!);
@@ -90,11 +95,12 @@ export async function playerTurn(deck: Card[], player: Person, bet: number): Pro
 
 /**
  * Handles the dealer's turn in Blackjack, drawing cards until the total value is 17 or higher.
- * @param {Card[]} deck - The deck of cards used in the game.
+ * @param {Array<Card>} deck - The deck of cards used in the game.
  * @param {Person} dealer - The dealer's hand.
  * @returns {Promise<number>} The total value of the dealer's hand at the end of their turn.
  */
-export async function dealerTurn(deck: Card[], dealer: Person): Promise<number> {
+export async function dealerTurn(deck: Array<Card>, 
+                                 dealer: Person): Promise<number> {
   let dealerTotal = calculateHandValue(dealer.hand); 
 
   if (checkForBlackjack(dealer.hand)) {
@@ -118,7 +124,8 @@ export async function dealerTurn(deck: Card[], dealer: Person): Promise<number> 
 export async function getBet(player: Person): Promise<number> {
   let bet = 0;
   do {
-    const betString = await readUserInput(`You have $${player.balance}. How much would you like to bet? `, player.balance); 
+    const prompt = `You have $${player.balance}. How much would you like to bet? `;
+    const betString = await readUserInput(prompt, player.balance); 
     bet = parseInt(betString, 10);
     if (isNaN(bet) || bet <= 0 || bet > player.balance) {
       console.log("Invalid bet amount. Please enter a valid number within your balance.");

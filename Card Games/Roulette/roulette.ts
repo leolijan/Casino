@@ -31,8 +31,6 @@ type Dozens = 4 | 5 | 6;
 // The rest of the bets with different odds depending on the specific bet. 
 type RestOfBets = "Single" | "Split" | "Street" | "Corner" | "DoubleStreet";
 
-type numbersBet = [];
-
 let allBets: List<bet> = list();
 
 /** ODDS
@@ -162,7 +160,7 @@ async function numberBet(bet: bet): Promise<void> {
         const first = Number(inp);
         
         bet[2][0] = first;
-        const numbers: number[] = [];
+        const numbers: Array<number> = [];
 
         if (first % 3 === 0) {
             // High up
@@ -335,7 +333,7 @@ async function columnsAndDozensBet(bet: bet): Promise<void>{
  * Calculates the total winnings for a player based on their bets placed
  * and the winning number each time. 
  * @param bets An array of bets placed, where each bet is 
- *             represented by [BetType, stake, number[]].
+ *             represented by [BetType, stake, Array<number>].
  * @param number The winning number in the roulette game.
  * @returns The total payout amount.
  */
@@ -352,7 +350,7 @@ function calculateWinnings(bets: List<bet>, number: number): number {
 /**
  * Calculates the payout based on the type of bet and winning number.
  * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, number[]].
+ *            represented by [BetType, stake, Array<number>].
  * @param number The winning number in the roulette game.
  * @returns The calculated payout amount.
  */
@@ -385,12 +383,12 @@ function calcPayout(bet: bet, number: number): number {
 /**
  * Calculates the payout for a bet on a single number.
  * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, number[]].
+ *            represented by [BetType, stake, Array<number>].
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-function calcSingle(bet: number[], stake: stake, number: number): number {
+function calcSingle(bet: Array<number>, stake: stake, number: number): number {
     return bet[0] === number ? stake * 36 : 0;
 }
 
@@ -398,12 +396,12 @@ function calcSingle(bet: number[], stake: stake, number: number): number {
 /**
  * Calculates the payout for a bet on two adjacent numbers.
  * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, number[]].
+ *            represented by [BetType, stake, Array<number>].
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-function calcSplit(bet: number[], stake: stake, number: number): number {
+function calcSplit(bet: Array<number>, stake: stake, number: number): number {
     return bet[0] === number ? stake * 18 : bet[1] === number ? stake * 18 : 0;
 }
 
@@ -412,12 +410,12 @@ function calcSplit(bet: number[], stake: stake, number: number): number {
  * Calculates the payout for a bet on a street. This is three consecutive
  *  numbers in a horizontal line.
  * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, number[]].
+ *            represented by [BetType, stake, Array<number>].
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-function calcStreet(bet: number[], stake: stake, number: number): number {
+function calcStreet(bet: Array<number>, stake: stake, number: number): number {
     return (streets[bet[0]].includes(number)) ? stake * 12 : 0;
 }
 
@@ -426,12 +424,12 @@ function calcStreet(bet: number[], stake: stake, number: number): number {
  * Calculates the payout for a bet on a corner. This is when four numbers meet
  * at one corner.
  * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, number[]].
+ *            represented by [BetType, stake, Array<number>].
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-function calcCorner(bet: number[], stake: stake, number: number): number {
+function calcCorner(bet: Array<number>, stake: stake, number: number): number {
     return (number >= bet[0] && number <= bet[0] + 4) ? stake * 8 : 0;
 }
 
@@ -440,12 +438,13 @@ function calcCorner(bet: number[], stake: stake, number: number): number {
  * Calculates the payout for a bet placed on a double street. This is six 
  * consecutive numbers that form two horizontal lines.
  * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, number[]].
+ *            represented by [BetType, stake, Array<number>].
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-function calcDoubleStreet(bet: number[], stake: stake, number: number): number {
+function calcDoubleStreet(bet: Array<number>, 
+                          stake: stake, number: number): number {
     return (streets[bet[0]].includes(number) || streets[bet[1]].includes(number)) 
            ? stake * 6 
            : 0;

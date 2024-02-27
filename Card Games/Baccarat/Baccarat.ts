@@ -8,7 +8,7 @@ import { Person, createPerson } from '../../Player/Player';
  * @param hand An array of Card objects representing the hand.
  * @returns A Promise resolving to the calculated hand value.
  */
-export async function calculateHandValue(hand: Card[]): Promise<number> {
+export async function calculateHandValue(hand: Array<Card>): Promise<number> {
   let total = 0;
 
   hand.forEach(card => {
@@ -34,7 +34,8 @@ export async function calculateHandValue(hand: Card[]): Promise<number> {
  * @param player A Person object representing the player.
  * @returns The total value of the player hand.
  */
-export async function playerHand(deck: Card[], player: Person): Promise<number> {
+export async function playerHand(deck: Array<Card>, 
+                                 player: Person): Promise<number> {
   let playerTotal = await calculateHandValue(player.hand);
   
   if (playerTotal >= 6) {
@@ -54,9 +55,9 @@ export async function playerHand(deck: Card[], player: Person): Promise<number> 
  * @param player A Person object representing the player.
  * @returns The total value of the banker's hand.
  */
-export async function bankerHand(deck: Card[], 
-                          banker: Person, 
-                          player: Person): Promise<number> {
+export async function bankerHand(deck: Array<Card>, 
+                                 banker: Person, 
+                                 player: Person): Promise<number> {
   let bankerTotal = await calculateHandValue(banker.hand);
 
   // Draws a third card for the banker and calculates the new card values
@@ -111,8 +112,8 @@ export async function bankerHand(deck: Card[],
  */
 export async function decideOutcome(playerValue: number, 
                              bankerValue: number, 
-                             playerHand: Card[], 
-                             bankerHand: Card[], 
+                             playerHand: Array<Card>, 
+                             bankerHand: Array<Card>, 
                              betType: string)
                              : Promise<{ outcome: string; winnings: number }> {
   let outcome = '';
