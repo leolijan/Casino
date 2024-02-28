@@ -6,8 +6,29 @@ import { startGame as startBlackjack } from '../Card Games/Blackjack/Blackjack';
 import { playerMove as startRoulette } from '../Card Games/Roulette/roulette';
 import { readUserInput, readUserInputBasic } from '../userInput/readUserInput';
 
-// Global variable
+type AllUsers = { [username: string]: Person };
+
 const textfile: string = "user_information.json";
+let allUsers : AllUsers = {}; 
+
+function loadUserData() {
+    try {
+        const data = fs.readFileSync(textfile, 'utf8');
+        allUsers = JSON.parse(data);
+    } catch (err) {
+        console.error(`Error reading the file: ${err}`);
+        allUsers = {};
+    }
+}
+
+function saveUserData() {
+    try {
+        const data = JSON.stringify(allUsers, null, 2);
+        fs.writeFileSync(textfile, data);
+    } catch (err) {
+        console.error(`An error occurred while saving user data: ${err}`);
+    }
+}
 
 function splashScreen(): void {
     const logo = `
@@ -27,7 +48,6 @@ function printOptions(options: {[key: string]: string}): void {
 }
 
 export async function loggedIn(user: string): Promise<void> {
-    let all_users = readLoginCredentials(textfile);
     const options: {[key: string]: string} = {
         "1": "Blackjack",
         "2": "Baccarat",
@@ -43,22 +63,21 @@ export async function loggedIn(user: string): Promise<void> {
     console.log(); // Add a newline for better formatting
     
     if (choice === "1") {
-        await startBlackjack(all_users[user]);
+        await startBlackjack(allUsers[user]);
     } else if (choice === "2") {
-        await startBaccarat(all_users[user]);
+        await startBaccarat(allUsers[user]);
     } else if (choice === "3") {
-        await startRoulette(all_users[user]);
+        await startRoulette(allUsers[user]);
     } else if (choice === "4") {
-        await insert_money(user, all_users); // Call insert_money here
+        await insert_money(user); // Call insert_money here
     } else if (choice === "5") {
         console.log("Logging out...");
         return; // Exit the loggedIn function to log out
     }
-    writeLoginCredentials(textfile, all_users); // Save after any operation
     await loggedIn(user); // Re-display the logged-in menu options
 }
 
-async function insert_money(username: string, all_users: {[key: string]: any}): Promise<void> {
+async function insert_money(username: string): Promise<void> {
     console.log("Select the amount of money to insert:");
     const moneyOptions: {[key: string]: string} = {
         "1": "100",
@@ -92,25 +111,23 @@ async function insert_money(username: string, all_users: {[key: string]: any}): 
         return;
     }
 
-    all_users[username].balance += amount;
-    console.log(`$${amount} has been added to your account. Your new balance is $${all_users[username].balance}.`);
+    allUsers[username].balance += amount;
+    console.log(`$${amount} has been added to your account. Your new balance is $${allUsers[username].balance}.`);
 }
 
-
-export async function login(users: {[key: string]: 
-                                    {password: string}}): Promise<void> {
+export async function login(): Promise<void> {
     while (true) {
         const username = await readUserInputBasic("Username: ");
         const password = await readUserInputBasic("Password: ");
 
-        if (users[username] && password === users[username].password) {
+        if (allUsers[username] && password === allUsers[username].password) {
             console.log(`Welcome ${username}`);
-            await loggedIn(username);
+            await loggedIn(username); // Ensure loggedIn uses allUsers
         } else {
-            console.log();
-            console.log("Invalid username or password");
+            console.log("\nInvalid username or password");
             console.log("Please try again or choose another option.");
             await menu();
+            break; // Break here to avoid infinite loop if choosing to exit
         }
     }
 }
@@ -122,20 +139,18 @@ export async function newUser(): Promise<void> {
         const confirmedPassword = await readUserInputBasic("Confirm your password: ");
 
         if (password === confirmedPassword) {
-            const all_users = readLoginCredentials(textfile);
-            if (all_users[username]) {
+            if (allUsers[username]) {
                 console.log("Username already exists. Choose a different username.");
                 continue;
             }
-            all_users[username] = {
+            allUsers[username] = {
                 name: username,
                 password: confirmedPassword,
-                balance: 1000, // Default starting balance
-                hand: [] // Empty hand at the start
+                balance: 1000,
+                hand: []
             };
-            writeLoginCredentials(textfile, all_users);
             console.log("Registration successful");
-
+            // Do not save here, saving is handled in menu when exiting
             break;
         } else {
             console.log("The two passwords are not identical");
@@ -175,34 +190,36 @@ export function readLoginCredentials(filename: string)
     }
 }
 
-
 export async function menu(): Promise<void> {
     splashScreen();
     console.log();
-    const all_users_saved: {[key: string]: Person} = readLoginCredentials(textfile);
-    const menu_options: {[key: string]: string} = {"1": "Login", 
-                                                   "2": "Register", 
-                                                   "3": "Quit"};
+    // No need to readLoginCredentials here, using allUsers directly
+    const menu_options: {[key: string]: string} = {
+        "1": "Login",
+        "2": "Register",
+        "3": "Quit"
+    };
     printOptions(menu_options);
 
     const user_input: string = await readUserInput("Option: ", 3);
 
     console.log(); // Add a newline for better formatting
-    
 
     if (user_input === "1") {
-        await login(all_users_saved);
+        await login(); // Adjusted to use allUsers
     } else if (user_input === "2") {
         await newUser();
-        await login(all_users_saved);
+        await login() // newUser function will be adjusted to use allUsers
     } else if (user_input === "3") {
+        console.log("Exiting program...");
+        saveUserData(); // Save data only when exiting the program
         process.exit();
     }
 }
-
 
 async function main(): Promise<void> {
     await menu();
 }
 
+loadUserData();
 main();

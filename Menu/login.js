@@ -44,6 +44,28 @@ var roulette_1 = require("../Card Games/Roulette/roulette");
 var readUserInput_1 = require("../userInput/readUserInput");
 // Global variable
 var textfile = "user_information.json";
+var allUsers = {};
+// Load user data into memory at application start
+function loadUserData() {
+    try {
+        var data = fs.readFileSync(textfile, 'utf8');
+        allUsers = JSON.parse(data);
+    }
+    catch (err) {
+        console.error("Error reading the file: ".concat(err));
+        allUsers = {};
+    }
+}
+// Call this function at the appropriate time to save data back to the file
+function saveUserData() {
+    try {
+        var data = JSON.stringify(allUsers, null, 2);
+        fs.writeFileSync(textfile, data);
+    }
+    catch (err) {
+        console.error("An error occurred while saving user data: ".concat(err));
+    }
+}
 function splashScreen() {
     var logo = "\n            \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n          \u2588\u2588                                   \u2588\u2588\n        \u2588\u2588                \uD835\uDE44\uD835\uDE4F\uD835\uDE3E\uD835\uDE56\uD835\uDE68\uD835\uDE5E\uD835\uDE63\uD835\uDE64                \u2588\u2588\n          \u2588\u2588                                   \u2588\u2588\n            \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n            ";
     console.log(logo);
@@ -56,11 +78,10 @@ function printOptions(options) {
 }
 function loggedIn(user) {
     return __awaiter(this, void 0, void 0, function () {
-        var all_users, options, choice;
+        var options, choice;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    all_users = readLoginCredentials(textfile);
                     options = {
                         "1": "Blackjack",
                         "2": "Baccarat",
@@ -69,30 +90,30 @@ function loggedIn(user) {
                         "5": "Log Out"
                     };
                     printOptions(options);
-                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 4)];
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 5)];
                 case 1:
                     choice = _a.sent();
                     console.log(); // Add a newline for better formatting
                     if (!(choice === "1")) return [3 /*break*/, 3];
-                    return [4 /*yield*/, (0, Blackjack_1.startGame)(all_users[user])];
+                    return [4 /*yield*/, (0, Blackjack_1.startGame)(allUsers[user])];
                 case 2:
                     _a.sent();
                     return [3 /*break*/, 10];
                 case 3:
                     if (!(choice === "2")) return [3 /*break*/, 5];
-                    return [4 /*yield*/, (0, Baccarat_1.startGame)(all_users[user])];
+                    return [4 /*yield*/, (0, Baccarat_1.startGame)(allUsers[user])];
                 case 4:
                     _a.sent();
                     return [3 /*break*/, 10];
                 case 5:
                     if (!(choice === "3")) return [3 /*break*/, 7];
-                    return [4 /*yield*/, (0, roulette_1.playerMove)(all_users[user])];
+                    return [4 /*yield*/, (0, roulette_1.playerMove)(allUsers[user])];
                 case 6:
                     _a.sent();
                     return [3 /*break*/, 10];
                 case 7:
                     if (!(choice === "4")) return [3 /*break*/, 9];
-                    return [4 /*yield*/, insert_money(user, all_users)];
+                    return [4 /*yield*/, insert_money(user)];
                 case 8:
                     _a.sent(); // Call insert_money here
                     return [3 /*break*/, 10];
@@ -102,9 +123,7 @@ function loggedIn(user) {
                         return [2 /*return*/]; // Exit the loggedIn function to log out
                     }
                     _a.label = 10;
-                case 10:
-                    writeLoginCredentials(textfile, all_users); // Save after any operation
-                    return [4 /*yield*/, loggedIn(user)];
+                case 10: return [4 /*yield*/, loggedIn(user)];
                 case 11:
                     _a.sent(); // Re-display the logged-in menu options
                     return [2 /*return*/];
@@ -113,7 +132,7 @@ function loggedIn(user) {
     });
 }
 exports.loggedIn = loggedIn;
-function insert_money(username, all_users) {
+function insert_money(username) {
     return __awaiter(this, void 0, void 0, function () {
         var moneyOptions, choice, amount, customAmountStr;
         return __generator(this, function (_a) {
@@ -156,14 +175,14 @@ function insert_money(username, all_users) {
                     }
                     _a.label = 4;
                 case 4:
-                    all_users[username].balance += amount;
-                    console.log("$".concat(amount, " has been added to your account. Your new balance is $").concat(all_users[username].balance, "."));
+                    allUsers[username].balance += amount;
+                    console.log("$".concat(amount, " has been added to your account. Your new balance is $").concat(allUsers[username].balance, "."));
                     return [2 /*return*/];
             }
         });
     });
 }
-function login(users) {
+function login() {
     return __awaiter(this, void 0, void 0, function () {
         var username, password;
         return __generator(this, function (_a) {
@@ -176,20 +195,19 @@ function login(users) {
                     return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Password: ")];
                 case 2:
                     password = _a.sent();
-                    if (!(users[username] && password === users[username].password)) return [3 /*break*/, 4];
+                    if (!(allUsers[username] && password === allUsers[username].password)) return [3 /*break*/, 4];
                     console.log("Welcome ".concat(username));
                     return [4 /*yield*/, loggedIn(username)];
                 case 3:
-                    _a.sent();
+                    _a.sent(); // Ensure loggedIn uses allUsers
                     return [3 /*break*/, 6];
                 case 4:
-                    console.log();
-                    console.log("Invalid username or password");
+                    console.log("\nInvalid username or password");
                     console.log("Please try again or choose another option.");
                     return [4 /*yield*/, menu()];
                 case 5:
                     _a.sent();
-                    _a.label = 6;
+                    return [3 /*break*/, 7]; // Break here to avoid infinite loop if choosing to exit
                 case 6: return [3 /*break*/, 0];
                 case 7: return [2 /*return*/];
             }
@@ -199,7 +217,7 @@ function login(users) {
 exports.login = login;
 function newUser() {
     return __awaiter(this, void 0, void 0, function () {
-        var username, password, confirmedPassword, all_users;
+        var username, password, confirmedPassword;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -214,19 +232,18 @@ function newUser() {
                 case 3:
                     confirmedPassword = _a.sent();
                     if (password === confirmedPassword) {
-                        all_users = readLoginCredentials(textfile);
-                        if (all_users[username]) {
+                        if (allUsers[username]) {
                             console.log("Username already exists. Choose a different username.");
                             return [3 /*break*/, 0];
                         }
-                        all_users[username] = {
+                        allUsers[username] = {
                             name: username,
                             password: confirmedPassword,
-                            balance: 1000, // Default starting balance
-                            hand: [] // Empty hand at the start
+                            balance: 1000,
+                            hand: []
                         };
-                        writeLoginCredentials(textfile, all_users);
                         console.log("Registration successful");
+                        // Do not save here, saving is handled in menu when exiting
                         return [3 /*break*/, 4];
                     }
                     else {
@@ -265,37 +282,40 @@ function readLoginCredentials(filename) {
 exports.readLoginCredentials = readLoginCredentials;
 function menu() {
     return __awaiter(this, void 0, void 0, function () {
-        var all_users_saved, menu_options, user_input;
+        var menu_options, user_input;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
                     splashScreen();
                     console.log();
-                    all_users_saved = readLoginCredentials(textfile);
-                    menu_options = { "1": "Login",
+                    menu_options = {
+                        "1": "Login",
                         "2": "Register",
-                        "3": "Quit" };
+                        "3": "Quit"
+                    };
                     printOptions(menu_options);
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 3)];
                 case 1:
                     user_input = _a.sent();
                     console.log(); // Add a newline for better formatting
                     if (!(user_input === "1")) return [3 /*break*/, 3];
-                    return [4 /*yield*/, login(all_users_saved)];
+                    return [4 /*yield*/, login()];
                 case 2:
-                    _a.sent();
+                    _a.sent(); // Adjusted to use allUsers
                     return [3 /*break*/, 7];
                 case 3:
                     if (!(user_input === "2")) return [3 /*break*/, 6];
                     return [4 /*yield*/, newUser()];
                 case 4:
                     _a.sent();
-                    return [4 /*yield*/, login(all_users_saved)];
+                    return [4 /*yield*/, login()]; // newUser function will be adjusted to use allUsers
                 case 5:
-                    _a.sent();
+                    _a.sent(); // newUser function will be adjusted to use allUsers
                     return [3 /*break*/, 7];
                 case 6:
                     if (user_input === "3") {
+                        console.log("Exiting program...");
+                        saveUserData(); // Save data only when exiting the program
                         process.exit();
                     }
                     _a.label = 7;
@@ -317,4 +337,5 @@ function main() {
         });
     });
 }
+loadUserData();
 main();
