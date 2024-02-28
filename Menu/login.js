@@ -61,10 +61,13 @@ function loggedIn(user) {
             switch (_a.label) {
                 case 0:
                     all_users = readLoginCredentials(textfile);
-                    options = { "1": "Black jack",
+                    options = {
+                        "1": "Blackjack",
                         "2": "Baccarat",
                         "3": "Roulette",
-                        "4": "Log Out" };
+                        "4": "Add Money",
+                        "5": "Log Out"
+                    };
                     printOptions(options);
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 4)];
                 case 1:
@@ -74,37 +77,92 @@ function loggedIn(user) {
                     return [4 /*yield*/, (0, Blackjack_1.startGame)(all_users[user])];
                 case 2:
                     _a.sent();
-                    writeLoginCredentials(textfile, all_users);
-                    return [3 /*break*/, 9];
+                    return [3 /*break*/, 10];
                 case 3:
                     if (!(choice === "2")) return [3 /*break*/, 5];
                     return [4 /*yield*/, (0, Baccarat_1.startGame)(all_users[user])];
                 case 4:
                     _a.sent();
-                    writeLoginCredentials(textfile, all_users);
-                    return [3 /*break*/, 9];
+                    return [3 /*break*/, 10];
                 case 5:
                     if (!(choice === "3")) return [3 /*break*/, 7];
                     return [4 /*yield*/, (0, roulette_1.playerMove)(all_users[user])];
                 case 6:
                     _a.sent();
-                    writeLoginCredentials(textfile, all_users);
-                    return [3 /*break*/, 9];
+                    return [3 /*break*/, 10];
                 case 7:
                     if (!(choice === "4")) return [3 /*break*/, 9];
-                    return [4 /*yield*/, menu()];
+                    return [4 /*yield*/, insert_money(user, all_users)];
                 case 8:
-                    _a.sent();
-                    _a.label = 9;
-                case 9: return [4 /*yield*/, loggedIn(user)];
+                    _a.sent(); // Call insert_money here
+                    return [3 /*break*/, 10];
+                case 9:
+                    if (choice === "5") {
+                        console.log("Logging out...");
+                        return [2 /*return*/]; // Exit the loggedIn function to log out
+                    }
+                    _a.label = 10;
                 case 10:
-                    _a.sent();
+                    writeLoginCredentials(textfile, all_users); // Save after any operation
+                    return [4 /*yield*/, loggedIn(user)];
+                case 11:
+                    _a.sent(); // Re-display the logged-in menu options
                     return [2 /*return*/];
             }
         });
     });
 }
 exports.loggedIn = loggedIn;
+function insert_money(username, all_users) {
+    return __awaiter(this, void 0, void 0, function () {
+        var moneyOptions, choice, amount, customAmountStr;
+        return __generator(this, function (_a) {
+            switch (_a.label) {
+                case 0:
+                    console.log("Select the amount of money to insert:");
+                    moneyOptions = {
+                        "1": "100",
+                        "2": "200",
+                        "3": "500",
+                        "4": "1000",
+                        "5": "Enter a custom amount"
+                    };
+                    printOptions(moneyOptions);
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option (or 'X' to cancel): ", 5)];
+                case 1:
+                    choice = _a.sent();
+                    if (choice.toLowerCase() === 'x') {
+                        console.log("Money insertion cancelled.");
+                        return [2 /*return*/];
+                    }
+                    amount = 0;
+                    if (!(choice === "5")) return [3 /*break*/, 3];
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Enter your custom amount: ")];
+                case 2:
+                    customAmountStr = _a.sent();
+                    amount = parseFloat(customAmountStr);
+                    if (isNaN(amount) || amount <= 0) {
+                        console.log("Invalid amount.");
+                        return [2 /*return*/];
+                    }
+                    return [3 /*break*/, 4];
+                case 3:
+                    if (moneyOptions.hasOwnProperty(choice)) {
+                        amount = parseFloat(moneyOptions[choice]);
+                    }
+                    else {
+                        console.log("Invalid option selected.");
+                        return [2 /*return*/];
+                    }
+                    _a.label = 4;
+                case 4:
+                    all_users[username].balance += amount;
+                    console.log("$".concat(amount, " has been added to your account. Your new balance is $").concat(all_users[username].balance, "."));
+                    return [2 /*return*/];
+            }
+        });
+    });
+}
 function login(users) {
     return __awaiter(this, void 0, void 0, function () {
         var username, password;
@@ -249,12 +307,9 @@ function menu() {
 exports.menu = menu;
 function main() {
     return __awaiter(this, void 0, void 0, function () {
-        var hej;
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0:
-                    hej = prompt("HEJ");
-                    return [4 /*yield*/, menu()];
+                case 0: return [4 /*yield*/, menu()];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];

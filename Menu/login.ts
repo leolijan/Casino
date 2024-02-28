@@ -28,33 +28,74 @@ function printOptions(options: {[key: string]: string}): void {
 
 export async function loggedIn(user: string): Promise<void> {
     let all_users = readLoginCredentials(textfile);
-    const options: {[key: string]: string} = {"1": "Black jack", 
-                                              "2" : "Baccarat" , 
-                                              "3": "Roulette", 
-                                              "4": "Log Out"};
+    const options: {[key: string]: string} = {
+        "1": "Blackjack",
+        "2": "Baccarat",
+        "3": "Roulette",
+        "4": "Add Money",
+        "5": "Log Out"
+    };
+    
     printOptions(options);
 
-    const choice: string = await readUserInput("Option: ", 4);
+    const choice: string = await readUserInput("Option: ", 5);
 
     console.log(); // Add a newline for better formatting
     
-
     if (choice === "1") {
         await startBlackjack(all_users[user]);
-        writeLoginCredentials(textfile, all_users); 
-    }else if (choice === "2") {
+    } else if (choice === "2") {
         await startBaccarat(all_users[user]);
-        writeLoginCredentials(textfile, all_users); 
     } else if (choice === "3") {
         await startRoulette(all_users[user]);
-        writeLoginCredentials(textfile, all_users); 
     } else if (choice === "4") {
-        await menu();
+        await insert_money(user, all_users); // Call insert_money here
+    } else if (choice === "5") {
+        console.log("Logging out...");
+        return; // Exit the loggedIn function to log out
     }
-    await loggedIn(user);
-
-   // test person: {name: "VB", password: "VB21", balance: 2000, hand: []}
+    writeLoginCredentials(textfile, all_users); // Save after any operation
+    await loggedIn(user); // Re-display the logged-in menu options
 }
+
+async function insert_money(username: string, all_users: {[key: string]: any}): Promise<void> {
+    console.log("Select the amount of money to insert:");
+    const moneyOptions: {[key: string]: string} = {
+        "1": "100",
+        "2": "200",
+        "3": "500",
+        "4": "1000",
+        "5": "Enter a custom amount"
+    };
+
+    printOptions(moneyOptions);
+
+    const choice = await readUserInput("Option (or 'X' to cancel): ", 5);
+
+    if (choice.toLowerCase() === 'x') {
+        console.log("Money insertion cancelled.");
+        return;
+    }
+
+    let amount = 0;
+    if (choice === "5") {
+        const customAmountStr = await readUserInputBasic("Enter your custom amount: ");
+        amount = parseFloat(customAmountStr);
+        if (isNaN(amount) || amount <= 0) {
+            console.log("Invalid amount.");
+            return;
+        }
+    } else if (moneyOptions.hasOwnProperty(choice)) {
+        amount = parseFloat(moneyOptions[choice]);
+    } else {
+        console.log("Invalid option selected.");
+        return;
+    }
+
+    all_users[username].balance += amount;
+    console.log(`$${amount} has been added to your account. Your new balance is $${all_users[username].balance}.`);
+}
+
 
 export async function login(users: {[key: string]: 
                                     {password: string}}): Promise<void> {
