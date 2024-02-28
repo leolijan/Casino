@@ -1,3 +1,4 @@
+import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import { Card } from '../Card Games/Deck/Deck';
 import { Person } from '../Player/Player';
@@ -72,7 +73,7 @@ export async function loggedIn(user: string): Promise<void> {
         await insert_money(user); // Call insert_money here
     } else if (choice === "5") {
         console.log("Logging out...");
-        return; // Exit the loggedIn function to log out
+        return await menu() // Exit the loggedIn function to log out
     }
     await loggedIn(user); // Re-display the logged-in menu options
 }
@@ -115,22 +116,47 @@ async function insert_money(username: string): Promise<void> {
     console.log(`$${amount} has been added to your account. Your new balance is $${allUsers[username].balance}.`);
 }
 
-export async function login(): Promise<void> {
-    while (true) {
-        const username = await readUserInputBasic("Username: ");
-        const password = await readUserInputBasic("Password: ");
+function isValidPassword(password: string): boolean {
+    const hasUpperCase = /[A-Z]/.test(password);
+    const hasSpecialChar = /[\W_]/.test(password); // This regex matches any non-word character plus underscore, adjust as needed for specific "special" characters
+    const isLongEnough = password.length >= 8;
 
-        if (allUsers[username] && password === allUsers[username].password) {
-            console.log(`Welcome ${username}`);
-            await loggedIn(username); // Ensure loggedIn uses allUsers
-        } else {
-            console.log("\nInvalid username or password");
-            console.log("Please try again or choose another option.");
-            await menu();
-            break; // Break here to avoid infinite loop if choosing to exit
-        }
-    }
+    return hasUpperCase && hasSpecialChar && isLongEnough;
 }
+
+export async function login(): Promise<void> {
+    let attempts = 0;
+    const maxAttempts = 3;
+    
+    while (attempts < maxAttempts) {
+        attempts = attempts + 1;
+        const username = await readUserInputBasic("Username: ");
+        const submittedPassword = await readUserInputBasic("Password: ");
+        
+        if (allUsers[username]) {
+            //wait to check crypted password to save time costs
+            const match = await bcrypt.compare(submittedPassword, allUsers[username].password);
+            
+            if (match) {
+                console.log(`Welcome ${username}`);
+                await loggedIn(username);
+                break;
+            } else {
+                console.log("\nInvalid username or password");
+            }
+        } else {
+            //Better to safty to not know if password or username is wrong
+            console.log("\nInvalid username or password");
+        }
+
+    }
+    console.log("Maximum login attempts reached. Please try again later.");
+    setTimeout(async () => await menu(), 3000); // Give user time to read the message
+
+    await menu();
+}    
+
+
 
 export async function newUser(): Promise<void> {
     while (true) {
@@ -138,14 +164,24 @@ export async function newUser(): Promise<void> {
         const password = await readUserInputBasic("Choose your password: ");
         const confirmedPassword = await readUserInputBasic("Confirm your password: ");
 
+        if (!isValidPassword(password)) {
+            console.log("Password does not meet the required standards:");
+            console.log("Password must include at least one uppercase letter, one special character, and be at least 8 characters long.");
+            // If the password is invalid, provide the opportunity to enter the details again without exiting the function
+            continue;
+        }
+
         if (password === confirmedPassword) {
             if (allUsers[username]) {
                 console.log("Username already exists. Choose a different username.");
                 continue;
             }
+            const saltRounds = 10; // Adjust based on security/performance needs
+            const hash = await bcrypt.hash(confirmedPassword, saltRounds);
+
             allUsers[username] = {
                 name: username,
-                password: confirmedPassword,
+                password: hash,
                 balance: 1000,
                 hand: []
             };
@@ -218,8 +254,8 @@ export async function menu(): Promise<void> {
 }
 
 async function main(): Promise<void> {
+    loadUserData();
     await menu();
 }
 
-loadUserData();
 main();

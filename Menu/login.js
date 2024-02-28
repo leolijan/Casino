@@ -37,15 +37,14 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.menu = exports.readLoginCredentials = exports.writeLoginCredentials = exports.newUser = exports.login = exports.loggedIn = void 0;
+var bcrypt = require("bcrypt");
 var fs = require("fs");
 var Baccarat_1 = require("../Card Games/Baccarat/Baccarat");
 var Blackjack_1 = require("../Card Games/Blackjack/Blackjack");
 var roulette_1 = require("../Card Games/Roulette/roulette");
 var readUserInput_1 = require("../userInput/readUserInput");
-// Global variable
 var textfile = "user_information.json";
 var allUsers = {};
-// Load user data into memory at application start
 function loadUserData() {
     try {
         var data = fs.readFileSync(textfile, 'utf8');
@@ -56,7 +55,6 @@ function loadUserData() {
         allUsers = {};
     }
 }
-// Call this function at the appropriate time to save data back to the file
 function saveUserData() {
     try {
         var data = JSON.stringify(allUsers, null, 2);
@@ -98,33 +96,32 @@ function loggedIn(user) {
                     return [4 /*yield*/, (0, Blackjack_1.startGame)(allUsers[user])];
                 case 2:
                     _a.sent();
-                    return [3 /*break*/, 10];
+                    return [3 /*break*/, 11];
                 case 3:
                     if (!(choice === "2")) return [3 /*break*/, 5];
                     return [4 /*yield*/, (0, Baccarat_1.startGame)(allUsers[user])];
                 case 4:
                     _a.sent();
-                    return [3 /*break*/, 10];
+                    return [3 /*break*/, 11];
                 case 5:
                     if (!(choice === "3")) return [3 /*break*/, 7];
                     return [4 /*yield*/, (0, roulette_1.playerMove)(allUsers[user])];
                 case 6:
                     _a.sent();
-                    return [3 /*break*/, 10];
+                    return [3 /*break*/, 11];
                 case 7:
                     if (!(choice === "4")) return [3 /*break*/, 9];
                     return [4 /*yield*/, insert_money(user)];
                 case 8:
                     _a.sent(); // Call insert_money here
-                    return [3 /*break*/, 10];
+                    return [3 /*break*/, 11];
                 case 9:
-                    if (choice === "5") {
-                        console.log("Logging out...");
-                        return [2 /*return*/]; // Exit the loggedIn function to log out
-                    }
-                    _a.label = 10;
-                case 10: return [4 /*yield*/, loggedIn(user)];
-                case 11:
+                    if (!(choice === "5")) return [3 /*break*/, 11];
+                    console.log("Logging out...");
+                    return [4 /*yield*/, menu()]; // Exit the loggedIn function to log out
+                case 10: return [2 /*return*/, _a.sent()]; // Exit the loggedIn function to log out
+                case 11: return [4 /*yield*/, loggedIn(user)];
+                case 12:
                     _a.sent(); // Re-display the logged-in menu options
                     return [2 /*return*/];
             }
@@ -182,34 +179,62 @@ function insert_money(username) {
         });
     });
 }
+function isValidPassword(password) {
+    var hasUpperCase = /[A-Z]/.test(password);
+    var hasSpecialChar = /[\W_]/.test(password); // This regex matches any non-word character plus underscore, adjust as needed for specific "special" characters
+    var isLongEnough = password.length >= 8;
+    return hasUpperCase && hasSpecialChar && isLongEnough;
+}
 function login() {
     return __awaiter(this, void 0, void 0, function () {
-        var username, password;
+        var attempts, maxAttempts, username, submittedPassword, match;
+        var _this = this;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!true) return [3 /*break*/, 7];
-                    return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Username: ")];
+                    attempts = 0;
+                    maxAttempts = 3;
+                    _a.label = 1;
                 case 1:
+                    if (!(attempts < maxAttempts)) return [3 /*break*/, 10];
+                    attempts = attempts + 1;
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Username: ")];
+                case 2:
                     username = _a.sent();
                     return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Password: ")];
-                case 2:
-                    password = _a.sent();
-                    if (!(allUsers[username] && password === allUsers[username].password)) return [3 /*break*/, 4];
+                case 3:
+                    submittedPassword = _a.sent();
+                    if (!allUsers[username]) return [3 /*break*/, 8];
+                    return [4 /*yield*/, bcrypt.compare(submittedPassword, allUsers[username].password)];
+                case 4:
+                    match = _a.sent();
+                    if (!match) return [3 /*break*/, 6];
                     console.log("Welcome ".concat(username));
                     return [4 /*yield*/, loggedIn(username)];
-                case 3:
-                    _a.sent(); // Ensure loggedIn uses allUsers
-                    return [3 /*break*/, 6];
-                case 4:
-                    console.log("\nInvalid username or password");
-                    console.log("Please try again or choose another option.");
-                    return [4 /*yield*/, menu()];
                 case 5:
                     _a.sent();
-                    return [3 /*break*/, 7]; // Break here to avoid infinite loop if choosing to exit
-                case 6: return [3 /*break*/, 0];
-                case 7: return [2 /*return*/];
+                    return [3 /*break*/, 10];
+                case 6:
+                    console.log("\nInvalid username or password");
+                    _a.label = 7;
+                case 7: return [3 /*break*/, 9];
+                case 8:
+                    //Better to safty to not know if password or username is wrong
+                    console.log("\nInvalid username or password");
+                    _a.label = 9;
+                case 9: return [3 /*break*/, 1];
+                case 10:
+                    console.log("Maximum login attempts reached. Please try again later.");
+                    setTimeout(function () { return __awaiter(_this, void 0, void 0, function () { return __generator(this, function (_a) {
+                        switch (_a.label) {
+                            case 0: return [4 /*yield*/, menu()];
+                            case 1: return [2 /*return*/, _a.sent()];
+                        }
+                    }); }); }, 3000); // Give user time to read the message
+                    return [4 /*yield*/, menu()];
+                case 11:
+                    _a.sent();
+                    return [2 /*return*/];
             }
         });
     });
@@ -217,11 +242,11 @@ function login() {
 exports.login = login;
 function newUser() {
     return __awaiter(this, void 0, void 0, function () {
-        var username, password, confirmedPassword;
+        var username, password, confirmedPassword, saltRounds, hash;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    if (!true) return [3 /*break*/, 4];
+                    if (!true) return [3 /*break*/, 7];
                     return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Choose your username: ")];
                 case 1:
                     username = _a.sent();
@@ -231,28 +256,37 @@ function newUser() {
                     return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Confirm your password: ")];
                 case 3:
                     confirmedPassword = _a.sent();
-                    if (password === confirmedPassword) {
-                        if (allUsers[username]) {
-                            console.log("Username already exists. Choose a different username.");
-                            return [3 /*break*/, 0];
-                        }
-                        allUsers[username] = {
-                            name: username,
-                            password: confirmedPassword,
-                            balance: 1000,
-                            hand: []
-                        };
-                        console.log("Registration successful");
-                        // Do not save here, saving is handled in menu when exiting
-                        return [3 /*break*/, 4];
+                    if (!isValidPassword(password)) {
+                        console.log("Password does not meet the required standards:");
+                        console.log("Password must include at least one uppercase letter, one special character, and be at least 8 characters long.");
+                        // If the password is invalid, provide the opportunity to enter the details again without exiting the function
+                        return [3 /*break*/, 0];
                     }
-                    else {
-                        console.log("The two passwords are not identical");
-                        console.log("Try again!");
-                        console.log();
+                    if (!(password === confirmedPassword)) return [3 /*break*/, 5];
+                    if (allUsers[username]) {
+                        console.log("Username already exists. Choose a different username.");
+                        return [3 /*break*/, 0];
                     }
-                    return [3 /*break*/, 0];
-                case 4: return [2 /*return*/];
+                    saltRounds = 10;
+                    return [4 /*yield*/, bcrypt.hash(confirmedPassword, saltRounds)];
+                case 4:
+                    hash = _a.sent();
+                    allUsers[username] = {
+                        name: username,
+                        password: hash,
+                        balance: 1000,
+                        hand: []
+                    };
+                    console.log("Registration successful");
+                    // Do not save here, saving is handled in menu when exiting
+                    return [3 /*break*/, 7];
+                case 5:
+                    console.log("The two passwords are not identical");
+                    console.log("Try again!");
+                    console.log();
+                    _a.label = 6;
+                case 6: return [3 /*break*/, 0];
+                case 7: return [2 /*return*/];
             }
         });
     });
@@ -329,7 +363,9 @@ function main() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
             switch (_a.label) {
-                case 0: return [4 /*yield*/, menu()];
+                case 0:
+                    loadUserData();
+                    return [4 /*yield*/, menu()];
                 case 1:
                     _a.sent();
                     return [2 /*return*/];
@@ -337,5 +373,4 @@ function main() {
         });
     });
 }
-loadUserData();
 main();
