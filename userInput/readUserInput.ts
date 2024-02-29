@@ -65,7 +65,7 @@ export function readUserInputBasic(prompt: string): Promise<string> {
  * @returns True if the answer is within the valid range, 
  *                    otherwise false.
  */
-function check(answer: string, max: number): boolean {
+export function check(answer: string, max: number): boolean {
     for (let i = 1; i < max + 1; i++) {
         if (answer === i.toString()) {
             return true;
