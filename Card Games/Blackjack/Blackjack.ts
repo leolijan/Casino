@@ -75,7 +75,7 @@ export async function playerTurn(deck: Array<Card>,
   // Player's decision-making loop
   while (playerTotal < 21) {
     console.log(`Your total is ${playerTotal}.`);
-    const prompt: string = "Hit (h), stand (s), or double down (d)?"; 
+    const prompt: string = "Hit (1), stand (2), or double down (3)?"; 
     const hitOrStand: string = await readUserInput(prompt, 3); 
 
     // Handle the double down option
