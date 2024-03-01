@@ -4,8 +4,8 @@ import {
     bankerHand,
     decideOutcome
   } from '../Baccarat/Baccarat'; 
-  import { Card, createBlackjackDeck, dealInitialCards, } from '../Deck/Deck';
-  import { createPerson } from '../../Player/Player';
+  import { Card, createBlackjackDeck as createBaccaratDeck, dealInitialCards, } from '../Deck/Deck';
+  import { Person, createPerson } from '../../Player/Player';
 
   jest.mock('../../userInput/readUserInput', () => ({
     readUserInput: jest.fn().mockImplementation((prompt) => {
@@ -56,7 +56,7 @@ import {
       });
   
       test('does not add a card if player total is 6 or more', async () => {
-        const deck = createBlackjackDeck(); // Assuming this creates a full deck
+        const deck = createBaccaratDeck(); // Assuming this creates a full deck
         const player = { name: 'Player', password: '', balance: 1000, hand: [{ value: 4, suit: 'Hearts' }, { value: 2, suit: 'Diamonds' }] };
         const total = await playerHand(deck, player);
         expect(player.hand.length).toBe(2); // No new card added
@@ -65,21 +65,64 @@ import {
     });
   
     describe('bankerHand', () => {
-      test('follows banker rules for drawing a third card', async () => {
-        const deck = [{ value: 2, suit: 'Clubs' }, { value: 4, suit: 'Hearts' }]; 
-        const banker = { name: 'Banker', password: '', balance: 0, hand: [{ value: 3, suit: 'Hearts' }] };
-        const player = { name: 'Player', password: '', balance: 1000, hand: [{ value: 2, suit: 'Hearts' }, { value: 3, suit: 'Diamonds' }] };
-        const total = await bankerHand(deck, banker, player);
-        expect(banker.hand.length).toBe(2);
-        expect(total).toBeLessThanOrEqual(9); 
+      test('banker draws on total <= 2 regardless of player third card', async () => {
+          const deck: Card[] = createBaccaratDeck();
+          const banker = createPerson('Banker', '', 0);
+          const player = createPerson('Player', '', 1000);
+          banker.hand = [{ value: 2, suit: 'Clubs' }];
+          player.hand = [{ value: 3, suit: 'Hearts' }, { value: 2, suit: 'Diamonds' }];
+          const total = await bankerHand(deck, banker, player);
+          expect(total).toBeLessThanOrEqual(9); // Ensures banker drew a third card
       });
   
-      test('banker draws a third card if total is 5 or less', async () => {
-        const deck = createBlackjackDeck(); // Assuming this creates a full deck
-        const banker = { name: 'Banker', password: '', balance: 0, hand: [{ value: 2, suit: 'Hearts' }, { value: 3, suit: 'Diamonds' }] };
-        const player = { name: 'Player', password: '', balance: 1000, hand: [] }; // Player hand irrelevant in this test
-        const total = await bankerHand(deck, banker, player);
-        expect(banker.hand.length).toBe(3); // Expecting a third card to be drawn
+      test('banker stands on total 7', async () => {
+        const deck = [{ value: 10, suit: 'Clubs' }]; // A card that won't be drawn
+        const banker = createPerson('Banker', '', 0);
+        banker.hand = [{ value: 4, suit: 'Hearts' }, { value: 3, suit: 'Diamonds' }]; // Total of 7
+        const player = createPerson('Player', '', 1000);
+        player.hand = [{ value: 8, suit: 'Clubs' }, { value: 9, suit: 'Spades' }];
+        await bankerHand(deck, banker, player);
+        expect(banker.hand.length).toBe(2); // Banker should not draw a third card
+      });
+  
+      test('banker draws on total 3 and player third card not 8', async () => {
+          const deck: Card[] = createBaccaratDeck();
+          const banker = createPerson('Banker', '', 0);
+          banker.hand = [{ value: 3, suit: 'Hearts' }];
+          const player = createPerson('Player', '', 1000);
+          player.hand = [{ value: 2, suit: 'Clubs' }, { value: 3, suit: 'Spades' }, { value: 2, suit: 'Diamonds' }];
+          const total = await bankerHand(deck, banker, player);
+          expect(total).toBeLessThanOrEqual(9); // Banker should draw a third card
+      });
+  
+      test('banker does not draw if total is 3 and player third card is 8', async () => {
+          const deck: Card[] = createBaccaratDeck();
+          const banker = createPerson('Banker', '', 0);
+          banker.hand = [{ value: 3, suit: 'Hearts' }];
+          const player = createPerson('Player', '', 1000);
+          player.hand = [{ value: 2, suit: 'Clubs' }, { value: 3, suit: 'Spades' }, { value: 8, suit: 'Diamonds' }];
+          await bankerHand(deck, banker, player);
+          expect(banker.hand.length).toBe(2); // Banker stands due to player's third card being 8
+      });
+  
+      test('banker draws on total 4 and player third card 2-7', async () => {
+        const deck = [{ value: 5, suit: 'Hearts' }]; // A card for the banker to draw
+        const banker = createPerson('Banker', '', 0);
+        banker.hand = [{ value: 2, suit: 'Hearts' }, { value: 2, suit: 'Diamonds' }]; // Total of 4
+        const player = createPerson('Player', '', 1000);
+        player.hand = [{ value: 2, suit: 'Clubs' }, { value: 3, suit: 'Spades' }, { value: 6, suit: 'Diamonds' }]; // Third card within 2-7
+        await bankerHand(deck, banker, player);
+        expect(banker.hand.length).toBe(3); // Banker draws a third card
+      });
+  
+      test('banker does not draw if total is 6 and player third card is not 6 or 7', async () => {
+        const deck = [{ value: 10, suit: 'Clubs' }]; // A card that won't be drawn
+        const banker = createPerson('Banker', '', 0);
+        banker.hand = [{ value: 3, suit: 'Hearts' }, { value: 3, suit: 'Diamonds' }]; // Total of 6
+        const player = createPerson('Player', '', 1000);
+        player.hand = [{ value: 2, suit: 'Clubs' }, { value: 3, suit: 'Spades' }, { value: 5, suit: 'Diamonds' }]; // Third card not 6 or 7
+        await bankerHand(deck, banker, player);
+        expect(banker.hand.length).toBe(2); // Banker should not draw a third card
       });
     });
   
