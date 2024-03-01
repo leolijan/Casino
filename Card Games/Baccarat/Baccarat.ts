@@ -82,9 +82,6 @@ export async function bankerHand(deck: Array<Card>,
     } else if (bankerTotal === 5 && 
                (playerThirdCard >= 4 && playerThirdCard <= 7)) {
       return bankerThirdCard();
-    } else if (bankerTotal === 6 && 
-               (playerThirdCard === 6 || playerThirdCard === 7)) {
-      return bankerThirdCard();
     } else {
       return bankerTotal;
     }

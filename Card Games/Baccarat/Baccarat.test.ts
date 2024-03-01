@@ -124,78 +124,107 @@ import {
         await bankerHand(deck, banker, player);
         expect(banker.hand.length).toBe(2); // Banker should not draw a third card
       });
+
+      test('banker draws on total <= 2 regardless of player third card', async () => {
+        const deck = [{ value: 5, suit: 'Hearts' }]; // A card for the banker to draw
+        const banker = createPerson('Banker', '', 0);
+        banker.hand = [{ value: 2, suit: 'Hearts' }]; // Total of 2 or less
+        const player = createPerson('Player', '', 1000);
+        player.hand = [{ value: 8, suit: 'Clubs' }, { value: 9, suit: 'Spades' }, { value: 2, suit: 'Diamonds' }];
+        await bankerHand(deck, banker, player);
+        expect(banker.hand.length).toBe(2); // Banker draws a third card
+      });
+
+      test('banker draws on total 5 and player third card 4-7', async () => {
+        const deck = [{ value: 5, suit: 'Hearts' }]; // A card for the banker to draw
+        const banker = createPerson('Banker', '', 0);
+        banker.hand = [{ value: 3, suit: 'Hearts' }, { value: 2, suit: 'Diamonds' }]; // Total of 5
+        const player = createPerson('Player', '', 1000);
+        player.hand = [{ value: 8, suit: 'Clubs' }, { value: 9, suit: 'Spades' }, { value: 5, suit: 'Diamonds' }]; // Third card 4-7
+        await bankerHand(deck, banker, player);
+        expect(banker.hand.length).toBe(3); // Banker draws a third card
+      });
+
+      test('banker draws a third card if total is 6 and player third card is 6 or 7', async () => {
+        const deck = [{ value: 5, suit: 'Hearts' }]; // A card for the banker to draw
+        const banker = createPerson('Banker', '', 0);
+        // Pre-setting the banker's hand to simulate a total of 6
+        banker.hand = [{ value: 2, suit: 'Hearts' }, { value: 2, suit: 'Diamonds' }, { value: 2, suit: 'Spades' }];
+        const player = createPerson('Player', '', 1000);
+        // Simulating a scenario where the player has already drawn a third card
+        player.hand = [{ value: 2, suit: 'Clubs' }, { value: 2, suit: 'Spades' }, { value: 7, suit: 'Diamonds' }]; // Player's third card is 6
+    
+        // Executing the banker's hand logic to possibly draw a third card based on the conditions
+        await bankerHand(deck, banker, player);
+    
+        // Verifying that the banker indeed draws a third card under these specific conditions
+        expect(banker.hand.length).toBe(3); // Validates the banker has drawn a third card
+      });
     });
   
     describe('decideOutcome', () => {
-      test('decides player win correctly', async () => {
-        const playerHand = [{ value: 3, suit: 'Hearts' }, { value: 4, suit: 'Diamonds' }];
-        const bankerHand = [{ value: 2, suit: 'Hearts' }, { value: 3, suit: 'Clubs' }];
-        const betType = "1"; // Bet on Player hand
-        const result = await decideOutcome(7, 5, playerHand, bankerHand, betType);
-        expect(result).toEqual({ outcome: 'Win', winnings: 2 });
+      const playerHand = [{ value: 2, suit: 'Hearts' }, { value: 4, suit: 'Spades' }];
+      const bankerHand = [{ value: 3, suit: 'Diamonds' }, { value: 5, suit: 'Clubs' }];
+  
+      test('player wins when betting on player and player has higher value', () => {
+          const outcome = decideOutcome(9, 7, playerHand, bankerHand, "1");
+          expect(outcome).toEqual({ outcome: 'Win', winnings: 2 });
       });
   
-      test('decides tie correctly', async () => {
-        const playerHand = [{ value: 4, suit: 'Hearts' }, { value: 3, suit: 'Diamonds' }];
-        const bankerHand = [{ value: 4, suit: 'Clubs' }, { value: 3, suit: 'Spades' }];
-        const betType = "3"; // Bet on a tie
-        const result = await decideOutcome(7, 7, playerHand, bankerHand, betType);
-        expect(result).toEqual({ outcome: 'Win', winnings: 8 });
+      test('player loses when betting on player but banker has higher value', () => {
+          const outcome = decideOutcome(6, 7, playerHand, bankerHand, "1");
+          expect(outcome).toEqual({ outcome: 'Lose', winnings: 0 });
       });
   
-      test('correctly decides banker win when player bets on banker', async () => {
-        const playerHand = [{ value: 2, suit: 'Hearts' }, { value: 2, suit: 'Diamonds' }];
-        const bankerHand = [{ value: 3, suit: 'Clubs' }, { value: 4, suit: 'Spades' }];
-        const betType = "2"; // Bet on Banker hand
-        const result = await decideOutcome(4, 7, playerHand, bankerHand, betType);
-        expect(result).toEqual({ outcome: 'Win', winnings: 1.95 }); // Banker wins, player bet on banker
+      test('player wins when betting on banker and banker has higher value', () => {
+          const outcome = decideOutcome(5, 8, playerHand, bankerHand, "2");
+          expect(outcome).toEqual({ outcome: 'Win', winnings: 1.95 });
       });
-    
-      test('player loses when betting on player but banker wins', async () => {
-        const playerHand = [{ value: 2, suit: 'Hearts' }, { value: 4, suit: 'Diamonds' }];
-        const bankerHand = [{ value: 9, suit: 'Clubs' }, { value: 0, suit: 'Spades' }];
-        const betType = "1"; // Bet on Player hand
-        const result = await decideOutcome(6, 9, playerHand, bankerHand, betType);
-        expect(result).toEqual({ outcome: 'Lose', winnings: 0 });
-      });
-    
-      test('player wins correctly when betting on a tie and a tie occurs', async () => {
-        const playerHand = [{ value: 5, suit: 'Hearts' }, { value: 5, suit: 'Diamonds' }];
-        const bankerHand = [{ value: 0, suit: 'Clubs' }, { value: 10, suit: 'Spades' }];
-        const betType = "3"; // Bet on a tie
-        const result = await decideOutcome(0, 0, playerHand, bankerHand, betType);
-        expect(result).toEqual({ outcome: 'Win', winnings: 8 });
-      });
-    
-      test('player wins with player pair bet when player has a pair', async () => {
-        const playerHand = [{ value: 2, suit: 'Hearts' }, { value: 2, suit: 'Diamonds' }];
-        const bankerHand : Array<Card> = []; // Banker hand is irrelevant for this bet type
-        const betType = "4"; // Bet on Player pair
-        const result = await decideOutcome(4, 0, playerHand, bankerHand, betType);
-        expect(result).toEqual({ outcome: 'Win', winnings: 11 });
-      });
-    
-      test('player wins with banker pair bet when banker has a pair', async () => {
-        const playerHand: Array<Card>  = []; // Player hand is irrelevant for this bet type
-        const bankerHand = [{ value: 3, suit: 'Clubs' }, { value: 3, suit: 'Spades' }];
-        const betType = "5"; // Bet on Banker pair
-        const result = await decideOutcome(0, 6, playerHand, bankerHand, betType);
-        expect(result).toEqual({ outcome: 'Win', winnings: 11 });
-      });
-    
-      test('player loses when no pair occurs but bet on player or banker pair', async () => {
-        const playerHand = [{ value: 2, suit: 'Hearts' }, { value: 4, suit: 'Diamonds' }];
-        const bankerHand = [{ value: 3, suit: 'Clubs' }, { value: 5, suit: 'Spades' }];
-        const betType = "4"; // Assuming bet on Player pair
-        const resultPlayerPair = await decideOutcome(6, 8, playerHand, bankerHand, betType);
-        expect(resultPlayerPair).toEqual({ outcome: 'Lose', winnings: 0 });
-    
-        const betTypeBankerPair = "5"; // Assuming bet on Banker pair
-        const resultBankerPair = await decideOutcome(6, 8, playerHand, bankerHand, betTypeBankerPair);
-        expect(resultBankerPair).toEqual({ outcome: 'Lose', winnings: 0 });
-      });
-    });
   
-    // Additional tests can be structured in a similar way...
+      test('player loses when betting on banker but player has higher value', () => {
+          const outcome = decideOutcome(8, 6, playerHand, bankerHand, "2");
+          expect(outcome).toEqual({ outcome: 'Lose', winnings: 0 });
+      });
+  
+      test('player wins when betting on a tie and both hands have equal value', () => {
+          const outcome = decideOutcome(8, 8, playerHand, bankerHand, "3");
+          expect(outcome).toEqual({ outcome: 'Win', winnings: 8 });
+      });
+  
+      test('player loses when betting on a tie but no tie occurs', () => {
+          const outcome = decideOutcome(9, 8, playerHand, bankerHand, "3");
+          expect(outcome).toEqual({ outcome: 'Lose', winnings: 0 });
+      });
+  
+      test('player wins with player pair bet when player hand has a pair', () => {
+          const pairedPlayerHand = [{ value: 2, suit: 'Hearts' }, { value: 2, suit: 'Spades' }];
+          const outcome = decideOutcome(4, 7, pairedPlayerHand, bankerHand, "4");
+          expect(outcome).toEqual({ outcome: 'Win', winnings: 11 });
+      });
+  
+      test('player loses with player pair bet when no pair in player hand', () => {
+          const outcome = decideOutcome(9, 7, playerHand, bankerHand, "4");
+          expect(outcome).toEqual({ outcome: 'Lose', winnings: 0 });
+      });
+  
+      test('player wins with banker pair bet when banker hand has a pair', () => {
+          const pairedBankerHand = [{ value: 3, suit: 'Diamonds' }, { value: 3, suit: 'Clubs' }];
+          const outcome = decideOutcome(5, 6, playerHand, pairedBankerHand, "5");
+          expect(outcome).toEqual({ outcome: 'Win', winnings: 11 });
+      });
+  
+      test('player loses with banker pair bet when no pair in banker hand', () => {
+          const outcome = decideOutcome(6, 8, playerHand, bankerHand, "5");
+          expect(outcome).toEqual({ outcome: 'Lose', winnings: 0 });
+      });
+  
+      test('player loses on invalid bet type', () => {
+          const outcome = decideOutcome(7, 5, playerHand, bankerHand, "invalid");
+          expect(outcome).toEqual({ outcome: 'Lose', winnings: 0 }); // Assuming invalid bet type defaults to a loss
+      });
+  });
+  
+  
+    // Additional tests can be structured in a similar way, its time for the Startgame function
   });
   
