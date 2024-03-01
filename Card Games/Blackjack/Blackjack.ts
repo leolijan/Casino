@@ -70,7 +70,7 @@ export async function playerTurn(deck: Array<Card>,
     console.log("Blackjack! You win 1.5x your bet.");
     player.balance += bet * 1.5; // Award the player with 1.5 times their bet
     return false; // End the player's turn
-  }
+  } else {}
 
   // Player's decision-making loop
   while (playerTotal < 21) {
@@ -103,7 +103,7 @@ export async function playerTurn(deck: Array<Card>,
     console.log("Bust! You lose.");
     player.balance -= bet; // Deduct the bet for losing
     return false; // Player loses
-  }
+  } else {}
   return true; // Player stands without busting
 }
 
@@ -124,7 +124,7 @@ export async function dealerTurn(deck: Array<Card>,
   if (checkForBlackjack(dealer.hand)) {
     console.log("Dealer has Blackjack!");
     return 21; // Blackjack value
-  }
+  } else {}
 
   // Dealer draws cards until the total is 17 or higher
   while (dealerTotal < 17) {
@@ -161,7 +161,7 @@ export async function getBet(player: Person): Promise<number> {
     if (isNaN(bet) || bet <= 0 || bet > player.balance) {
       console.log("Invalid bet amount. Please enter a valid number " +
                   "within your balance.");
-    }
+    } else {}
   } while (isNaN(bet) || bet <= 0 || bet > player.balance);
   
   return bet; // Return the validated bet amount
@@ -225,7 +225,7 @@ export async function startGame(player: Person): Promise<void> {
     if (player.balance <= 0) {
       console.log("You've run out of funds! Game over.");
       break;
-    }
+    } else {}
 
     // Ask player if they want to play again
     const playAgainOptions: string = 

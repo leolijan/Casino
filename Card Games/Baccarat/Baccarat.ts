@@ -15,11 +15,9 @@ export function calculateHandValue(hand: Array<Card>): number {
   hand.forEach(card => {
     if (card.value >= 10 && card.value <= 13) {
       total += 0;
-    }
-    else if (card.value === 14) {
+    } else if (card.value === 14) {
       total += 1;
-    }
-    else {
+    } else {
       total += card.value;
     }
   });
