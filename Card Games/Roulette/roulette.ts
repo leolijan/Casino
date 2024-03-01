@@ -1,7 +1,7 @@
 import * as readline from 'readline';
 import { readUserInput } from '../../userInput/readUserInput';
 import { Person, createPerson } from '../../Player/Player';
-import { head, list, List, pair, tail, is_null, to_string as display_list } from '../../lib/list';
+import { head, list, List, pair, tail, is_null, to_string as display_list, empty_list } from '../../lib/list';
 
 
 // All possible bets
@@ -31,7 +31,7 @@ type Dozens = 4 | 5 | 6;
 // The rest of the bets with different odds depending on the specific bet. 
 type RestOfBets = "Single" | "Split" | "Street" | "Corner" | "DoubleStreet";
 
-let allBets: List<bet> = list();
+let allBets: List<bet> = empty_list();
 
 /** ODDS
  * single: 35:1
@@ -56,16 +56,26 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
                  [25,26,27], [28,29,30], [31,32,33], [34,35,36]];
 
 
+
+export async function startRoulette(person: Person): Promise<void> {
+    // could add print_options from login
+    console.log("WELCOME TO ROULETTE YOU HAVE " + person.balance.toString() + " DOLLARS");
+    const before = person.balance;
+    playerMove(person);
+}
+
+
 /**
  * Manages the player's move in the roulette game.
  * @param person The player represented as a Person object.
  */
 export async function playerMove(person: Person): Promise<void> {
     // could add print_options from login
-    const bet: bet = ["", 0, []];
     console.log("WELCOME TO ROULETTE YOU HAVE " + person.balance.toString() + " DOLLARS");
+    const before = person.balance;
 
-    await addBetAmount(person, bet);
+    const stake = await addBetAmount(person);
+    person.balance -= stake;
     //person add bet
 
     // type of bet:
@@ -73,14 +83,14 @@ export async function playerMove(person: Person): Promise<void> {
     // 2. even bets (RedBlack, EvenOdd, LowHigh)
     // 3. Columns or dozens
 
-    await buildABet(bet);
+    const bet: bet = await buildABet(stake);
     // place bets and register bets
     allBets = pair(bet, allBets);
 
     console.log("YOUR BET: ", bet)
     console.log("ALL BETS: ", display_list(allBets));
     
-    const prompt = "want to add a bet?: Yes(1) or No(2)\n";
+    const prompt = "Want to add a bet?: Yes(1) or No(2)\n";
     const userInput = await readUserInput(prompt, 2);
 
     if (userInput === "1") {
@@ -88,20 +98,31 @@ export async function playerMove(person: Person): Promise<void> {
     } else {
         // Spin the wheel and call the calculatewinnings functions 
         // and register the payout to the account
-        const rand = Math.ceil(Math.random() * 36);
-        console.log(rand);
-        console.log("balance after: ", 
-                    person.balance += calculateWinnings(allBets,rand));
+        const winningNumber = spin();
+        console.log("WINNING NUMBER IS: " + winningNumber);
+        console.log();
+        const winnings = calculateWinnings(allBets, winningNumber);
+        person.balance += winnings;
+        const delta = person.balance - before;
+        
+        const str = delta > 0 ? "YOU WON " + delta + " DOLLARS" : delta < 0 ? "YOU LOST " + Math.abs(delta) + " DOLLARS" : "YOU BROKE EVEN";
+        console.log(str);        
+        console.log("Balance after: ", 
+                    person.balance);
 
-        const prompt = "want to play more?: Yes(1) or No(2)\n";
+        const prompt = "Want to play more?: Yes(1) or No(2)\n";
         const userInput = await readUserInput(prompt, 2);
 
         if(userInput === "1") {
+            allBets = empty_list();
             await playerMove(person);
         }else{}
-        
-        // Choose to continue or leave to other games
     }
+}
+
+function spin(): number{
+    // 0-36
+    return Math.floor(Math.random()*37);
 }
 
 
@@ -111,15 +132,12 @@ export async function playerMove(person: Person): Promise<void> {
  * @param person The player represented as a Person object.
  * @param bet The bet details according to the bet type.
  */
-export async function addBetAmount(person: Person, bet: bet): Promise<void> {
+export async function addBetAmount(person: Person): Promise<stake> {
     const userInput = await readUserInput("How much would you like to bet? \n",
                                           person.balance);
     const stake = Number(userInput);
-    console.log(person.balance);
-    person.balance -= stake;
-    console.log(person.balance);
 
-    bet[1] = stake;
+    return stake;
 }
 
 /**
@@ -127,11 +145,15 @@ export async function addBetAmount(person: Person, bet: bet): Promise<void> {
  * selecting the type of bet.
  * @param bet The bet details according to the bet type.
  */
-export async function buildABet(bet: bet): Promise<void> {
+export async function buildABet(stake: stake): Promise<bet> {
+    console.log("\n---------BUILD A BET----------\n");
+    
     const prompt = "1. Numbers bet (single, split, street, corner, doublestreet)" +
                    "\n2. Even bets (RedBlack, EvenOdd, LowHigh)" +
                    "\n3. Columns or dozens\n";
     const userInput = await readUserInput(prompt, 3);
+    const bet: bet = ["", stake, []];
+    
 
     if (userInput === "1"){
         await numberBet(bet);
@@ -140,6 +162,8 @@ export async function buildABet(bet: bet): Promise<void> {
     } else {
         await columnsAndDozensBet(bet);
     }
+
+    return bet;
 }
 
 
@@ -149,16 +173,19 @@ export async function buildABet(bet: bet): Promise<void> {
  * @param bet The bet details according to the bet type.
  */
 export async function numberBet(bet: bet): Promise<void> {
-    const prompt = "Choose single (1), split (2), street (3), " +
-                   "corner (4) or doublestreet (5)\n";
-    let inp = await readUserInput(prompt, 5);
+    const prompt = "Choose: zero (1), single (2), split (3), street (4), " +
+                   "corner (5) or doublestreet (6)\n";
+    let inp = await readUserInput(prompt, 6);
 
-    if (inp === "1") {
+    if (inp === "1"){
+        bet[0] = "Single";
+        bet[2][0] = 0;
+    } else if (inp === "2") {
         // Single
         inp = await readUserInput("choose number: ", 36);
         bet[0] = "Single";
         bet[2][0] = Number(inp);
-    } else if (inp === "2") {
+    } else if (inp === "3") {
         // Split 
         let amount = 0;
         inp = await readUserInput("choose first number: ", 36);   
@@ -203,14 +230,14 @@ export async function numberBet(bet: bet): Promise<void> {
                     : numbers[second - 1];
 
         console.log(bet[2]);
-    } else if (inp === "3") {
+    } else if (inp === "4") {
         // Street 
         inp = await readUserInput("Choose street: (1-12): \n", 12); 
         bet[0] = "Street"; 
         bet[2][0] = Number(inp);
-    } else if (inp === "4") {
+    } else if (inp === "5") {
         // Corner
-        inp = await readUserInput("choose first number: \n", 36);
+        inp = await readUserInput("Choose first number: \n", 36);
         bet[0]= "Corner";
         const first = Number(inp);
         
@@ -222,13 +249,13 @@ export async function numberBet(bet: bet): Promise<void> {
             // Go left
             second = first - 3;
         } else {
-            inp = await readUserInput("go left (1) or right (2): \n", 2);  
+            inp = await readUserInput("Go left to " + (first-3).toString() + " (1) or right to " + (first-3).toString() + " (2): \n", 2);  
             second = Number(inp) === 1 ? first - 3 : first + 3;
         }
 
         // Up (first, first - 1, second, second - 1)
         // Down (first, first + 1, second, second + 1)
-        inp = await readUserInput("go up (1): ("+ (first).toString() + "," + 
+        inp = await readUserInput("Go up (1): ("+ (first).toString() + "," + 
                                   (first - 1).toString() + "," + 
                                   (second - 1).toString() + "," + 
                                   (second).toString() + ")" + " or down (2): (" + 
@@ -584,3 +611,5 @@ export function calcDozens(dozens: Dozens, stake: stake, number: number): number
         }
     } 
 }
+
+playerMove(createPerson("hej", "jsdiojids", 1000000000));
