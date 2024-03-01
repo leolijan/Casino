@@ -81,7 +81,7 @@ export function list<S>(...elements: Array<S>): List<S> {
  * @template T the element type
  * @returns the empty list of type T
  */
-function empty_list<T>(): List<T> {
+export function empty_list<T>(): List<T> {
     return null;
 }
 

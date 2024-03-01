@@ -1,15 +1,16 @@
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
 import { Person } from '../Player/Player';
-import { startGame as startBaccarat } from '../Card Games/Baccarat/Baccarat';
-import { startGame as startBlackjack } from '../Card Games/Blackjack/Blackjack';
-import { playerMove as startRoulette } from '../Card Games/Roulette/roulette';
+import { startGame as startBaccarat } from '../Games/Card Games/Baccarat/Baccarat';
+import { startGame as startBlackjack } from '../Games/Card Games/Blackjack/Blackjack';
+import { startGame as startRoulette } from '../Games/Roulette/roulette';
 import { readUserInput, readUserInputBasic } from '../userInput/readUserInput';
-
+import { splashScreen, printOptions } from '../lib/visuals';
+import { isValidPassword } from '../lib/Password';
 type AllUsers = { [username: string]: Person };
 
-const textfile: string = "user_information.json";
-let allUsers : AllUsers = {}; //Memonization :)
+const textfile: string = "../user_information.json";
+let allUsers : AllUsers = {}; //Memoization :)
 
 /**
  * Loads user data from a JSON file into the allUsers object. If the file does not exist or an error occurs,
@@ -24,7 +25,7 @@ function loadUserData(): void {
       allUsers = {};
     }
   }
-  
+
 /**
  * Saves the current state of allUsers object into a JSON file. If an error occurs during the save process,
  * the function logs an error message.
@@ -38,32 +39,6 @@ function saveUserData(): void {
     }
   }
   
-/**
- * Prints the casino splash screen/logo to the console.
- */
-function splashScreen(): void {
-    const logo: string = `
-      ███████████████████████████████████
-    ██                                   ██
-  ██                𝙄𝙏𝘾𝙖𝙨𝙞𝙣𝙤                ██
-    ██                                   ██
-      ███████████████████████████████████
-      `;
-    console.log(logo);
-  }
-  
-/**
- * Prints a list of options to the console. Each option is passed as an entry in an object,
- * where the key is the option number and the value is the description of the option.
- *
- * @param options An object containing key-value pairs of options.
- */
-function printOptions(options: { [key: string]: string }): void {
-    for (const [key, value] of Object.entries(options)) {
-      console.log(`${key}) ${value}`);
-    }
-  }
-
 /**
  * Handles the main menu for a logged-in user, allowing them to select a game to play, add money, or log out.
  * Depending on the user's choice, it will call the corresponding game start function or the insert_money function.
@@ -144,21 +119,7 @@ async function insert_money(username: string): Promise<void> {
     console.log(`$${amount} has been added to your account. Your new balance is $${allUsers[username].balance}.`);
   }
   
-/**
- * Validates a password based on predefined criteria: must include at least one uppercase letter,
- * one special character, and be at least 8 characters long.
- *
- * @param password The password string to validate.
- * @returns Returns true if the password meets the criteria, false otherwise.
- */
-function isValidPassword(password: string): boolean {
-    const hasUpperCase: boolean = /[A-Z]/.test(password);
-    const hasSpecialChar: boolean = /[\W_]/.test(password);
-    const isLongEnough: boolean = password.length >= 8;
-  
-    return hasUpperCase && hasSpecialChar && isLongEnough;
-  }
-  
+
 /**
  * Handles the login process, allowing a user to attempt to log in with a username and password.
  * Limits the number of attempts to prevent brute force attacks.
@@ -230,37 +191,7 @@ export async function newUser(): Promise<void> {
     }
   }
   
-/**
- * Writes login credentials of all users to a specified file.
- *
- * @param filename The name of the file to write the users' data to.
- * @param users An object containing user information.
- */
-export function writeLoginCredentials(filename: string, users: AllUsers): void {
-    try {
-      const data: string = JSON.stringify(users, null, 2);
-      fs.writeFileSync(filename, data);
-    } catch (err) {
-      console.error(`An error occurred: ${err}`);
-    }
-  }
-  
-  /**
-   * Reads login credentials from a specified file.
-   *
-   * @param filename The name of the file to read the users' data from.
-   * @returns An object containing the user information.
-   */
-  export function readLoginCredentials(filename: string): AllUsers {
-    try {
-      const data: string = fs.readFileSync(filename, 'utf8');
-      return JSON.parse(data);
-    } catch (err) {
-      console.error(`Error reading the file: ${err}`);
-      fs.writeFileSync(filename, '{}');
-      return {};
-    }
-  }
+
   
 /**
  * Displays the main menu of the application, allowing users to login, register, or quit the program.
