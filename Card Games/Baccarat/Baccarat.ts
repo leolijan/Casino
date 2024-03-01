@@ -33,7 +33,8 @@ export function calculateHandValue(hand: Array<Card>): number {
  * @param player A Person object representing the player.
  * @returns The total value of the player hand.
  */
-export async function playerHand(deck: Array<Card>, player: Person): Promise<number> {
+export async function playerHand(deck: Array<Card>, 
+                                 player: Person): Promise<number> {
   let playerTotal = await calculateHandValue(player.hand);
   
   // Depending on the value of the first two cards, either no more cards 
