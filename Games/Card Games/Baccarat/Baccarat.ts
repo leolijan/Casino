@@ -85,7 +85,6 @@ export async function bankerHand(deck: Array<Card>,
       return bankerTotal;
     }
   }
-
     
   // Depending on the value of the first two cards and the rules of the banker,
   // either no more cards will be drawn or a third card will be drawn.
@@ -116,8 +115,7 @@ export function decideOutcome(playerValue: number,
                               playerHand: Array<Card>, 
                               bankerHand: Array<Card>, 
                               betType: string)
-                              : { outcome: string; winnings: number } {
-                        
+                              : { outcome: string; winnings: number } {                
   let outcome = "";
   let winnings = 0;
 
@@ -169,7 +167,7 @@ export function decideOutcome(playerValue: number,
  * Starts and manages the Baccarat game.
  * @param player The player represented as a Person object.
  */
-export async function startGame(player: Person) {
+export async function startGame(player: Person): Promise<void> {
   // Starts the game by emptying the player's hand, creating a new deck suited
   // for Baccarat and creates a banker. 
   player.hand = [];

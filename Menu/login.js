@@ -43,8 +43,8 @@ var Baccarat_1 = require("../Games/Card Games/Baccarat/Baccarat");
 var Blackjack_1 = require("../Games/Card Games/Blackjack/Blackjack");
 var roulette_1 = require("../Games/Roulette/roulette");
 var readUserInput_1 = require("../userInput/readUserInput");
-var visuals_1 = require("../lib/visuals");
-var Password_1 = require("../lib/Password");
+var visuals_1 = require("../lib/visuals/visuals");
+var Password_1 = require("../lib/Password/Password");
 var textfile = "../user_information.json";
 var allUsers = {}; //Memoization :)
 /**
@@ -153,15 +153,16 @@ function insert_money(username) {
                         "2": "200",
                         "3": "500",
                         "4": "1000",
-                        "5": "Enter a custom amount"
+                        "5": "Enter a custom amount",
+                        "6": "exit"
                     };
                     (0, visuals_1.printOptions)(moneyOptions);
-                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option (or 'X' to cancel): ", 5)];
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option : ", 6)];
                 case 1:
                     choice = _a.sent();
-                    if (choice.toLowerCase() === 'x') {
-                        console.log("Money insertion cancelled.");
-                        return [2 /*return*/];
+                    if (choice === "6") {
+                        console.log("Exiting money insertion.");
+                        return [2 /*return*/]; // Exits the function early
                     }
                     amount = 0;
                     if (!(choice === "5")) return [3 /*break*/, 3];
