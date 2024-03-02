@@ -7,37 +7,43 @@ import { startGame as startRoulette } from '../Games/Roulette/roulette';
 import { readUserInput, readUserInputBasic } from '../userInput/readUserInput';
 import { splashScreen, printOptions } from '../lib/visuals/visuals';
 import { isValidPassword } from '../lib/Password/Password';
-type AllUsers = { [username: string]: Person };
 
-const textfile: string = "../user_information.json";
-let allUsers : AllUsers = {}; //Memoization :)
+export type AllUsers = { [username: string]: Person };
+
+
+const textfile: string = "../user_information.json";//the json file
+
 
 /**
- * Loads user data from a JSON file into the allUsers object. If the file does not exist or an error occurs,
- * the function logs an error message and initializes allUsers as an empty object.
+ * Loads user data from a JSON file into a provided object.
+ * @param filePath The path to the JSON file containing user data.
+ * @param allUsersObj The object into which user data will be loaded.
  */
-function loadUserData(): void {
+export function loadUserData(filePath: string, allUsers : AllUsers): void {
   try {
-    const data: string = fs.readFileSync(textfile, 'utf8');
-    allUsers = JSON.parse(data);
+    const data: string = fs.readFileSync(filePath, 'utf8');
+    const users = JSON.parse(data);
+    Object.assign(allUsers, users); // Load data into the provided object
   } catch (err) {
     console.error(`Error reading the file: ${err}`);
-    allUsers = {};
+    Object.assign(allUsers, {}); // Initialize as an empty object on error
   }
 }
 
 /**
- * Saves the current state of allUsers object into a JSON file. If an error occurs during the save process,
- * the function logs an error message.
+ * Saves the current state of a provided allUsers object into a JSON file.
+ * @param filePath The path to the JSON file where user data will be saved.
+ * @param allUsersObj The object containing user data to save.
  */
-function saveUserData(): void {
+export function saveUserData(filePath: string, allUsers : AllUsers): void {
   try {
     const data: string = JSON.stringify(allUsers, null, 2);
-    fs.writeFileSync(textfile, data);
+    fs.writeFileSync(filePath, data);
   } catch (err) {
     console.error(`An error occurred while saving user data: ${err}`);
   }
 }
+
   
 /**
  * Handles the main menu for a logged-in user, allowing them to select a game to play, add money, or log out.
@@ -45,7 +51,7 @@ function saveUserData(): void {
  *
  * @param user The username of the currently logged-in user.
  */
-export async function loggedIn(user: string): Promise<void> {
+export async function loggedIn(user: string, allUsers : AllUsers): Promise<void> {
   const options: {[key: string]: string} = {
       "1": "Blackjack",
       "2": "Baccarat",
@@ -67,12 +73,12 @@ export async function loggedIn(user: string): Promise<void> {
   } else if (choice === "3") {
       await startRoulette(allUsers[user]);
   } else if (choice === "4") {
-      await insert_money(user); // Call insert_money here
+      await insert_money(user, allUsers); // Call insert_money here
   } else if (choice === "5") {
       console.log("Logging out...");
-      return await menu() // Exit the loggedIn function to log out
+      return await menu(allUsers) // Exit the loggedIn function to log out
   }
-  await loggedIn(user); // Re-display the logged-in menu options
+  await loggedIn(user, allUsers); // Re-display the logged-in menu options
 }
 
 /**
@@ -81,7 +87,7 @@ export async function loggedIn(user: string): Promise<void> {
  *
  * @param username The username of the currently logged-in user.
  */
-async function insert_money(username: string): Promise<void> {
+export async function insert_money(username: string, allUsers : AllUsers): Promise<void> {
   console.log("Select the amount of money to insert:");
   const moneyOptions: { [key: string]: string } = {
     "1": "100",
@@ -125,7 +131,7 @@ async function insert_money(username: string): Promise<void> {
  * Handles the login process, allowing a user to attempt to log in with a username and password.
  * Limits the number of attempts to prevent brute force attacks.
  */
-export async function login(): Promise<void> {
+export async function login(allUsers : AllUsers): Promise<void> {
   let attempts: number = 0;
   const maxAttempts: number = 3;
   
@@ -139,7 +145,7 @@ export async function login(): Promise<void> {
       
       if (match) {
         console.log(`Welcome ${username}`);
-        await loggedIn(username);
+        await loggedIn(username, allUsers);
         break;
       } else {
         console.log("\nInvalid username or password");
@@ -150,24 +156,14 @@ export async function login(): Promise<void> {
   }
 
   console.log("Maximum login attempts reached. Please try again later.");
-  setTimeout(async () => await menu(), 3000);
+  setTimeout(async () => await menu(allUsers), 3000);
 }
   
 /**
  * Allows a new user to register by choosing a username and a password. It checks if the password meets
  * the required security standards and if the username is not already taken.
  */
-export async function newUser(): Promise<void> {
-<<<<<<< HEAD
-  console.log("Required standards: at least one uppercase letter, one special character, and at least 8 characters long.");  
-    while (true) {
-      const username: string = await readUserInputBasic("Choose your username: ");
-      const password: string = await readUserInputBasic("Choose your password: ");
-      const confirmedPassword: string = await readUserInputBasic("Confirm your password: ");
-  
-      if (!isValidPassword(password)) {
-        console.log("Password does not meet the required standards: at least one uppercase letter, one special character, and at least 8 characters long.");
-=======
+export async function newUser(allUsers : AllUsers): Promise<void> {
 
   while (true) {
     const username: string = await readUserInputBasic("Choose your username: ");
@@ -182,7 +178,6 @@ export async function newUser(): Promise<void> {
     if (password === confirmedPassword) {
       if (allUsers[username]) {
         console.log("Username already exists. Choose a different username.");
->>>>>>> f9d8f371fbcd540a3622899a7470c27fcd6f756b
         continue;
       }
 
@@ -204,13 +199,11 @@ export async function newUser(): Promise<void> {
   }
 }
   
-
-  
 /**
  * Displays the main menu of the application, allowing users to login, register, or quit the program.
  * It handles user input and redirects to the appropriate function based on the user's choice.
  */
-export async function menu(): Promise<void> {
+export async function menu(allUsers : AllUsers): Promise<void> {
   splashScreen();
   console.log();
   const menu_options: { [key: string]: string } = {
@@ -225,13 +218,13 @@ export async function menu(): Promise<void> {
   console.log(); // Add a newline for better formatting
 
   if (user_input === "1") {
-    await login();
+    await login(allUsers);
   } else if (user_input === "2") {
-    await newUser();
-    await login(); // Assume newUser logs the user in automatically after registration
+    await newUser(allUsers);
+    await login(allUsers); // Assume newUser logs the user in automatically after registration
   } else if (user_input === "3") {
     console.log("Exiting program...");
-    saveUserData(); // Save data only when exiting the program
+    saveUserData(textfile, allUsers); // Save data only when exiting the program
     process.exit();
   }
 }
@@ -240,9 +233,10 @@ export async function menu(): Promise<void> {
  * The main entry point of the application. It initializes the application by loading user data from a file
  * and then displays the main menu to the user.
  */
-async function main(): Promise<void> {
-  loadUserData();
-  await menu();
+async function main(allUsers : AllUsers = {}): Promise<void> {
+  loadUserData(textfile, allUsers);
+  await menu(allUsers);
 }
-  
+
+
 main();
