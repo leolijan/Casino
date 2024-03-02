@@ -88,16 +88,17 @@ async function insert_money(username: string): Promise<void> {
     "2": "200",
     "3": "500",
     "4": "1000",
-    "5": "Enter a custom amount"
+    "5": "Enter a custom amount",
+    "6": "exit"
   };
 
   printOptions(moneyOptions);
 
-  const choice: string = await readUserInput("Option (or 'X' to cancel): ", 5);
+  const choice: string = await readUserInput("Option : ", 6);
 
-  if (choice.toLowerCase() === 'x') {
-    console.log("Money insertion cancelled.");
-    return;
+  if (choice === "6") {
+    console.log("Exiting money insertion.");
+    return; // Exits the function early
   }
 
   let amount: number = 0;
