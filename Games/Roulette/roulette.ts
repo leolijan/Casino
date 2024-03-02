@@ -102,7 +102,6 @@ export async function playerMove(person: Person): Promise<void> {
     console.log("YOU HAVE " + person.balance + " DOLLARS TO BET WITH");
     
     const stake = await addBetAmount(person);
-    person.balance -= stake;
     //person add bet
 
     // type of bet:
@@ -141,6 +140,7 @@ export async function addBetAmount(person: Person): Promise<stake> {
     const userInput = await readUserInput("How much would you like to bet? \n",
                                           person.balance);
     const stake = Number(userInput);
+    person.balance -= stake;
 
     return stake;
 }

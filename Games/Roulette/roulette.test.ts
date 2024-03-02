@@ -1,7 +1,7 @@
 import { calcSingle, calcSplit, calcStreet, calcCorner, calcDoubleStreet, 
          bet ,calcRedOrBlack, calcEvenOrOdd, EvenOdd, Color, calcLowOrHigh, 
          LowHigh, calcColumns, calcDozens, playerMove, calcPayout, addBetAmount, 
-         BetType, calculateWinnings} from './roulette'; // Adjust import path as necessary
+         BetType, calculateWinnings, numberBet} from './roulette'; // Adjust import path as necessary
 import { head, list, List, pair, tail, is_null, to_string as display_list } from '../../lib/list';
 import { Person, createPerson } from '../../Player/Player';
 import * as userInputModule from '../../userInput/readUserInput'; // Adjust the import path as necessary
@@ -11,6 +11,7 @@ const splitBet: bet = ["Split", 100, [17, 20]];
 const streetBet: bet = ["Street", 100, [1]]; // Assuming street bet is identified by the first number in the street
 const cornerBet: bet = ["Corner", 100, [17, 18, 20, 21]];
 const doubleStreetBet: bet = ["DoubleStreet", 100, [1, 2]]; // Assuming double street bet is identified by the two streets' starting numbers
+
 
 describe('calcSingle', () => {
     test('wins on correct number', () => {
@@ -343,11 +344,26 @@ describe('addBetAmount', () => {
         const mockStake = 100;
         (userInputModule.readUserInput as jest.Mock).mockResolvedValue(mockStake.toString());
   
-        await addBetAmount(mockPerson);
+        mockBet[1] = await addBetAmount(mockPerson);
   
         expect(mockBet[1]).toBe(mockStake);
         expect(mockPerson.balance).toBe(400); // Assuming the person had a balance of 500 and bet 100
         expect(userInputModule.readUserInput).toHaveBeenCalledWith("How much would you like to bet? \n", 500);
+    });
+});
+
+describe('numberbet', () => {
+    test('', async () => {
+        const mockBet: bet = ['', 0, []];
+        const expectedBet: bet = ["Single",0,[0]];
+        (userInputModule.readUserInput as jest.Mock).mockResolvedValue("1");
+
+        await numberBet(mockBet);
+
+        expect(mockBet[0]).toBe(expectedBet[0]);
+        expect(mockBet[1]).toBe(expectedBet[1]);
+        expect(mockBet[2][0]).toBe(expectedBet[2][0]);
+
     });
 });
 

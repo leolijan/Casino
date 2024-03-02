@@ -121,7 +121,6 @@ function playerMove(person) {
                     return [4 /*yield*/, addBetAmount(person)];
                 case 1:
                     stake = _a.sent();
-                    person.balance -= stake;
                     return [4 /*yield*/, buildABet(stake)];
                 case 2:
                     bet = _a.sent();
@@ -163,6 +162,7 @@ function addBetAmount(person) {
                 case 1:
                     userInput = _a.sent();
                     stake = Number(userInput);
+                    person.balance -= stake;
                     return [2 /*return*/, stake];
             }
         });
@@ -231,7 +231,7 @@ function numberBet(bet) {
                     return [3 /*break*/, 19];
                 case 2:
                     if (!(inp === "2")) return [3 /*break*/, 4];
-                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("choose number: ", 36)];
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Choose number: ", 36)];
                 case 3:
                     // Single
                     inp = _a.sent();
@@ -241,7 +241,7 @@ function numberBet(bet) {
                 case 4:
                     if (!(inp === "3")) return [3 /*break*/, 7];
                     amount = 0;
-                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("choose first number: ", 36)];
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Choose first number: ", 36)];
                 case 5:
                     inp = _a.sent();
                     bet[0] = "Split";
@@ -309,7 +309,7 @@ function numberBet(bet) {
                     // Go left
                     second = first - 3;
                     return [3 /*break*/, 14];
-                case 12: return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Go left to " + (first - 3).toString() + " (1) or right to " + (first - 3).toString() + " (2): \n", 2)];
+                case 12: return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Go left to " + (first - 3).toString() + " (1) or right to " + (first + 3).toString() + " (2): \n", 2)];
                 case 13:
                     inp = _a.sent();
                     second = Number(inp) === 1 ? first - 3 : first + 3;
@@ -331,7 +331,7 @@ function numberBet(bet) {
                         : [first, first + 1, second, second + 1];
                     return [3 /*break*/, 19];
                 case 16:
-                    if (!(inp === "5")) return [3 /*break*/, 19];
+                    if (!(inp === "6")) return [3 /*break*/, 19];
                     // Doublestreet
                     bet[0] = "DoubleStreet";
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Choose first street (1-12):\n", 12)];

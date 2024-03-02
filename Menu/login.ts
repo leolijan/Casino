@@ -157,6 +157,7 @@ export async function login(): Promise<void> {
  * the required security standards and if the username is not already taken.
  */
 export async function newUser(): Promise<void> {
+  console.log("Required standards: at least one uppercase letter, one special character, and at least 8 characters long.");  
     while (true) {
       const username: string = await readUserInputBasic("Choose your username: ");
       const password: string = await readUserInputBasic("Choose your password: ");
