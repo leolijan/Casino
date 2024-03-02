@@ -36,15 +36,21 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     }
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.menu = exports.readLoginCredentials = exports.writeLoginCredentials = exports.newUser = exports.login = exports.loggedIn = void 0;
+exports.menu = exports.newUser = exports.login = exports.loggedIn = void 0;
 var bcrypt = require("bcrypt");
 var fs = require("fs");
-var Baccarat_1 = require("../Card Games/Baccarat/Baccarat");
-var Blackjack_1 = require("../Card Games/Blackjack/Blackjack");
-var roulette_1 = require("../Card Games/Roulette/roulette");
+var Baccarat_1 = require("../Games/Card Games/Baccarat/Baccarat");
+var Blackjack_1 = require("../Games/Card Games/Blackjack/Blackjack");
+var roulette_1 = require("../Games/Roulette/roulette");
 var readUserInput_1 = require("../userInput/readUserInput");
-var textfile = "user_information.json";
-var allUsers = {};
+var visuals_1 = require("../lib/visuals");
+var Password_1 = require("../lib/Password");
+var textfile = "../user_information.json";
+var allUsers = {}; //Memoization :)
+/**
+ * Loads user data from a JSON file into the allUsers object. If the file does not exist or an error occurs,
+ * the function logs an error message and initializes allUsers as an empty object.
+ */
 function loadUserData() {
     try {
         var data = fs.readFileSync(textfile, 'utf8');
@@ -55,6 +61,10 @@ function loadUserData() {
         allUsers = {};
     }
 }
+/**
+ * Saves the current state of allUsers object into a JSON file. If an error occurs during the save process,
+ * the function logs an error message.
+ */
 function saveUserData() {
     try {
         var data = JSON.stringify(allUsers, null, 2);
@@ -64,16 +74,12 @@ function saveUserData() {
         console.error("An error occurred while saving user data: ".concat(err));
     }
 }
-function splashScreen() {
-    var logo = "\n            \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n          \u2588\u2588                                   \u2588\u2588\n        \u2588\u2588                \uD835\uDE44\uD835\uDE4F\uD835\uDE3E\uD835\uDE56\uD835\uDE68\uD835\uDE5E\uD835\uDE63\uD835\uDE64                \u2588\u2588\n          \u2588\u2588                                   \u2588\u2588\n            \u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\u2588\n            ";
-    console.log(logo);
-}
-function printOptions(options) {
-    for (var _i = 0, _a = Object.entries(options); _i < _a.length; _i++) {
-        var _b = _a[_i], key = _b[0], value = _b[1];
-        console.log("".concat(key, ") ").concat(value));
-    }
-}
+/**
+ * Handles the main menu for a logged-in user, allowing them to select a game to play, add money, or log out.
+ * Depending on the user's choice, it will call the corresponding game start function or the insert_money function.
+ *
+ * @param user The username of the currently logged-in user.
+ */
 function loggedIn(user) {
     return __awaiter(this, void 0, void 0, function () {
         var options, choice;
@@ -87,7 +93,7 @@ function loggedIn(user) {
                         "4": "Add Money",
                         "5": "Log Out"
                     };
-                    printOptions(options);
+                    (0, visuals_1.printOptions)(options);
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 5)];
                 case 1:
                     choice = _a.sent();
@@ -105,7 +111,7 @@ function loggedIn(user) {
                     return [3 /*break*/, 11];
                 case 5:
                     if (!(choice === "3")) return [3 /*break*/, 7];
-                    return [4 /*yield*/, (0, roulette_1.playerMove)(allUsers[user])];
+                    return [4 /*yield*/, (0, roulette_1.startGame)(allUsers[user])];
                 case 6:
                     _a.sent();
                     return [3 /*break*/, 11];
@@ -129,6 +135,12 @@ function loggedIn(user) {
     });
 }
 exports.loggedIn = loggedIn;
+/**
+ * Prompts the user to insert money into their account. The user can select a predefined amount or enter a custom amount.
+ * If the entered amount is valid, it is added to the user's balance.
+ *
+ * @param username The username of the currently logged-in user.
+ */
 function insert_money(username) {
     return __awaiter(this, void 0, void 0, function () {
         var moneyOptions, choice, amount, customAmountStr;
@@ -143,7 +155,7 @@ function insert_money(username) {
                         "4": "1000",
                         "5": "Enter a custom amount"
                     };
-                    printOptions(moneyOptions);
+                    (0, visuals_1.printOptions)(moneyOptions);
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option (or 'X' to cancel): ", 5)];
                 case 1:
                     choice = _a.sent();
@@ -179,12 +191,10 @@ function insert_money(username) {
         });
     });
 }
-function isValidPassword(password) {
-    var hasUpperCase = /[A-Z]/.test(password);
-    var hasSpecialChar = /[\W_]/.test(password); // This regex matches any non-word character plus underscore, adjust as needed for specific "special" characters
-    var isLongEnough = password.length >= 8;
-    return hasUpperCase && hasSpecialChar && isLongEnough;
-}
+/**
+ * Handles the login process, allowing a user to attempt to log in with a username and password.
+ * Limits the number of attempts to prevent brute force attacks.
+ */
 function login() {
     return __awaiter(this, void 0, void 0, function () {
         var attempts, maxAttempts, username, submittedPassword, match;
@@ -197,7 +207,7 @@ function login() {
                     _a.label = 1;
                 case 1:
                     if (!(attempts < maxAttempts)) return [3 /*break*/, 10];
-                    attempts = attempts + 1;
+                    attempts += 1;
                     return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Username: ")];
                 case 2:
                     username = _a.sent();
@@ -219,7 +229,6 @@ function login() {
                     _a.label = 7;
                 case 7: return [3 /*break*/, 9];
                 case 8:
-                    //Better to safty to not know if password or username is wrong
                     console.log("\nInvalid username or password");
                     _a.label = 9;
                 case 9: return [3 /*break*/, 1];
@@ -230,16 +239,17 @@ function login() {
                             case 0: return [4 /*yield*/, menu()];
                             case 1: return [2 /*return*/, _a.sent()];
                         }
-                    }); }); }, 3000); // Give user time to read the message
-                    return [4 /*yield*/, menu()];
-                case 11:
-                    _a.sent();
+                    }); }); }, 3000);
                     return [2 /*return*/];
             }
         });
     });
 }
 exports.login = login;
+/**
+ * Allows a new user to register by choosing a username and a password. It checks if the password meets
+ * the required security standards and if the username is not already taken.
+ */
 function newUser() {
     return __awaiter(this, void 0, void 0, function () {
         var username, password, confirmedPassword, saltRounds, hash;
@@ -256,10 +266,8 @@ function newUser() {
                     return [4 /*yield*/, (0, readUserInput_1.readUserInputBasic)("Confirm your password: ")];
                 case 3:
                     confirmedPassword = _a.sent();
-                    if (!isValidPassword(password)) {
-                        console.log("Password does not meet the required standards:");
-                        console.log("Password must include at least one uppercase letter, one special character, and be at least 8 characters long.");
-                        // If the password is invalid, provide the opportunity to enter the details again without exiting the function
+                    if (!(0, Password_1.isValidPassword)(password)) {
+                        console.log("Password does not meet the required standards: at least one uppercase letter, one special character, and at least 8 characters long.");
                         return [3 /*break*/, 0];
                     }
                     if (!(password === confirmedPassword)) return [3 /*break*/, 5];
@@ -278,12 +286,9 @@ function newUser() {
                         hand: []
                     };
                     console.log("Registration successful");
-                    // Do not save here, saving is handled in menu when exiting
                     return [3 /*break*/, 7];
                 case 5:
-                    console.log("The two passwords are not identical");
-                    console.log("Try again!");
-                    console.log();
+                    console.log("The two passwords are not identical. Try again!\n");
                     _a.label = 6;
                 case 6: return [3 /*break*/, 0];
                 case 7: return [2 /*return*/];
@@ -292,42 +297,24 @@ function newUser() {
     });
 }
 exports.newUser = newUser;
-function writeLoginCredentials(filename, users) {
-    try {
-        var data = JSON.stringify(users, null, 2);
-        fs.writeFileSync(filename, data);
-    }
-    catch (err) {
-        console.error("An error occurred: ".concat(err));
-    }
-}
-exports.writeLoginCredentials = writeLoginCredentials;
-function readLoginCredentials(filename) {
-    try {
-        var data = fs.readFileSync(filename, 'utf8');
-        return JSON.parse(data);
-    }
-    catch (err) {
-        console.error("Error reading the file: ".concat(err));
-        fs.writeFileSync(filename, '{}');
-        return {};
-    }
-}
-exports.readLoginCredentials = readLoginCredentials;
+/**
+ * Displays the main menu of the application, allowing users to login, register, or quit the program.
+ * It handles user input and redirects to the appropriate function based on the user's choice.
+ */
 function menu() {
     return __awaiter(this, void 0, void 0, function () {
         var menu_options, user_input;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    splashScreen();
+                    (0, visuals_1.splashScreen)();
                     console.log();
                     menu_options = {
                         "1": "Login",
                         "2": "Register",
                         "3": "Quit"
                     };
-                    printOptions(menu_options);
+                    (0, visuals_1.printOptions)(menu_options);
                     return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Option: ", 3)];
                 case 1:
                     user_input = _a.sent();
@@ -335,16 +322,16 @@ function menu() {
                     if (!(user_input === "1")) return [3 /*break*/, 3];
                     return [4 /*yield*/, login()];
                 case 2:
-                    _a.sent(); // Adjusted to use allUsers
+                    _a.sent();
                     return [3 /*break*/, 7];
                 case 3:
                     if (!(user_input === "2")) return [3 /*break*/, 6];
                     return [4 /*yield*/, newUser()];
                 case 4:
                     _a.sent();
-                    return [4 /*yield*/, login()]; // newUser function will be adjusted to use allUsers
+                    return [4 /*yield*/, login()];
                 case 5:
-                    _a.sent(); // newUser function will be adjusted to use allUsers
+                    _a.sent(); // Assume newUser logs the user in automatically after registration
                     return [3 /*break*/, 7];
                 case 6:
                     if (user_input === "3") {
@@ -359,6 +346,10 @@ function menu() {
     });
 }
 exports.menu = menu;
+/**
+ * The main entry point of the application. It initializes the application by loading user data from a file
+ * and then displays the main menu to the user.
+ */
 function main() {
     return __awaiter(this, void 0, void 0, function () {
         return __generator(this, function (_a) {
