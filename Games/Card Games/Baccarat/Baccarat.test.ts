@@ -337,8 +337,7 @@ describe("Baccarat startGame function", () => {
     (readUserInput as jest.Mock).mockImplementation(() => Promise.resolve("100"));
   });
 
-  test("completes a game cycle with player betting and making choices", 
-       async () => {
+  test("completes a game cycle with player betting and making choices", async () => {
     await startGame(mockPlayer);
     expect(mockPlayer.hand.length).toBeGreaterThanOrEqual(2);
     expect(mockPlayer.balance).not.toBe(1000);
@@ -355,9 +354,19 @@ describe("Baccarat startGame function", () => {
     await startGame(mockPlayer);
     expect(readUserInput).toHaveBeenCalledTimes(5);
   });
-
-  test("ensures the game ends correctly when player chooses not to continue", 
-       async () => {
+  
+  test("player chooses to play again", async () => {
+    (readUserInput as jest.Mock)
+      .mockResolvedValueOnce("100")
+      .mockResolvedValueOnce("1")
+      .mockResolvedValueOnce("1")
+      .mockResolvedValueOnce("100")
+      .mockResolvedValueOnce("1")
+      .mockResolvedValueOnce("2");
+    await startGame(mockPlayer);
+    expect(readUserInput).toHaveBeenCalledTimes(5);
+  });
+  test("ensures the game ends correctly when player chooses not to continue", async () => {
     (readUserInput as jest.Mock).mockResolvedValueOnce("no");
     await startGame(mockPlayer);
     expect(true).toBe(true); // Placeholder for end game verification
@@ -373,5 +382,6 @@ describe("Baccarat startGame function", () => {
     expect(mockPlayer.balance).toBe(0);
     expect(console.log).toHaveBeenCalledWith("You've run out of funds! Game over.");
   });
+
 });
 
