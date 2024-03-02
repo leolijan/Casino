@@ -5,8 +5,8 @@ import { startGame as startBaccarat } from '../Games/Card Games/Baccarat/Baccara
 import { startGame as startBlackjack } from '../Games/Card Games/Blackjack/Blackjack';
 import { startGame as startRoulette } from '../Games/Roulette/roulette';
 import { readUserInput, readUserInputBasic } from '../userInput/readUserInput';
-import { splashScreen, printOptions } from '../lib/visuals';
-import { isValidPassword } from '../lib/Password';
+import { splashScreen, printOptions } from '../lib/visuals/visuals';
+import { isValidPassword } from '../lib/Password/Password';
 type AllUsers = { [username: string]: Person };
 
 const textfile: string = "../user_information.json";

@@ -19,9 +19,6 @@ export async function readUserInput(prompt: string,
         rl.question(prompt, (answer) => {
             rl.close();
             resolve(answer);
-            if(answer === "x" || answer === "X") {
-                process.exit();
-            }
             if(!check(answer, max)){
                 console.log("WRONG INPUT");
                 isValidInput = false;
