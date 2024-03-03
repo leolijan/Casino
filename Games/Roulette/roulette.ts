@@ -57,6 +57,12 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
 
 
 
+/**
+ * Acts as the game loop for roulette.
+ * @param person The player represented as a Person object.
+ * @param allBets All bets that the player has chosen before the spin 
+ * which is set to empty at the start of the game
+ */                 
 export async function startGame(person: Person, allBets: List<bet> = empty_list()): Promise<void> {
     // could add print_options from login
     console.log("WELCOME TO ROULETTE YOU HAVE " + person.balance.toString() + " DOLLARS");
@@ -77,6 +83,13 @@ export async function startGame(person: Person, allBets: List<bet> = empty_list(
     }
 }
 
+/**
+ * Manages all logic needed for the actions to be taken between
+ * player moves 
+ * @param person The player represented as a Person object.
+ * @param before amount of money the player had before playing
+ * @param allBets a list of bets submitted by the player
+ */
 export function computerMove(person: Person, before: number, allBets: List<bet>){
     // Spin the wheel and call the calculatewinnings functions 
         // and register the payout to the account
@@ -97,6 +110,7 @@ export function computerMove(person: Person, before: number, allBets: List<bet>)
 /**
  * Manages the player's move in the roulette game.
  * @param person The player represented as a Person object.
+ * @param allBets a list of bets submitted by the player
  */
 export async function playerMove(person: Person, allBets: List<bet>): Promise<void> {
     console.log("YOU HAVE " + person.balance + " DOLLARS TO BET WITH");
@@ -124,6 +138,10 @@ export async function playerMove(person: Person, allBets: List<bet>): Promise<vo
     } else {}
 }
 
+/**
+ * randomizes a number between 0-36 and returns it
+ * @return number between 0 and 36
+ */
 export function spin(): number{
     // 0-36
     return Math.floor(Math.random()*37);
@@ -134,7 +152,7 @@ export function spin(): number{
  * Prompts the player to input the amount of money they would like to bet
  * and then removes that amount from their wallet balance. 
  * @param person The player represented as a Person object.
- * @param bet The bet details according to the bet type.
+ * @returns 
  */
 export async function addBetAmount(person: Person): Promise<stake> {
     const userInput = await readUserInput("How much would you like to bet? \n",
@@ -147,8 +165,9 @@ export async function addBetAmount(person: Person): Promise<stake> {
 
 /**
  * Prompts the player to build a bet of their choice by
- * selecting the type of bet.
- * @param bet The bet details according to the bet type.
+ * selecting the type of bet and returns it
+ * @param stake amount of money betted by the player
+ * @returns bet
  */
 export async function buildABet(stake: stake): Promise<bet> {
     console.log("\n---------BUILD A BET----------\n");
@@ -367,7 +386,7 @@ export async function columnsAndDozensBet(bet: bet): Promise<void>{
 /**
  * Calculates the total winnings for a player based on their bets placed
  * and the winning number each time. 
- * @param bets An array of bets placed, where each bet is 
+ * @param bets A list of bets placed, where each bet is 
  *             represented by [BetType, stake, Array<number>].
  * @param number The winning number in the roulette game.
  * @returns The total payout amount.
