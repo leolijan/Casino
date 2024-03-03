@@ -90,7 +90,7 @@ export async function startGame(person: Person, allBets: List<bet> = empty_list(
  * @param before amount of money the player had before playing
  * @param allBets a list of bets submitted by the player
  */
-export function computerMove(person: Person, before: number, allBets: List<bet>){
+export function computerMove(person: Person, before: number, allBets: List<bet>): void {
     // Spin the wheel and call the calculatewinnings functions 
         // and register the payout to the account
         const winningNumber = spin();
