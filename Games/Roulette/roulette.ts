@@ -31,7 +31,7 @@ type Dozens = 4 | 5 | 6;
 // The rest of the bets with different odds depending on the specific bet. 
 type RestOfBets = "Single" | "Split" | "Street" | "Corner" | "DoubleStreet";
 
-let allBets: List<bet> = empty_list();
+
 
 /** ODDS
  * single: 35:1
@@ -57,14 +57,14 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
 
 
 
-export async function startGame(person: Person): Promise<void> {
+export async function startGame(person: Person, allBets: List<bet> = empty_list()): Promise<void> {
     // could add print_options from login
     console.log("WELCOME TO ROULETTE YOU HAVE " + person.balance.toString() + " DOLLARS");
     while(true){
         const before = person.balance;
-        await playerMove(person);
+        await playerMove(person, allBets);
 
-        computerMove(person, before);
+        computerMove(person, before, allBets);
 
         const prompt = "Want to play more?: Yes(1) or No(2)\n";
         const userInput = await readUserInput(prompt, 2);
@@ -77,7 +77,7 @@ export async function startGame(person: Person): Promise<void> {
     }
 }
 
-function computerMove(person: Person, before: number){
+export function computerMove(person: Person, before: number, allBets: List<bet>){
     // Spin the wheel and call the calculatewinnings functions 
         // and register the payout to the account
         const winningNumber = spin();
@@ -98,7 +98,7 @@ function computerMove(person: Person, before: number){
  * Manages the player's move in the roulette game.
  * @param person The player represented as a Person object.
  */
-export async function playerMove(person: Person): Promise<void> {
+export async function playerMove(person: Person, allBets: List<bet>): Promise<void> {
     console.log("YOU HAVE " + person.balance + " DOLLARS TO BET WITH");
     
     const stake = await addBetAmount(person);
@@ -120,11 +120,11 @@ export async function playerMove(person: Person): Promise<void> {
     const userInput = await readUserInput(prompt, 2);
 
     if (userInput === "1") {
-        await playerMove(person);
+        await playerMove(person, allBets);
     } else {}
 }
 
-function spin(): number{
+export function spin(): number{
     // 0-36
     return Math.floor(Math.random()*37);
 }
@@ -614,4 +614,3 @@ export function calcDozens(dozens: Dozens, stake: stake, number: number): number
     } 
 }
 
-//startGame(createPerson("hej", "jsdiojids", 1000000000));
