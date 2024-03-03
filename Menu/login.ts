@@ -164,7 +164,6 @@ export async function login(allUsers : AllUsers): Promise<void> {
  * the required security standards and if the username is not already taken.
  */
 export async function newUser(allUsers : AllUsers): Promise<void> {
-
   while (true) {
     const username: string = await readUserInputBasic("Choose your username: ");
     const password: string = await readUserInputBasic("Choose your password: ");
