@@ -1,7 +1,7 @@
 import { calcSingle, calcSplit, calcStreet, calcCorner, calcDoubleStreet, 
          bet ,calcRedOrBlack, calcEvenOrOdd, EvenOdd, Color, calcLowOrHigh, 
          LowHigh, calcColumns, calcDozens, playerMove, calcPayout, addBetAmount,
-         BetType, calculateWinnings, numberBet, columnsAndDozensBet, evenBets, buildABet, spin} from './roulette'; 
+         BetType, calculateWinnings, numberBet, columnsAndDozensBet, evenBets, buildABet, spin, startGame, computerMove} from './roulette'; 
 import { head, list, List, pair, tail, is_null, to_string as display_list, empty_list} from '../../lib/list';
 import { Person, createPerson } from '../../Player/Player';
 import * as userInputModule from '../../userInput/readUserInput'; 
@@ -968,40 +968,66 @@ describe('buildABet', () => {
 });
 
 describe('playerMove', () => {
-    let person : Person;
+    let person: Person;
+    let allBets: List<bet>;
+
     beforeEach(() => {
         jest.clearAllMocks();
         person = createPerson('Test Player', '', 1000); // Assume this function creates a person object with a name and balance
-        // Assuming allBets can be reset to an empty state
+        allBets = empty_list(); // Reset allBets to an empty state before each test
     });
 
-    test('processes a single bet and does not add another', async () => {
-        // Mocking user input for bet amount, bet type, and decision not to add another bet
-        let allBets: List<bet> = empty_list();
+    test('processes a bet then player choose to add antoher bet', async () => {
         (userInputModule.readUserInput as jest.Mock)
             .mockResolvedValueOnce("100") // Bet amount
+            .mockResolvedValueOnce("1")
             .mockResolvedValueOnce("1") // Bet type, e.g., "Numbers bet"
-            .mockResolvedValueOnce("2"); // User chooses not to add another bet
-
-        // Assuming addBetAmount, buildABet are external functions you can mock. If not, adjust strategy accordingly.
-        // Mocking the effects of addBetAmount and buildABet
-        // For simplicity in this example, we won't detail mocking their internal logic but focus on the sequence.
-
+            .mockResolvedValueOnce("1") // User chooses not to add another bet
+            .mockResolvedValueOnce("100") // Bet amount
+            .mockResolvedValueOnce("1")
+            .mockResolvedValueOnce("1") // Bet type, e.g., "Numbers bet"
+            .mockResolvedValueOnce("2");//Player chooses not to add another bet
+    
         await playerMove(person, allBets);
-
-        // Verifying that the person's balance is updated
+    
         expect(person.balance).toBeLessThanOrEqual(900); // Assuming the bet amount is subtracted from the initial balance
-        // Verifying that a bet has been added
-        expect(allBets.length).toBeGreaterThan(0); 
-        // Verifying the correct number of prompts
-        expect(userInputModule.readUserInput).toHaveBeenCalledTimes(3);
+        expect(userInputModule.readUserInput).toHaveBeenCalledTimes(8);
+        expect(userInputModule.readUserInput).toHaveBeenCalledWith("Want to add a bet?: Yes(1) or No(2)\n", 2);
+    });
+});
+
+describe('startGame', () => {
+    let person: Person;
+    let allBets: List<bet>;
+
+    beforeEach(() => {
+        jest.clearAllMocks();
+        person = createPerson('Test Player', '', 1000);
     });
 
-    // To test adding multiple bets, you would ideally simulate recursion within `playerMove`.
-    // This could involve more complex mocking to simulate the user choosing to add another bet.
-    // Such a test might look conceptually similar to the above but would include additional cycles
-    // of mockResolvedValueOnce calls to `readUserInput` to simulate the user adding more bets.
+    test('two full games after one another', async () => {
+        jest.mock('./roulette', () => ({
+            spin: jest.fn().mockReturnValue(3)
+        }));
+        
+        (userInputModule.readUserInput as jest.Mock)
+            .mockResolvedValueOnce("100") // First bet amount
+            .mockResolvedValueOnce("1") // numbersbet
+            .mockResolvedValueOnce("1") // Single: 0
+            .mockResolvedValueOnce("2") // Chooses to not add another bet
+            .mockResolvedValueOnce("1") //Chooses to play again
+            .mockResolvedValueOnce("100") // First bet amount
+            .mockResolvedValueOnce("1") // numbersbet
+            .mockResolvedValueOnce("1") // Single: 0
+            .mockResolvedValueOnce("2") // Chooses to not add another bet
+            .mockResolvedValueOnce("2") //chooses to not play again
 
-    // Additional tests should include simulating different bet types by changing the second mockResolvedValueOnce call.
-    // You might also test edge cases, such as invalid inputs where applicable, to ensure robustness.
+        await startGame(person);
+
+        expect(person.balance).toBe(800); // Assuming the bet amount is subtracted two times
+        expect(userInputModule.readUserInput).toHaveBeenCalledTimes(10); // Ensure loop exits properly
+    });
+
+    
 });
+
