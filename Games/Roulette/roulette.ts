@@ -345,7 +345,7 @@ export async function columnsAndDozensBet(bet: bet): Promise<void>{
             bet[0] = 1;
         } else if (inp === "2") {
             bet[0] = 2;
-        } else if (inp === "3") {
+        } else if (inp === "3") {//This line 
             bet[0] = 3;
         } else {}
     } else if (inp === "2") {
@@ -357,7 +357,7 @@ export async function columnsAndDozensBet(bet: bet): Promise<void>{
             bet[0] = 4;
         } else if (inp === "2") {
             bet[0] = 5;
-        } else if (inp === "3") {
+        } else if (inp === "3") {//This line
             bet[0] = 6;
         } else {}
     } else {}   
@@ -394,13 +394,13 @@ export function calcPayout(bet: bet, number: number): number {
            ? calcSingle(bet[2], bet[1], number) 
            : typeOfBet === "Split" 
            ? calcSplit(bet[2], bet[1], number) 
-           : typeOfBet === "Street" 
+           : typeOfBet === "Street"
            ? calcStreet(bet[2], bet[1], number) 
            : typeOfBet === "Corner" 
            ? calcCorner(bet[2], bet[1], number) 
            : typeOfBet === "DoubleStreet" 
            ? calcDoubleStreet(bet[2], bet[1], number) 
-           : typeOfBet === ("Red" || "Black") 
+           : typeOfBet === ("Red" || "Black") //here
            ? calcRedOrBlack(typeOfBet, bet[1], number) 
            : typeOfBet === ("Even" || "Odd") 
            ? calcEvenOrOdd(typeOfBet, bet[1], number) 
@@ -408,7 +408,7 @@ export function calcPayout(bet: bet, number: number): number {
            ? calcLowOrHigh(typeOfBet, bet[1], number) 
            : typeOfBet ===  (1 || 2 || 3) 
            ? calcColumns(typeOfBet, bet[1], number) 
-           : typeOfBet ===  (4 || 5 || 6) 
+           : typeOfBet ===  (4 || 5 || 6) //to here
            ? calcDozens(typeOfBet, bet[1], number) 
            : 0;
 }

@@ -485,7 +485,6 @@ describe('calcPayout', () => {
     // Example bet setup for tests
     const singleBet: bet = ["Single", 100, [17]];
     const number = 17; // Winning number for this test case
-  
     test('correctly calculates payout for a Single bet', () => {
       const payout = calcPayout(singleBet, number);
       expect(payout).toBe(3600); // Assuming the payout for a Single bet is stake * 36
@@ -499,8 +498,69 @@ describe('calcPayout', () => {
       expect(payout).toBe(1800); // Assuming the payout for a Split bet is stake * 18
     });
   
-    // Continue with tests for Street, Corner, DoubleStreet, Red/Black, Even/Odd, Low/High, Columns, Dozens
-  
+    // Corner Bet
+    const cornerBet: bet = ["Corner", 100, [1, 2, 4, 5]]; // Assuming bet on these corner numbers
+    test('correctly calculates payout for a Corner bet', () => {
+    const payout = calcPayout(cornerBet, 4); // Winning number in the corner
+    expect(payout).toBe(800); // Assuming the payout for a Corner bet is stake * 8
+    });
+
+    // Double Street Bet
+    const doubleStreetBet: bet = ["DoubleStreet", 100, [1, 4]]; // Assuming bet on the first and second street
+    test('correctly calculates payout for a Double Street bet', () => {
+    const payout = calcPayout(doubleStreetBet, 6); // Winning number in the second street
+    expect(payout).toBe(600); // Assuming the payout for a Double Street bet is stake * 6
+    });
+
+    // Red/Black Bet
+    const redBet: bet = [Color.Red, 100, []];
+    test('correctly calculates payout for a Red bet', () => {
+    const payout = calcPayout(redBet, 3); // Assuming 3 is a red number
+    expect(payout).toBe(200); // Assuming the payout for a Red/Black bet is stake * 2
+    });
+
+    // Red/Black Bet
+    const blackBet: bet = [Color.Black, 100, []];
+    test('correctly calculates payout for a Black bet', () => {
+    const payout = calcPayout(blackBet, 3); 
+    expect(payout).toBe(0); 
+    });
+
+    // Even/Odd Bet
+    const evenBet: bet = [EvenOdd.Even, 100, []];
+    test('correctly calculates payout for an Even bet', () => {
+    const payout = calcPayout(evenBet, 4); // 4 is an even number
+    expect(payout).toBe(200); // Assuming the payout for an Even/Odd bet is stake * 2
+    });
+
+    // Even/Odd Bet
+    const oddBet: bet = [EvenOdd.Odd, 100, []];
+    test('correctly calculates payout for an Odd bet', () => {
+    const payout = calcPayout(oddBet, 4); // 4 is an even number
+    expect(payout).toBe(0); // Assuming the payout for an Even/Odd bet is stake * 2
+    });
+
+    // Low/High Bet
+    const lowBet: bet = [LowHigh.Low, 100, []];
+    test('correctly calculates payout for a Low bet', () => {
+    const payout = calcPayout(lowBet, 10); // 10 is a low number (1-18)
+    expect(payout).toBe(200); // Assuming the payout for a Low/High bet is stake * 2
+    });
+
+    // Columns Bet
+    const columnBet: bet = [1, 100, []]; // Assuming bet on the first column
+    test('correctly calculates payout for a Columns bet', () => {
+    const payout = calcPayout(columnBet, 1); // Winning number in the first column
+    expect(payout).toBe(300); // Assuming the payout for a Columns bet is stake * 3
+    });
+
+    // Dozens Bet
+    const dozenBet: bet = [4, 100, []]; // Assuming bet on the first dozen
+    test('correctly calculates payout for a Dozens bet', () => {
+    const payout = calcPayout(dozenBet, 12); // Winning number in the first dozen
+    expect(payout).toBe(300); // Assuming the payout for a Dozens bet is stake * 3
+    });
+
     // Example for an invalid bet type
     test('returns 0 for an invalid bet type', () => {
       const invalidBet: bet = ["InvalidType" as BetType, 100, [17]]; // Cast to BetType to simulate invalid type
