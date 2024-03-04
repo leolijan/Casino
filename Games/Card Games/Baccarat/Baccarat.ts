@@ -1,12 +1,19 @@
 import { readUserInput } from '../../../Utilities/userInput/readUserInput';
-import { createBlackjackDeck as createBaccaratDeck, Card, 
-         isPair, dealInitialCards, showHand } from '../Deck/Deck';
-import { Person, createPerson } from '../../../Utilities/Player/Player';
+import { createBlackjackDeck as createBaccaratDeck, 
+         Card, isPair, dealInitialCards, showHand } from '../Deck/Deck';
+import { Person } from '../../../Utilities/Player/Player';
+
 
 /**
- * Calculates the total value of a hand, according to the rules of baccarat.
- * @param hand An array of Card objects representing the hand.
- * @returns The total value of the hand.
+ * Calculates the total value of a baccarat hand from Card objects.
+ *
+ * @example
+ * // Given a hand with cards of value 5, 1, and 14 (Ace)
+ * calculateHandValue([{value: 5}, {value: 1}, {value: 14}]);
+ * // Returns 7, as Aces are worth 1 and face cards are worth 0
+ *
+ * @param hand Array of Card objects representing the hand.
+ * @returns The baccarat value of the hand, calculated modulo 10.
  */
 export function calculateHandValue(hand: Array<Card>): number {
   let total = 0;
@@ -28,10 +35,16 @@ export function calculateHandValue(hand: Array<Card>): number {
 
 
 /**
- * Manages the player's hand according to the rules of baccarat
+ * Manages the player's hand in a game of baccarat, drawing a third card if necessary.
+ *
+ * @example
+ * // Assuming a deck and a player with an initial hand
+ * const total = await playerHand(deck, player);
+ * // Returns the total value of the player's hand according to baccarat rules
+ *
  * @param deck The current deck of cards.
  * @param player A Person object representing the player.
- * @returns The total value of the player hand.
+ * @returns The total value of the player's hand after potentially drawing a third card.
  */
 export async function playerHand(deck: Array<Card>, 
                                  player: Person): Promise<number> {
@@ -49,12 +62,18 @@ export async function playerHand(deck: Array<Card>,
 
 
 /**
- * Manages the banker's hand by following specific drawing rules that are based
- * on the value of the banker's hand and the player's third card.
- * @param deck The deck of cards that are represented as an array of type Card.
+ * Determines the banker's hand value by applying baccarat drawing rules based on 
+ * the banker's current hand and the player's third card value.
+ *
+ * @example
+ * // Assuming a deck and both banker and player with initial hands
+ * const bankerTotal = await bankerHand(deck, banker, player);
+ * // Calculates and returns the total value of the banker's hand according to baccarat rules
+ *
+ * @param deck The deck of cards, represented as an array of Card objects.
  * @param banker A Person object representing the banker.
- * @param player A Person object representing the player.
- * @returns The total value of the banker's hand.
+ * @param player A Person object representing the player, to consider player's third card if drawn.
+ * @returns The total value of the banker's hand after applying drawing rules.
  */
 export async function bankerHand(deck: Array<Card>, 
                                  banker: Person, 
@@ -101,14 +120,19 @@ export async function bankerHand(deck: Array<Card>,
 
 
 /**
- * Decides the outcome of the game based on the type of bet made and
- * the player and banker hands.
+ * Determines the game outcome and winnings based on the bet type and hand values.
+ *
+ * @example
+ * // Assuming playerValue of 8, bankerValue of 7, and bet on player
+ * decideOutcome(8, 7, playerHand, bankerHand, "1");
+ * // Returns { outcome: "Win", winnings: 2 }
+ *
  * @param playerValue Total value of the player's hand.
  * @param bankerValue Total value of the banker's hand.
- * @param playerHand The player's hand.
- * @param bankerHand The banker's hand.
- * @param betType Type of bet made by the player.
- * @returns An object containing the outcome and potential winnings.
+ * @param playerHand Array of player's Card objects.
+ * @param bankerHand Array of banker's Card objects.
+ * @param betType String indicating the type of bet made.
+ * @returns An object containing 'outcome' and 'winnings'.
  */
 export function decideOutcome(playerValue: number, 
                               bankerValue: number, 
@@ -130,7 +154,7 @@ export function decideOutcome(playerValue: number,
   } else if (betType === "2") {
     if (bankerValue > playerValue) {
       outcome = "Win";
-      winnings = 1.95; // 5% commission
+      winnings = 2;
     } else {
       outcome = "Lose";
     }
@@ -164,8 +188,16 @@ export function decideOutcome(playerValue: number,
 
 
 /**
- * Starts and manages the Baccarat game.
- * @param player The player represented as a Person object.
+ * Initiates and manages a single session of Baccarat for the player.
+ *
+ * @example
+ * // Assuming player object is already defined
+ * await startGame(player);
+ * // Engages player in a session of Baccarat, handling bets, card dealing, and outcomes.
+ *
+ * @param player The player participating in the game, represented as a Person object.
+ *
+ * @returns void. Continuously runs until the player decides to stop or runs out of funds.
  */
 export async function startGame(player: Person): Promise<void> {
   // Starts the game by emptying the player's hand, creating a new deck suited
@@ -194,7 +226,6 @@ export async function startGame(player: Person): Promise<void> {
     await dealInitialCards(deck, player);
     await dealInitialCards(deck, banker);
 
-
     // The final hand of the player and the banker
     const finalPlayerHand = await playerHand(deck, player);
     const finalBankerHand = await bankerHand(deck, banker, player);
@@ -206,9 +237,10 @@ export async function startGame(player: Person): Promise<void> {
     console.log("Final value for banker hand: " + finalBankerHand);
 
     const { outcome, winnings } = await decideOutcome(finalPlayerHand,
-                                                      finalBankerHand, player.hand, 
-                                                      banker.hand, userInput);
-
+                                                      finalBankerHand, 
+                                                      player.hand, 
+                                                      banker.hand, 
+                                                      userInput);
     // Manages potential winnings and losses.
     if (outcome === "Win") {
       console.log("You win");

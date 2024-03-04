@@ -1,4 +1,3 @@
-// Blackjack.test.ts
 import { calculateHandValue, checkForBlackjack, getBet,
          playerTurn, dealerTurn, startGame } from './Blackjack';
 import { readUserInput } from '../../../Utilities/userInput/readUserInput';

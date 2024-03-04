@@ -6,9 +6,7 @@ import {
   buildABet, spin, startGame
 } from './roulette';
 
-import {
-  list, List, to_string as displayList, empty_list
-} from '../../Utilities/list';
+import { list, List, empty_list } from '../../Utilities/list';
 
 import { Person, createPerson } from '../../Utilities/Player/Player';
 import {readUserInput} from '../../Utilities/userInput/readUserInput';

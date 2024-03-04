@@ -80,8 +80,9 @@ describe('check', () => {
                                                         max)).toBe(false);
     });
   
-    test.each(['a', '', ' ', 'one'])('should return false for non-numeric inputs', (input) => {
-      expect(check(input, max)).toBe(false);
+    test.each(['a', '', ' ', 'one'])('should return false for non-numeric inputs', 
+                                     (input) => {
+                                          expect(check(input, max)).toBe(false);
     });
   
     test('should return true for the lowest boundary value', () => {

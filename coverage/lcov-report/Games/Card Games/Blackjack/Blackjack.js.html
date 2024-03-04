@@ -23,9 +23,9 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">84.31% </span>
+                <span class="strong">84.46% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>172/204</span>
+                <span class='fraction'>174/206</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">95.62% </span>
+                <span class="strong">95.67% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>153/160</span>
+                <span class='fraction'>155/162</span>
             </div>
         
             
@@ -345,7 +345,10 @@
 <a name='L280'></a><a href='#L280'>280</a>
 <a name='L281'></a><a href='#L281'>281</a>
 <a name='L282'></a><a href='#L282'>282</a>
-<a name='L283'></a><a href='#L283'>283</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<a name='L283'></a><a href='#L283'>283</a>
+<a name='L284'></a><a href='#L284'>284</a>
+<a name='L285'></a><a href='#L285'>285</a>
+<a name='L286'></a><a href='#L286'>286</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">57x</span>
 <span class="cline-any cline-yes">30x</span>
@@ -577,6 +580,9 @@
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-yes">8x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">8x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -666,9 +672,9 @@ var __generator = (this &amp;&amp; this.__generator) || function (thisArg, body)
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.startGame = exports.getBet = exports.dealerTurn = exports.playerTurn = exports.checkForBlackjack = exports.calculateHandValue = void 0;
-var readUserInput_1 = require("../../../userInput/readUserInput");
+var readUserInput_1 = require("../../../Utilities/userInput/readUserInput");
 var Deck_1 = require("../Deck/Deck");
-var Player_1 = require("../../../Player/Player");
+var Player_1 = require("../../../Utilities/Player/Player");
 /**
  * Calculates the total value of a hand in Blackjack, taking into account the
  * special rules for Aces (value of 11 or 1 to avoid busting if possible).
@@ -754,7 +760,7 @@ function playerTurn(deck, player, originalBet) {
                         playerTotal = calculateHandValue(player.hand);
                     }
                     else if (hitOrStand === "2") {
-                        return [3 /*break*/, 3]; // Player chooses to stand
+                        return [3 /*break*/, 3];
                     }
                     return [3 /*break*/, 1];
                 case 3: return [4 /*yield*/, (0, Deck_1.showHand)(player)];
@@ -839,7 +845,7 @@ exports.getBet = getBet;
  */
 function startGame(player) {
     return __awaiter(this, void 0, void 0, function () {
-        var deck, dealer, bet, playAgain, playerTurnOutcome, dealerTotal, playerTotal;
+        var deck, dealer, bet, playAgain, dealerFirstCard, playerTurnOutcome, dealerTotal, playerTotal;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
@@ -858,6 +864,9 @@ function startGame(player) {
                     (0, Deck_1.dealInitialCards)(deck, dealer);
                     console.log("Your hand:");
                     (0, Deck_1.showHand)(player); // Assuming showHand is properly implemented
+                    dealerFirstCard = dealer.hand[0];
+                    console.log("Dealer's first card: " +
+                        "".concat(dealerFirstCard.value, " of ").concat(dealerFirstCard.suit));
                     if (!(checkForBlackjack(player.hand) &amp;&amp; checkForBlackjack(dealer.hand))) return [3 /*break*/, 3];
                     console.log("Both you and the dealer have Blackjack! It's a push.");
                     return [3 /*break*/, 8];
@@ -891,7 +900,7 @@ function startGame(player) {
                     _a.label = 8;
                 case 8:
                     if (!(player.balance &gt; 0)) return [3 /*break*/, 10];
-                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Do you want to play again? (Yes=1/No=2): ", 2)];
+                    return [4 /*yield*/, (0, readUserInput_1.readUserInput)("Do you want to play again? Yes(1) No(2): ", 2)];
                 case 9:
                     playAgain = _a.sent();
                     return [3 /*break*/, 11];
@@ -916,7 +925,7 @@ exports.startGame = startGame;
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-04T09:56:31.698Z
+                at 2024-03-04T13:58:11.022Z
             </div>
         <script src="../../../prettify.js"></script>
         <script>

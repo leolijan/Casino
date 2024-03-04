@@ -13,17 +13,17 @@ export async function readUserInput(prompt: string,
         input: process.stdin,
         output: process.stdout
     });
-    let isValidInput = true;
+    let isValidInput : Boolean = true;
   
     const userInput = await new Promise<string>((resolve) => {
         rl.question(prompt, (answer) => {
             rl.close();
             resolve(answer);
+            
             if(!check(answer, max)){
                 console.log("WRONG INPUT");
                 isValidInput = false;
-            }
-            
+            } else {}
         });
     });
   
@@ -63,13 +63,13 @@ export function readUserInputBasic(prompt: string): Promise<string> {
  * @param answer The user's input to be checked.
  * @param max The maximum allowed value for the input.
  * @returns True if the answer is within the valid range, 
- *                    otherwise false.
+ *          otherwise false.
  */
 export function check(answer: string, max: number): boolean {
     for (let i = 1; i < max + 1; i++) {
         if (answer === i.toString()) {
             return true;
-        }
+        } else {}
     }
     return false;
 }

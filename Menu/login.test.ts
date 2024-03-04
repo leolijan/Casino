@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 import * as bcrypt from 'bcrypt';
-import { loadUserData, saveUserData, login, newUser, AllUsers, insert_money, loggedIn, menu} from './login';
+import { loadUserData, saveUserData, login, newUser, AllUsers, loggedIn, menu} from './login';
 import {readUserInput, readUserInputBasic} from '../Utilities/userInput/readUserInput';
 import { Person, createPerson } from '../Utilities/Player/Player';
 import { startGame as startBlackjack } from '../Games/Card Games/Blackjack/Blackjack';
@@ -23,61 +23,19 @@ jest.mock('../Utilities/userInput/readUserInput', () => ({
   readUserInputBasic: jest.fn()
 }));
 
-describe('insert_money', () => {
-  let allUsers: AllUsers;
-  beforeEach(() => {
-    jest.clearAllMocks();
-    allUsers = {
-      testUser: { balance: 1000, name: 'Test User', password: 'test', hand: [] }
-    };
-  });
-
-  test('successfully inserts predefined money amount', async () => {
-    jest.mocked(readUserInput).mockResolvedValue('1'); // Use jest.mocked for type safety
-    await insert_money('testUser', allUsers);
-    expect(allUsers.testUser.balance).toBe(1100);
-  });
-
-  test('inserts custom money amount successfully', async () => {
-    jest.mocked(readUserInput).mockResolvedValue('5'); // Simulate choosing custom amount option
-    jest.mocked(readUserInputBasic).mockResolvedValue('250'); // Simulate entering custom amount
-    await insert_money('testUser', allUsers);
-    expect(allUsers.testUser.balance).toBe(1250); // Check if custom amount is added correctly
-  });
-  
-  test('handles invalid custom amount', async () => {
-    jest.mocked(readUserInput).mockResolvedValue('5'); // Simulate choosing custom amount option
-    jest.mocked(readUserInputBasic).mockResolvedValue('-100'); // Simulate entering an invalid amount
-    await insert_money('testUser', allUsers);
-    expect(allUsers.testUser.balance).toBe(1000); // Balance should remain unchanged for invalid amount
-  });
-  
-  test('exits without inserting money', async () => {
-    jest.mocked(readUserInput).mockResolvedValue('6'); // Simulate choosing to exit
-    await insert_money('testUser', allUsers);
-    expect(allUsers.testUser.balance).toBe(1000); // Balance should remain unchanged on exit
-  });
-  
-  test('handles selecting an invalid option', async () => {
-    jest.mocked(readUserInput).mockResolvedValue('7'); // Simulate choosing an invalid option
-    await insert_money('testUser', allUsers);
-    expect(allUsers.testUser.balance).toBe(1000); // Balance should remain unchanged for invalid option
-  });
-});
-
 describe('newUser', () => {
   let allUsers : AllUsers= {};
 
   beforeEach(() => {
     allUsers = {}; // Reset allUsers before each test
-    jest.clearAllMocks(); // Clear all mock implementations
+    jest.clearAllMocks(); 
   });
 
   test('successful user registration', async () => {
     jest.mocked(readUserInputBasic)
-      .mockResolvedValueOnce('newUsername') // Mock username input
-      .mockResolvedValueOnce('Valid$Password1') // Mock password input
-      .mockResolvedValueOnce('Valid$Password1'); // Mock password confirmation input
+      .mockResolvedValueOnce('newUsername') 
+      .mockResolvedValueOnce('Valid$Password1') 
+      .mockResolvedValueOnce('Valid$Password1'); 
 
     await newUser(allUsers);
 
@@ -89,9 +47,9 @@ describe('newUser', () => {
     jest.mocked(readUserInputBasic)
       .mockResolvedValueOnce('anotherNewUsername') // Mock username input
       .mockResolvedValueOnce('Valid$Password3') // Mock password input
-      .mockResolvedValueOnce('DifferentPassword') // Non-matching password confirmation
+      .mockResolvedValueOnce('DifferentPassword') // Non-matching 
       .mockResolvedValueOnce('anotherNewUsername')
-      .mockResolvedValueOnce('Valid$Password3') // Retry with the same valid password
+      .mockResolvedValueOnce('Valid$Password3') // Retry with the same password
       .mockResolvedValueOnce('Valid$Password3'); // Confirm the valid password
   
     await newUser(allUsers);
@@ -101,42 +59,50 @@ describe('newUser', () => {
   });
 
   test('username already exists', async () => {
-    allUsers['existingUsername'] = { balance: 1000, name: 'Existing User', password: 'hashed', hand: [] };
+    allUsers['existingUsername'] = { balance: 1000, 
+                                     name: 'Existing User', 
+                                     password: 'hashed', 
+                                     hand: [] };
   
     jest.mocked(readUserInputBasic)
-      .mockResolvedValueOnce('existingUsername') // Attempt to use an existing username
-      .mockResolvedValueOnce('Valid$Password4') // Mock password input
+      .mockResolvedValueOnce('existingUsername')
+      .mockResolvedValueOnce('Valid$Password4') 
       .mockResolvedValueOnce('Valid$Password4')
-      .mockResolvedValueOnce('newValidUsername') // New unique username after retry
-      .mockResolvedValueOnce('Valid$Password4') // Mock password input
-      .mockResolvedValueOnce('Valid$Password4'); // Mock password confirmation input
+      .mockResolvedValueOnce('newValidUsername') 
+      .mockResolvedValueOnce('Valid$Password4') 
+      .mockResolvedValueOnce('Valid$Password4'); 
   
     await newUser(allUsers);
   
     expect(allUsers).toHaveProperty('newValidUsername');
-    expect(bcrypt.hash).toHaveBeenCalledWith('Valid$Password4', expect.any(Number));
+    expect(bcrypt.hash).toHaveBeenCalledWith('Valid$Password4', 
+                                             expect.any(Number));
   });
 
   test('password does not meet criteria', async () => {
     jest.mocked(readUserInputBasic)
       .mockResolvedValueOnce('uniqueUsername') // Mock username input
       .mockResolvedValueOnce('short') // Invalid password attempt
-      .mockResolvedValueOnce('short') // Mock confirmation of the invalid password
+      .mockResolvedValueOnce('short') // invalid password
       .mockResolvedValueOnce('uniqueUsername') // Mock username input
-      .mockResolvedValueOnce('Valid$Password2') // Second attempt with a valid password
+      .mockResolvedValueOnce('Valid$Password2') // Second attempt 
       .mockResolvedValueOnce('Valid$Password2'); // Confirm the valid password
   
     await newUser(allUsers);
   
     expect(allUsers).toHaveProperty('uniqueUsername');
-    expect(bcrypt.hash).toHaveBeenCalledWith('Valid$Password2', expect.any(Number));
+    expect(bcrypt.hash).toHaveBeenCalledWith('Valid$Password2', 
+                                             expect.any(Number));
   });
 });
 
 describe('loadUserData', () => {
   test('should load user data into allUsers object', () => {
     const mockJsonData = JSON.stringify({
-      'Test User': { name: 'Test User', password: 'test', balance: 1000, hand: [] }
+      'Test User': { name: 'Test User', 
+                     password: 'test', 
+                     balance: 1000, 
+                     hand: [] }
     });
     (fs.readFileSync as jest.Mock).mockReturnValue(mockJsonData);
     

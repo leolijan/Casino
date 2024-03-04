@@ -1,3 +1,21 @@
 {
-  
+  "leo": {
+    "name": "leo",
+    "password": "$2b$10$lOpkk4pCbXPNfIbi7DRp8O3fiUMkfidq4gchweQLxzOjpeVLg/Kzy",
+    "balance": 500,
+    "hand": [
+      {
+        "value": 12,
+        "suit": "Hearts"
+      },
+      {
+        "value": 11,
+        "suit": "Diamonds"
+      },
+      {
+        "value": 7,
+        "suit": "Hearts"
+      }
+    ]
+  }
 }
