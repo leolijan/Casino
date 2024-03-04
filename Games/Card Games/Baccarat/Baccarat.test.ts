@@ -12,8 +12,8 @@ import {
   dealInitialCards,
 } from '../Deck/Deck';
 
-import { Person, createPerson } from '../../../Player/Player';
-import { readUserInput } from '../../../userInput/readUserInput';
+import { Person, createPerson } from '../../../Utilities/Player/Player';
+import { readUserInput } from '../../../Utilities/userInput/readUserInput';
 
 describe('calculateHandValue', () => {
   test('calculates the value of a hand without face cards', async () => {
@@ -305,8 +305,7 @@ describe('decideOutcome', () => {
   });
 });
 
-// Mocking readUserInput and Deck module
-jest.mock('../../../userInput/readUserInput', () => ({
+jest.mock('../../../Utilities/userInput/readUserInput', () => ({
   readUserInput: jest.fn(),
 }));
 
@@ -352,7 +351,8 @@ describe("Baccarat startGame function", () => {
       .mockResolvedValueOnce("1")
       .mockResolvedValueOnce("2");
     await startGame(mockPlayer);
-    expect(readUserInput).toHaveBeenCalledTimes(5);
+
+    expect(readUserInput).toHaveBeenCalledTimes(6);
   });
   
   test("player chooses to play again", async () => {
@@ -364,8 +364,9 @@ describe("Baccarat startGame function", () => {
       .mockResolvedValueOnce("1")
       .mockResolvedValueOnce("2");
     await startGame(mockPlayer);
-    expect(readUserInput).toHaveBeenCalledTimes(5);
+    expect(readUserInput).toHaveBeenCalledTimes(6);
   });
+
   test("ensures the game ends correctly when player chooses not to continue", async () => {
     (readUserInput as jest.Mock).mockResolvedValueOnce("no");
     await startGame(mockPlayer);

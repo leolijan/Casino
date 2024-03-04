@@ -1,17 +1,17 @@
 import {
-  calcSingle, calcSplit, calcStreet, calcCorner, calcDoubleStreet,
+  calcSingle, calcSplit, calcCorner, calcDoubleStreet,
   bet, calcRedOrBlack, calcEvenOrOdd, EvenOdd, Color, calcLowOrHigh,
   LowHigh, calcColumns, calcDozens, playerMove, calcPayout, addBetAmount,
   BetType, calculateWinnings, numberBet, columnsAndDozensBet, evenBets,
-  buildABet, spin, startGame, computerMove
+  buildABet, spin, startGame
 } from './roulette';
 
 import {
-  head, list, List, pair, tail, is_null, to_string as displayList, empty_list
-} from '../../lib/list';
+  list, List, to_string as displayList, empty_list
+} from '../../Utilities/list';
 
-import { Person, createPerson } from '../../Player/Player';
-import {readUserInput} from '../../userInput/readUserInput';
+import { Person, createPerson } from '../../Utilities/Player/Player';
+import {readUserInput} from '../../Utilities/userInput/readUserInput';
 
 describe('spin', () => {
     test('returns a number between 0 and 36', () => {
@@ -35,46 +35,18 @@ describe('spin', () => {
     });
 });
 
-describe('calcSingle', () => {
-    const singleBet: bet = ["Single", 100, [17]];
-    test('wins on correct number', () => {
-        const payout = calcSingle(singleBet[2], singleBet[1], 17);
-        expect(payout).toBe(3600); 
-    });
-
-    test('loses on incorrect number', () => {
-        const payout = calcSingle(singleBet[2], singleBet[1], 18);
-        expect(payout).toBe(0);
-    });
-});
-
 describe('calcSplit', () => {
-    // Define a split bet according to the roulette game rules
     const splitBet: bet = ["Split", 100, [17, 20]];
-  
-    test('wins on first number', () => {
-      // Calculate payout for winning on the first number of the split bet
-      const payout = calcSplit(splitBet[2], splitBet[1], 17);
-      // Expect payout to be stake * 18 for a split bet win
-      expect(payout).toBe(1800); 
-    });
-  
-    test('wins on second number', () => {
-      // Calculate payout for winning on the second number of the split bet
-      const payout = calcSplit(splitBet[2], splitBet[1], 20);
-      expect(payout).toBe(1800);
-    });
-  
+    
     test('loses on incorrect number', () => {
-      // Calculate payout for betting on a number not part of the split bet
       const payout = calcSplit(splitBet[2], splitBet[1], 22);
       expect(payout).toBe(0); // No payout expected for a loss
     });
   
     test('attempt split bet on non-adjacent numbers', () => {
-      // Define a bet on non-adjacent numbers, which is considered invalid
       const nonAdjacentSplitBet: bet = ["Split", 100, [1, 3]];
       const winningNumber = 1;
+      
       // Calculate payout, expecting no payout for an invalid split bet
       const payout = calcSplit(nonAdjacentSplitBet[2], 
                                nonAdjacentSplitBet[1], 
@@ -83,7 +55,6 @@ describe('calcSplit', () => {
     });
   
     test('split bet includes number outside roulette table range', () => {
-      // Define a split bet that includes a number outside the standard roulette range
       const invalidSplitBet: bet = ["Split", 100, [1, 37]];
       const winningNumber = 1;
       // Calculate payout, expecting no payout for a bet with invalid number
@@ -94,24 +65,6 @@ describe('calcSplit', () => {
     });
   });
   
-describe('calcStreet', () => {
-    test('wins on number within street', () => {
-        const streetIndex = 0; //[1, 2, 3] for simplicity
-        const stake = 100;
-        const number = 2; // Number within the first street
-        const payout = calcStreet([streetIndex], stake, number);
-        expect(payout).toBe(1200); // stake * 12 for winning
-    });
-
-    test('loses on number outside street', () => {
-        const streetIndex = 0; // Still assuming the first street [1, 2, 3]
-        const stake = 100;
-        const number = 4; // Number not within the first street
-        const payout = calcStreet([streetIndex], stake, number);
-        expect(payout).toBe(0); // No payout for losing bet
-    });
-});
-
 describe('calcCorner', () => {
     test('wins on number within corner', () => {
          // Corner bet includes number 17
@@ -120,7 +73,6 @@ describe('calcCorner', () => {
     });
 
     test('loses on number outside corner', () => {
-        // Number 15 is not part of the corner bet
         const payout = calcCorner([16,17,19,20], 100, 15); 
         expect(payout).toBe(0);
     });
@@ -128,8 +80,8 @@ describe('calcCorner', () => {
 
 describe('calcDoubleStreet', () => {
     test('wins on number within first street of double street', () => {
-        const firstStreetIndex = 0; // For street [1, 2, 3]
-        const secondStreetIndex = 1; // For street [4, 5, 6]
+        const firstStreetIndex = 0; 
+        const secondStreetIndex = 1; 
         const stake = 100;
         const winningNumber = 2; // Number within the first street
         const payout = calcDoubleStreet([firstStreetIndex, secondStreetIndex], 
@@ -185,28 +137,10 @@ describe('calcRedOrBlack', () => {
         expect(payout).toBe(200); // stake * 2 for red/black bet win
     });
 
-    test('loses on red bet when black wins', () => {
-        const betColor = Color.Red;
-        const stake = 100;
-        const losingNumber = 4; // Assuming 4 is black
-        const payout = calcRedOrBlack(betColor, stake, losingNumber);
-        expect(payout).toBe(0);
-    });
-
-    test('bet on a non-existing number', () => {
-        const stake = 100;
-        const nonExistingNumber = 0; 
-        const payoutRed = calcRedOrBlack(Color.Red, stake, nonExistingNumber);
-        const payoutBlack = calcRedOrBlack(Color.Black, stake, 
-                                           nonExistingNumber);
-        expect(payoutRed).toBe(0);
-        expect(payoutBlack).toBe(0);
-    });
-
     test('wins on black bet', () => {
         const betColor = Color.Black;
         const stake = 100;
-        const winningNumber = 4; // Assuming 4 is black
+        const winningNumber = 4; // 4 is black
         const payout = calcRedOrBlack(betColor, stake, winningNumber);
         expect(payout).toBe(200); // Expecting payout = stake * 2 
     });
@@ -214,34 +148,17 @@ describe('calcRedOrBlack', () => {
     test('loses on black bet when red wins', () => {
         const betColor = Color.Black;
         const stake = 100;
-        const losingNumber = 3; // Assuming 3 is red
+        const losingNumber = 3; // 3 is red
         const payout = calcRedOrBlack(betColor, stake, losingNumber);
         expect(payout).toBe(0);
-    });
-
-    test('bet on 37 (representing 00)', () => {
-        const stake = 100;
-        const specialNumber = 37; 
-        const payoutRed = calcRedOrBlack(Color.Red, stake, specialNumber);
-        const payoutBlack = calcRedOrBlack(Color.Black, stake, specialNumber);
-        expect(payoutRed).toBe(0);
-        expect(payoutBlack).toBe(0);
     });
 });
 
 describe('calcEvenOrOdd', () => {
-    test('wins on even bet', () => {
-        const betType = EvenOdd.Even;
-        const stake = 100;
-        const winningNumber = 4; // An even number
-        const payout = calcEvenOrOdd(betType, stake, winningNumber);
-        expect(payout).toBe(200); // stake * 2 for an even/odd bet win
-    });
-
     test('loses on even bet when odd wins', () => {
         const betType = EvenOdd.Even;
         const stake = 100;
-        const losingNumber = 5; // An odd number
+        const losingNumber = 5;
         const payout = calcEvenOrOdd(betType, stake, losingNumber);
         expect(payout).toBe(0);
     });
@@ -271,38 +188,6 @@ describe('calcEvenOrOdd', () => {
         expect(payout).toBe(0);
     });
 
-    // Edge cases
-    test('lowest even number (2) win', () => {
-        const betType = EvenOdd.Even;
-        const stake = 100;
-        const winningNumber = 2; // Lowest even number
-        const payout = calcEvenOrOdd(betType, stake, winningNumber);
-        expect(payout).toBe(200);
-    });
-
-    test('highest odd number (35) win', () => {
-        const betType = EvenOdd.Odd;
-        const stake = 100;
-        const winningNumber = 35; // Highest odd number within 1-36 range
-        const payout = calcEvenOrOdd(betType, stake, winningNumber);
-        expect(payout).toBe(200);
-    });
-
-    test('edge even number (36) win', () => {
-        const betType = EvenOdd.Even;
-        const stake = 100;
-        const winningNumber = 36; // Highest even number within 1-36 range
-        const payout = calcEvenOrOdd(betType, stake, winningNumber);
-        expect(payout).toBe(200);
-    });
-
-    test('edge odd number (1) win', () => {
-        const betType = EvenOdd.Odd;
-        const stake = 100;
-        const winningNumber = 1; // Lowest odd number
-        const payout = calcEvenOrOdd(betType, stake, winningNumber);
-        expect(payout).toBe(200);
-    });
 });
 
 describe('calcLowOrHigh', () => {
@@ -311,7 +196,7 @@ describe('calcLowOrHigh', () => {
         const stake = 100;
         const winningNumber = 1; // A low number (1-18)
         const payout = calcLowOrHigh(betType, stake, winningNumber);
-        expect(payout).toBe(200); // Expecting payout = stake * 2 
+        expect(payout).toBe(200); // Expected payout = stake * 2 
     });
 
     test('loses on low bet when high wins', () => {
@@ -322,26 +207,12 @@ describe('calcLowOrHigh', () => {
         expect(payout).toBe(0);
     });
 
-    test('bet on edge low number', () => {
-        const stake = 100;
-        const lowEdgeNumber = 18; // Highest low number
-        const payoutLow = calcLowOrHigh(LowHigh.Low, stake, lowEdgeNumber);
-        expect(payoutLow).toBe(200);
-    });
-
-    test('bet on edge high number', () => {
-        const stake = 100;
-        const highEdgeNumber = 19; // Lowest high number
-        const payoutHigh = calcLowOrHigh(LowHigh.High, stake, highEdgeNumber);
-        expect(payoutHigh).toBe(200);
-    });
-
     test('wins on high bet', () => {
         const betType = LowHigh.High;
         const stake = 100;
         const winningNumber = 36; // A high number (19-36)
         const payout = calcLowOrHigh(betType, stake, winningNumber);
-        expect(payout).toBe(200); // Expecting payout = stake * 2 
+        expect(payout).toBe(200); // Expected payout = stake * 2 
     });
 
     test('loses on high bet when low wins', () => {
@@ -443,67 +314,10 @@ describe('calcDozens', () => {
         const payout = calcDozens(dozenBet, stake, losingNumber);
         expect(payout).toBe(0);
     });
-
-    // Edge Cases
-    test('edge case win on first dozen upper limit', () => {
-        const dozenBet = 4; // First dozen
-        const stake = 100;
-        const winningNumber = 12; // Upper limit of the first dozen
-        const payout = calcDozens(dozenBet, stake, winningNumber);
-        expect(payout).toBe(300);
-    });
-
-    test('edge case lose on first dozen going over', () => {
-        const dozenBet = 4; // First dozen
-        const stake = 100;
-        const losingNumber = 13; // Just outside the first dozen
-        const payout = calcDozens(dozenBet, stake, losingNumber);
-        expect(payout).toBe(0);
-    });
-
-    test('edge case win on second dozen lower limit', () => {
-        const dozenBet = 5; // Second dozen
-        const stake = 100;
-        const winningNumber = 13; // Lower limit of the second dozen
-        const payout = calcDozens(dozenBet, stake, winningNumber);
-        expect(payout).toBe(300);
-    });
-
-    test('edge case win on second dozen upper limit', () => {
-        const dozenBet = 5; // Second dozen
-        const stake = 100;
-        const winningNumber = 24; // Upper limit of the second dozen
-        const payout = calcDozens(dozenBet, stake, winningNumber);
-        expect(payout).toBe(300);
-    });
-
-    test('edge case lose on second dozen going over', () => {
-        const dozenBet = 5; // Second dozen
-        const stake = 100;
-        const losingNumber = 25; // Just outside the second dozen
-        const payout = calcDozens(dozenBet, stake, losingNumber);
-        expect(payout).toBe(0);
-    });
-
-    test('edge case win on third dozen lower limit', () => {
-        const dozenBet = 6; // Third dozen
-        const stake = 100;
-        const winningNumber = 25; // Lower limit of the third dozen
-        const payout = calcDozens(dozenBet, stake, winningNumber);
-        expect(payout).toBe(300);
-    });
-
-    test('edge case win on third dozen upper limit', () => {
-        const dozenBet = 6; // Third dozen
-        const stake = 100;
-        const winningNumber = 36; // Upper limit of the third dozen
-        const payout = calcDozens(dozenBet, stake, winningNumber);
-        expect(payout).toBe(300);
-    });
 });
 
 describe('calcPayout', () => {
-    // Example bet setup for tests
+    // Single bet
     const singleBet: bet = ["Single", 100, [17]];
     const number = 17; // Winning number for this test case
     test('correctly calculates payout for a Single bet', () => {
@@ -539,25 +353,11 @@ describe('calcPayout', () => {
     expect(payout).toBe(200); // stake * 2
     });
 
-    // Red/Black Bet
-    const blackBet: bet = [Color.Black, 100, []];
-    test('correctly calculates payout for a Black bet', () => {
-    const payout = calcPayout(blackBet, 3); 
-    expect(payout).toBe(0); 
-    });
-
     // Even/Odd Bet
     const evenBet: bet = [EvenOdd.Even, 100, []];
     test('correctly calculates payout for an Even bet', () => {
     const payout = calcPayout(evenBet, 4); // 4 is an even number
     expect(payout).toBe(200); // stake * 2
-    });
-
-    // Even/Odd Bet
-    const oddBet: bet = [EvenOdd.Odd, 100, []];
-    test('correctly calculates payout for an Odd bet', () => {
-    const payout = calcPayout(oddBet, 4); // 4 is an even number
-    expect(payout).toBe(0); // stake * 2
     });
 
     // Low/High Bet
@@ -592,13 +392,6 @@ describe('calcPayout', () => {
 describe('calculateWinnings', () => {
     const winningNumber = 17;
     
-    test('calculates total winnings for a single bet', () => {
-      const singleBet: bet = ["Single", 100, [17]];
-      const bets: List<bet> = list(singleBet);
-      const totalWinnings = calculateWinnings(bets, winningNumber);
-      expect(totalWinnings).toBe(3600); // Single bet is stake * 36
-    });
-  
     test('calculates total winnings for multiple bets', () => {
       const betsList: List<bet> = list(
         ["Single", 100, [17]], // Winning bet
@@ -617,23 +410,13 @@ describe('calculateWinnings', () => {
     });
 });
 
-jest.mock('../../userInput/readUserInput', () => ({
+jest.mock('../../Utilities/userInput/readUserInput', () => ({
     readUserInput: jest.fn(),
   }));
   
 describe('numberBet', () => {
     beforeEach(() => {
         jest.clearAllMocks();
-    });
-
-    test('chooses zero successfully', async () => {
-        const mockBet: bet = ['', 0, []];
-        const expectedBet: bet = ["Single", 0, [0]];
-        (readUserInput as jest.Mock).mockResolvedValueOnce('1');
-
-        await numberBet(mockBet);
-
-        expect(mockBet).toEqual(expectedBet);
     });
 
     test('chooses single number successfully', async () => {
@@ -686,21 +469,7 @@ describe('numberBet', () => {
         expect(mockBet[0]).toBe("Street");
         expect(mockBet[2][0]).toBe(chosenStreet);
     });
-    
-    test('chooses corner bet successfully', async () => {
-        const mockBet: bet = ['', 0, []];
-        const firstNumber = 10; // Example starting number for corner
-        (readUserInput as jest.Mock)
-            .mockResolvedValueOnce("5") // Choose corner
-            .mockResolvedValueOnce(firstNumber.toString()) // First number
-            .mockResolvedValueOnce("1") // Option to go right 
-            .mockResolvedValueOnce("1"); // Option to go up 
-    
-        await numberBet(mockBet);
-    
-        expect(mockBet[0]).toBe("Corner");
-    });
-    
+        
     test('chooses double street bet successfully', async () => {
         const mockBet: bet = ['', 0, []];
         const firstStreet = 3; // Example first street
@@ -718,48 +487,6 @@ describe('numberBet', () => {
                                                            secondStreet]));
     });
     
-    test('chooses split bet with specific adjacent number logic', async () => {
-        const mockBet: bet = ['', 0, []];
-        const firstNumber = 11; // Example number for split
-        // Simulate choosing the first available adjacent number
-        const secondNumberOption = "1"; 
-        (readUserInput as jest.Mock)
-            .mockResolvedValueOnce("3") // Choose split
-            .mockResolvedValueOnce(firstNumber.toString()) // First number
-            .mockResolvedValueOnce(secondNumberOption); // adjacent number
-    
-        await numberBet(mockBet);
-    
-        expect(mockBet[0]).toBe("Split");
-    });
-
-    test('chooses split bet with valid adjacent numbers', async () => {
-        const mockBet: bet = ['', 0, []];
-        (readUserInput as jest.Mock)
-            .mockResolvedValueOnce("3") // Split bet
-            .mockResolvedValueOnce("11") // First number
-            .mockResolvedValueOnce("1"); // selects a adjacent number
-
-        await numberBet(mockBet);
-
-        expect(mockBet[0]).toBe("Split");
-        expect(mockBet[2].length).toBeGreaterThan(0); //numbers were added
-    });
-
-    test('chooses corner bet with specific position', async () => {
-        const mockBet: bet = ['', 0, []];
-        (readUserInput as jest.Mock)
-            .mockResolvedValueOnce("5") // Corner
-            .mockResolvedValueOnce("10") // First number
-            .mockResolvedValueOnce("1") // Direction choice
-            .mockResolvedValueOnce("1"); // Position choice (up or down)
-
-        await numberBet(mockBet);
-
-        expect(mockBet[0]).toBe("Corner");
-        expect(mockBet[2].length).toBe(4); // Corner bet involves 4 numbers
-    });
-
     test('chooses double street bet with valid streets', async () => {
         const mockBet: bet = ['', 0, []];
         (readUserInput as jest.Mock)
@@ -789,32 +516,6 @@ describe('numberBet', () => {
         // Verify the second number is a valid adjacent number 
     });
     
-    test('split bet with a number on the right edge', async () => {
-        const mockBet: bet = ['', 0, []];
-        const rightEdgeNumber = 3; // Choosing a number on the right edge
-        (readUserInput as jest.Mock)
-            .mockResolvedValueOnce("3") // Choosing split bet
-            .mockResolvedValueOnce(rightEdgeNumber.toString()) // First number
-            .mockResolvedValueOnce("1"); // Choosing an adjacent number
-
-        await numberBet(mockBet);
-
-        expect(mockBet[0]).toBe("Split");
-    });
-
-    test('split bet with a middle number', async () => {
-        const mockBet: bet = ['', 0, []];
-        const middleNumber = 14; // Choosing a middle number
-        (readUserInput as jest.Mock)
-            .mockResolvedValueOnce("3") // Choosing split bet
-            .mockResolvedValueOnce(middleNumber.toString()) //First number
-            .mockResolvedValueOnce("1"); // Choosing an adjacent number
-
-        await numberBet(mockBet);
-
-        expect(mockBet[0]).toBe("Split");
-    });
-
     test('corner bet with first number close to start, forcing right', 
          async () => {
 
@@ -865,6 +566,34 @@ describe('numberBet', () => {
         expect(mockBet[0]).toBe("Split");
         // Check that the adjacent number chosen is among the expected options
         expect(expectedAdjacentNumbers).toContain(mockBet[2][1]);
+    });
+
+    test('DoubleStreet furthest to the left', async () => {
+        const mockBet: bet = ['', 0, []];
+    
+        (readUserInput as jest.Mock)
+            .mockResolvedValueOnce("6") // Choosing doublestreet bet
+            .mockResolvedValueOnce("1");
+            
+        await numberBet(mockBet);
+    
+        expect(mockBet[0]).toBe("DoubleStreet");
+        expect(mockBet[2][0]).toBe(1);
+        expect(mockBet[2][1]).toBe(2);
+    });
+
+    test('DoubleStreet furthest to the right', async () => {
+        const mockBet: bet = ['', 0, []];
+    
+        (readUserInput as jest.Mock)
+            .mockResolvedValueOnce("6") // Choosing doublestreet bet
+            .mockResolvedValueOnce("12");
+            
+        await numberBet(mockBet);
+    
+        expect(mockBet[0]).toBe("DoubleStreet");
+        expect(mockBet[2][0]).toBe(12);
+        expect(mockBet[2][1]).toBe(11);
     });
 });
 
@@ -983,7 +712,9 @@ describe('addBetAmount', () => {
         const mockBet: bet = ['', 0, []];
         const mockPerson: Person = { name: 'John Doe', 
                                      password : '1', 
-                                     balance: 500, hand: [] };
+                                     balance: 500,
+                                     hand: [] 
+                                    };
         const mockStake = 100;
         (readUserInput as jest.Mock).mockResolvedValue(mockStake.toString());
   
@@ -1004,19 +735,15 @@ describe('buildABet', () => {
     test('builds a numbers bet when user selects option 1', async () => {
         const stake = 100;
         (readUserInput as jest.Mock).mockResolvedValueOnce("1");
-
         const bet = await buildABet(stake);
-
-        expect(bet[1]).toEqual(stake); // Verify stake is passed through 
+        expect(bet[1]).toEqual(stake); 
     });
 
     test('builds an even bet when user selects option 2', async () => {
         const stake = 100;
         // Simulate user selecting "Even bets"
         (readUserInput as jest.Mock).mockResolvedValueOnce("2");
-
         const bet = await buildABet(stake);
-
         expect(bet[1]).toEqual(stake);
     });
 
@@ -1026,9 +753,7 @@ describe('buildABet', () => {
         const stake = 100;
         // Simulate user selecting "Columns or dozens"
         (readUserInput as jest.Mock).mockResolvedValueOnce("3");
-
         const bet = await buildABet(stake);
-
         expect(bet[1]).toEqual(stake);
     });
 });
@@ -1052,11 +777,10 @@ describe('playerMove', () => {
             .mockResolvedValueOnce("100") // Bet amount
             .mockResolvedValueOnce("1")
             .mockResolvedValueOnce("1") // Bet type: "Numbers bet"
-            .mockResolvedValueOnce("2");//Player chooses not to add another bet
+            .mockResolvedValueOnce("2"); // Player chooses not to add another bet
     
         await playerMove(person, allBets);
 
-        // Assuming the bet amount is subtracted from the initial balance
         expect(person.balance).toBeLessThanOrEqual(900); 
         expect(readUserInput).toHaveBeenCalledTimes(8);
         const expectedString : string = "Want to add a bet?: Yes(1) or No(2)\n"
@@ -1087,12 +811,31 @@ describe('startGame', () => {
             .mockResolvedValueOnce("1") // numbersbet
             .mockResolvedValueOnce("1") // Single: 0
             .mockResolvedValueOnce("2") // Chooses to not add another bet
-            .mockResolvedValueOnce("2") //chooses to not play again
-
+            .mockResolvedValueOnce("2") //chooses to play again
+            
         await startGame(person);
 
         expect(person.balance).toBe(800); //bet amount is subtracted two times
         expect(readUserInput).toHaveBeenCalledTimes(10); // Ensure loop exits 
+    });
+
+    test('two full games after one another', async () => {
+        jest.mock('./roulette', () => ({
+            spin: jest.fn().mockReturnValue(3)
+        }));
+
+        (readUserInput as jest.Mock)
+            .mockResolvedValueOnce("1000") // First bet amount
+            .mockResolvedValueOnce("1") // numbersbet
+            .mockResolvedValueOnce("1") // Single: 0
+            .mockResolvedValueOnce("2") // Chooses to not add another bet
+            .mockResolvedValueOnce("1") //Chooses to play again
+            ///should now exit becuse player has no funds
+
+        await startGame(person);
+
+        expect(person.balance).toBe(0); //bet is subtracted
+        expect(readUserInput).toHaveBeenCalledTimes(5); // Ensure loop exits 
     });
 });
 

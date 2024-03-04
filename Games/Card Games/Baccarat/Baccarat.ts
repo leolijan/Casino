@@ -1,7 +1,7 @@
-import { readUserInput } from '../../../userInput/readUserInput';
+import { readUserInput } from '../../../Utilities/userInput/readUserInput';
 import { createBlackjackDeck as createBaccaratDeck, Card, 
          isPair, dealInitialCards, showHand } from '../Deck/Deck';
-import { Person, createPerson } from '../../../Player/Player';
+import { Person, createPerson } from '../../../Utilities/Player/Player';
 
 /**
  * Calculates the total value of a hand, according to the rules of baccarat.
@@ -170,60 +170,65 @@ export function decideOutcome(playerValue: number,
 export async function startGame(player: Person): Promise<void> {
   // Starts the game by emptying the player's hand, creating a new deck suited
   // for Baccarat and creates a banker. 
-  player.hand = [];
-  const deck = createBaccaratDeck();
-  const banker: Person = { name: "Banker", password: "", balance: 0, hand: [] };
+  while(true) {
+    player.hand = [];
+    const deck = createBaccaratDeck();
+    const banker: Person = { name: "Banker", password: "", 
+                             balance: 0, hand: [] };
 
-  // Prompts the player for their bet amount, 
-  // displaying their current wallet balance.
-  const prompt = "You have $" + player.balance + 
-                 ". How much would you like to bet? ";
-  const bet = await readUserInput(prompt, player.balance);
-  
-  console.log("Welcome to Baccarat!");
-  
-  const options = "1. Bet on Player hand\n" +
-                  "2. Bet on Banker hand\n" +
-                  "3. Bet on a tie\n" +
-                  "4. Bet on a player pair\n" +
-                  "5. Bet on a banker pair\n";
-  let userInput = await readUserInput(options, 5);
-  
-  await dealInitialCards(deck, player);
-  await dealInitialCards(deck, banker);
+    // Prompts the player for their bet amount, 
+    // displaying their current wallet balance.
+    const prompt = "You have $" + player.balance + 
+                  ". How much would you like to bet? ";
+    const bet = await readUserInput(prompt, player.balance);
+    
+    console.log("Welcome to Baccarat!");
+    
+    const options = "1. Bet on Player hand\n" +
+                    "2. Bet on Banker hand\n" +
+                    "3. Bet on a tie\n" +
+                    "4. Bet on a player pair\n" +
+                    "5. Bet on a banker pair\n";
+    let userInput = await readUserInput(options, 5);
+    
+    await dealInitialCards(deck, player);
+    await dealInitialCards(deck, banker);
 
 
-  // The final hand of the player and the banker
-  const finalPlayerHand = await playerHand(deck, player);
-  const finalBankerHand = await bankerHand(deck, banker, player);
-  
-  await showHand(player);
-  await showHand(banker);
+    // The final hand of the player and the banker
+    const finalPlayerHand = await playerHand(deck, player);
+    const finalBankerHand = await bankerHand(deck, banker, player);
+    
+    await showHand(player);
+    await showHand(banker);
 
-  console.log("Final value for player hand: " + finalPlayerHand);
-  console.log("Final value for banker hand: " + finalBankerHand);
+    console.log("Final value for player hand: " + finalPlayerHand);
+    console.log("Final value for banker hand: " + finalBankerHand);
 
-  const { outcome, winnings } = await decideOutcome(finalPlayerHand,
-                                                    finalBankerHand, player.hand, 
-                                                    banker.hand, userInput);
+    const { outcome, winnings } = await decideOutcome(finalPlayerHand,
+                                                      finalBankerHand, player.hand, 
+                                                      banker.hand, userInput);
 
-  // Manages potential winnings and losses.
-  if (outcome === "Win") {
-    console.log("You win");
-    player.balance += Number(bet) * winnings;
-  } else {
-    console.log("You lose");
-    player.balance -= Number(bet);
+    // Manages potential winnings and losses.
+    if (outcome === "Win") {
+      console.log("You win");
+      player.balance += Number(bet) * winnings;
+    } else {
+      console.log("You lose");
+      player.balance -= Number(bet);
+    }
+    
+    if (player.balance <= 0) {
+      console.log("You've run out of funds! Game over.");
+      break;
+    } else {}
+
+    const playAgainOptions = "Would you like to play again? Yes(1) or No(2): ";
+    userInput = await readUserInput(playAgainOptions, 2);
+    
+    if (userInput === "1") {
+      continue
+    } else {break}
   }
-  
-  if (player.balance <= 0) {
-    console.log("You've run out of funds! Game over.");
-  } else {}
-
-  const playAgainOptions = "Would you like to play again? Yes(1) or No(2): ";
-  userInput = await readUserInput(playAgainOptions, 2);
-  if (userInput === "1") {
-    startGame(player);  
-  } else {}
 }
 

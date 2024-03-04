@@ -1,12 +1,12 @@
 import * as readline from 'readline';
-import { readUserInput } from '../../userInput/readUserInput';
-import { Person, createPerson } from '../../Player/Player';
-import { head, list, List, pair, tail, is_null, to_string as display_list, empty_list } from '../../lib/list';
+import { readUserInput } from '../../Utilities/userInput/readUserInput';
+import { Person, createPerson } from '../../Utilities/Player/Player';
+import { head, list, List, pair, tail, is_null, 
+         to_string as display_list, empty_list } from '../../Utilities/list';
 
 
 // All possible bets
 export type BetType = EvenMoney | TwoToOne | RestOfBets | "";
-
 
 // All of the bets where you win the same amount you bet.
 type EvenMoney = Color | LowHigh | EvenOdd;
@@ -31,30 +31,18 @@ type Dozens = 4 | 5 | 6;
 // The rest of the bets with different odds depending on the specific bet. 
 type RestOfBets = "Single" | "Split" | "Street" | "Corner" | "DoubleStreet";
 
-
-
-/** ODDS
- * single: 35:1
- * split: 17:1
- * street: 11:1
- * corner: 8:1
- * double street: 5:1
- * columns/dozens: 2:1
- * red/black/odd/even/high/low(18 numbers): 1:1
- */
 type stake = number;
 
 // bettype, money betted, numbers betted on
 export type bet = [BetType, stake, Array<number>];
 
-
 // Global variable to keep track of all red numbers:
 const redNumbers = [1, 3, 5, 7, 9, 12, 14, 16, 18, 
                     19, 21, 23, 25, 27, 30, 32, 34, 36];
+
 const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12], 
                  [13,14,15], [16,17,18], [19,20,21], [22,23,24], 
                  [25,26,27], [28,29,30], [31,32,33], [34,35,36]];
-
 
 
 /**
@@ -63,22 +51,30 @@ const streets = [[1,2,3], [4,5,6], [7,8,9], [10,11,12],
  * @param allBets All bets that the player has chosen before the spin 
  * which is set to empty at the start of the game
  */                 
-export async function startGame(person: Person, allBets: List<bet> = empty_list()): Promise<void> {
+export async function startGame(person: Person, 
+                                allBets: List<bet> = empty_list())
+                                : Promise<void> {
     // could add print_options from login
-    console.log("WELCOME TO ROULETTE YOU HAVE " + person.balance.toString() + " DOLLARS");
     while(true){
-        const before = person.balance;
-        await playerMove(person, allBets);
+        if(person.balance === 0){
+            console.log("UNFORTUNATELY YOU'RE OUT OF FUNDS COME BACK LATER");
+            break;            
+        }else {
+            console.log("WELCOME TO ROULETTE YOU HAVE " + 
+                        person.balance.toString() + " DOLLARS");
+            const before = person.balance;
+            await playerMove(person, allBets);
 
-        computerMove(person, before, allBets);
+            computerMove(person, before, allBets);
+        
+            const prompt = "Want to play more?: Yes(1) or No(2)\n";
+            const userInput = await readUserInput(prompt, 2);
 
-        const prompt = "Want to play more?: Yes(1) or No(2)\n";
-        const userInput = await readUserInput(prompt, 2);
-
-        if(userInput === "1") {
-            allBets = empty_list();
-        }else{
-            break;
+            if(userInput === "1") {
+                allBets = empty_list();
+            }else{
+                break;
+            }
         }
     }
 }
@@ -90,38 +86,37 @@ export async function startGame(person: Person, allBets: List<bet> = empty_list(
  * @param before amount of money the player had before playing
  * @param allBets a list of bets submitted by the player
  */
-export function computerMove(person: Person, before: number, allBets: List<bet>): void {
+export function computerMove(person: Person, 
+                             before: number, 
+                             allBets: List<bet>): void {
     // Spin the wheel and call the calculatewinnings functions 
-        // and register the payout to the account
-        const winningNumber = spin();
-        console.log("WINNING NUMBER IS: " + winningNumber);
-        console.log();
-        const winnings = calculateWinnings(allBets, winningNumber);
-        person.balance += winnings;
-        const delta = person.balance - before;
-        
-        const str = delta > 0 ? "YOU WON " + delta + " DOLLARS" : delta < 0 ? "YOU LOST " + Math.abs(delta) + " DOLLARS" : "YOU BROKE EVEN";
-        console.log(str);        
-        console.log("Balance after: ", 
-                    person.balance);
+    // and register the payout to the account
+    const winningNumber = spin();
+    console.log("WINNING NUMBER IS: " + winningNumber);
+    console.log();
+    const winnings = calculateWinnings(allBets, winningNumber);
+    person.balance += winnings;
+    const delta = person.balance - before;
+    
+    const str = delta > 0 
+                ? "YOU WON " + delta + " DOLLARS" 
+                : delta < 0 
+                ? "YOU LOST " + Math.abs(delta) + " DOLLARS" 
+                : "YOU BROKE EVEN";
+    console.log(str);        
+    console.log("Balance after: ", 
+                person.balance);
 }
-
 
 /**
  * Manages the player's move in the roulette game.
  * @param person The player represented as a Person object.
  * @param allBets a list of bets submitted by the player
  */
-export async function playerMove(person: Person, allBets: List<bet>): Promise<void> {
+export async function playerMove(person: Person, 
+                                 allBets: List<bet>): Promise<void> {
     console.log("YOU HAVE " + person.balance + " DOLLARS TO BET WITH");
-    
     const stake = await addBetAmount(person);
-    //person add bet
-
-    // type of bet:
-    // 1. numbers bet (single, split, street, corner, doublestreet)
-    // 2. even bets (RedBlack, EvenOdd, LowHigh)
-    // 3. Columns or dozens
 
     const bet: bet = await buildABet(stake);
     // place bets and register bets
@@ -143,8 +138,7 @@ export async function playerMove(person: Person, allBets: List<bet>): Promise<vo
  * @return number between 0 and 36
  */
 export function spin(): number{
-    // 0-36
-    return Math.floor(Math.random()*37);
+    return Math.floor(Math.random() * 37);
 }
 
 
@@ -177,7 +171,6 @@ export async function buildABet(stake: stake): Promise<bet> {
                    "\n3. Columns or dozens\n";
     const userInput = await readUserInput(prompt, 3);
     const bet: bet = ["", stake, []];
-    
 
     if (userInput === "1"){
         await numberBet(bet);
@@ -219,14 +212,15 @@ export async function numberBet(bet: bet): Promise<void> {
         bet[2][0] = first;
         const numbers: Array<number> = [];
 
+        // check line to ensure right amount of adjacent numbers
         if (first % 3 === 0) {
-            // High up
+            // Highest line
             amount = numbers.push(first - 1, first + 3, first - 3);
         } else if (first % 3 === 1) {
-            // Lowest
+            // Lowest line
             amount = numbers.push(first + 1, first + 3, first - 3);
         } else {
-            // Middle
+            // Middle line
             amount = numbers.push(first - 1, first + 1, first + 3, first - 3);
         }
 
@@ -236,7 +230,6 @@ export async function numberBet(bet: bet): Promise<void> {
         for (let i = 0; i < amount; i++) {
             if (numbers[i] < 1 || numbers[i] > 36) {
                 moved++;
-                numbers[i] = -1;
             } else {
                 str += "nr: " + numbers[i].toString() + 
                        " (" + (i - moved + 1).toString() + "), ";
@@ -270,7 +263,9 @@ export async function numberBet(bet: bet): Promise<void> {
             // Go left
             second = first - 3;
         } else {
-            inp = await readUserInput("Go left to " + (first-3).toString() + " (1) or right to " + (first+3).toString() + " (2): \n", 2);  
+            inp = await readUserInput("Go left to " + (first-3).toString() +
+                                      " (1) or right to " + 
+                                      (first+3).toString() + " (2): \n", 2);  
             second = Number(inp) === 1 ? first - 3 : first + 3;
         }
 
@@ -288,6 +283,7 @@ export async function numberBet(bet: bet): Promise<void> {
         bet[2] = Number(inp) === 1 
                  ? [first, first - 1, second, second - 1] 
                  : [first, first + 1, second, second + 1];
+
     } else if (inp === "6") {
         // Doublestreet
         bet[0] = "DoubleStreet";
@@ -296,9 +292,17 @@ export async function numberBet(bet: bet): Promise<void> {
         bet[2][0] = first;
 
         // CHECK IF STREET IS OUTSIDE OF SCOPE
-        inp = await readUserInput("Choose second street: street " + 
+        if(first-1===0){
+            console.log("SECOND STREETNR IS 2");            
+            inp = (2).toString();
+        }else if(first+1===13){
+            console.log("SECOND STREETNR IS 11"); 
+            inp = (1).toString();
+        }else{
+            inp = await readUserInput("Choose second street: street " + 
                                   (first - 1).toString() + " (1) or street " + 
                                   (first + 1).toString()+ " (2):\n", 2);
+        }
 
         bet[2][1] = Number(inp) === 1 ? first - 1 : first + 1;
     } else {} 
@@ -395,8 +399,8 @@ export function calculateWinnings(bets: List<bet>, number: number): number {
     if (is_null(bets)) {
         return 0;
     } else {
-        return calcPayout(head(bets), number) + calculateWinnings(tail(bets),
-                                                                  number);
+        return calcPayout(head(bets), number) + 
+               calculateWinnings(tail(bets), number);
     }
 }
 
@@ -414,12 +418,12 @@ export function calcPayout(bet: bet, number: number): number {
            : typeOfBet === "Split" 
            ? calcSplit(bet[2], bet[1], number) 
            : typeOfBet === "Street"
-           ? calcStreet(bet[2], bet[1], number) 
+           ? calcStreet(bet[2][0], bet[1], number) 
            : typeOfBet === "Corner" 
            ? calcCorner(bet[2], bet[1], number) 
            : typeOfBet === "DoubleStreet" 
            ? calcDoubleStreet(bet[2], bet[1], number) 
-           : typeOfBet === ("Red" || "Black") //here
+           : typeOfBet === ("Red" || "Black") 
            ? calcRedOrBlack(typeOfBet, bet[1], number) 
            : typeOfBet === ("Even" || "Odd") 
            ? calcEvenOrOdd(typeOfBet, bet[1], number) 
@@ -427,7 +431,7 @@ export function calcPayout(bet: bet, number: number): number {
            ? calcLowOrHigh(typeOfBet, bet[1], number) 
            : typeOfBet ===  (1 || 2 || 3) 
            ? calcColumns(typeOfBet, bet[1], number) 
-           : typeOfBet ===  (4 || 5 || 6) //to here
+           : typeOfBet ===  (4 || 5 || 6) 
            ? calcDozens(typeOfBet, bet[1], number) 
            : 0;
 }
@@ -435,29 +439,31 @@ export function calcPayout(bet: bet, number: number): number {
 
 /**
  * Calculates the payout for a bet on a single number.
- * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, Array<number>].
+ * @param bet Array of numbers betted on.
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-export function calcSingle(bet: Array<number>, stake: stake, number: number): number {
+export function calcSingle(bet: Array<number>, 
+                           stake: stake, 
+                           number: number): number {
     return bet[0] === number ? stake * 36 : 0;
 }
 
 /**
  * Calculates the payout for a split bet placed on two adjacent numbers.
- * This function validates that the bet is placed on numbers within the valid range (1-36)
- * and that the numbers are adjacent on the roulette table. It returns the payout amount
- * if one of the bet numbers matches the winning number and the bet is valid.
- * 
- * @param bet An array containing two numbers on which the split bet is placed.
+ * This function validates that the bet is placed on numbers within the 
+ * valid range (1-36) and that the numbers are adjacent on the roulette table. 
+ * It returns the payout amount if one of the bet numbers matches the winning 
+ * number and the bet is valid.
+ * @param bet An array containing two valid numbers on which the split bet is placed.
  * @param stake The amount of money staked on the bet.
  * @param number The winning number of the roulette spin.
  * @returns The payout amount if the bet wins, otherwise 0.
  */
 export function calcSplit(bet: Array<number>, 
-                          stake: stake, number: number): number {
+                          stake: stake, 
+                          number: number): number {
     // Validate numbers are within the roulette table range
     if (bet.some(num => num < 1 || num > 36)) {
         return 0; // No payout for numbers outside the valid range
@@ -477,61 +483,64 @@ export function calcSplit(bet: Array<number>,
 /**
  * Calculates the payout for a bet on a street. This is three consecutive
  *  numbers in a horizontal line.
- * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, Array<number>].
+ * @param index index pointing to a place in street array 
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-export function calcStreet(bet: Array<number>, stake: stake, number: number): number {
-    return (streets[bet[0]].includes(number)) ? stake * 12 : 0;
+export function calcStreet(index: number, 
+                           stake: stake, 
+                           number: number): number {
+    return (streets[index].includes(number)) ? stake * 12 : 0;
 }
 
 /**
  * Calculates the payout for a bet on a corner. This is when four numbers meet
  * at one corner.
- * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, Array<number>].
+ * @param bet Array consisting of numbers betted on.
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-export function calcCorner(bet: Array<number>, stake: stake, number: number): number {
-    return (number >= bet[0] && number <= bet[0] + 4) ? stake * 8 : 0;
+export function calcCorner(bet: Array<number>, 
+                           stake: stake,
+                           number: number): number {
+    return (bet.includes(number)) ? stake * 8 : 0;
 }
 
 
 /**
  * Calculates the payout for a bet placed on a double street. This is six 
  * consecutive numbers that form two horizontal lines.
- * @param bet An array of bets placed, where each bet is 
- *            represented by [BetType, stake, Array<number>].
+ * @param indexes An array of indexes each pointing to an index in the street array.
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-export function calcDoubleStreet(bet: Array<number>, 
-                          stake: stake, number: number): number {
-    return (streets[bet[0]].includes(number) || streets[bet[1]].includes(number)) 
-           ? stake * 6 
-           : 0;
+export function calcDoubleStreet(indexes: Array<number>, 
+                                 stake: stake, 
+                                 number: number): number {
+    let ret = 0;
+
+    indexes.forEach(index => {   
+        ret += calcStreet(index,stake,number);
+    });
+    
+    return ret / 2;
 }
 
 /**
- * Calculates the payout for a bet placed on either red or black numbers.
- * This function includes a check for special cases (0 and 00), which are traditionally
- * not considered either red or black, and returns a payout based on whether the winning
- * number matches the bet's color selection.
+ * Calculates the payout for a bet placed on either red or black numbers 
+ * and returns a payout based on whether the winning number 
+ * matches the bet's color selection.
  * @param redOrBlack - The color selected for the bet (Red or Black).
  * @param stake - The amount of stake placed on the bet.
  * @param number - The winning number in the roulette game.
  * @returns The payout for the placed bet if it wins, otherwise 0.
  */
-export function calcRedOrBlack(redOrBlack: Color, stake: number, number: number): number {
-    if (number === 0 || number === 37) {
-        return 0; 
-    }
-
+export function calcRedOrBlack(redOrBlack: Color, 
+                               stake: number, 
+                               number: number): number {
     if (redOrBlack === Color.Red) {
         return redNumbers.includes(number) ? stake * 2 : 0;
     } else {
@@ -541,14 +550,15 @@ export function calcRedOrBlack(redOrBlack: Color, stake: number, number: number)
 
 /**
  * Calculates the payout for a bet placed on either even or odd numbers.
- * Special consideration is given to the number 0, which is neither even nor odd,
- * resulting in no payout for bets on even or odd if the winning number is 0.
+ * Special consideration is given to the number 0, which is neither even nor odd.
  * @param evenOrOdd - The type of selection for the bet (Even or Odd).
  * @param stake - The amount of stake placed on the bet.
  * @param number - The winning number in the roulette game.
  * @returns The payout for the placed bet if it wins, otherwise 0.
  */
-export function calcEvenOrOdd(evenOrOdd: EvenOdd, stake: number, number: number): number {
+export function calcEvenOrOdd(evenOrOdd: EvenOdd, 
+                              stake: number, 
+                              number: number): number {
     if (number === 0) {
         return 0;
     }
@@ -568,15 +578,17 @@ export function calcEvenOrOdd(evenOrOdd: EvenOdd, stake: number, number: number)
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-export function calcLowOrHigh(lowOrHigh: LowHigh, stake: stake, number: number): number {
+export function calcLowOrHigh(lowOrHigh: LowHigh, 
+                              stake: stake, 
+                              number: number): number {
     if (lowOrHigh === LowHigh.Low) {
-        if (number <= 18) {
+        if (number <= 18 && number > 0) {
             return stake * 2;
         } else {
             return 0;
         }
     } else {
-        if (number >= 19) {
+        if (number >= 19 && number > 0) {
             return stake * 2;
         } else {
             return 0;
@@ -592,8 +604,10 @@ export function calcLowOrHigh(lowOrHigh: LowHigh, stake: stake, number: number):
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-export function calcColumns(column: Columns, stake: stake, number: number): number {
-    if ((number - column) % 3 === 0) {
+export function calcColumns(column: Columns, 
+                            stake: stake, 
+                            number: number): number {
+    if ((number - column) % 3 === 0 && number > 0) {
         return stake * 3;
     } else {
         return 0;
@@ -603,12 +617,14 @@ export function calcColumns(column: Columns, stake: stake, number: number): numb
 
 /**
  * Calculates the payout for a bet placed on a dozen.
- * @param column The dozen selected for the bet.
+ * @param dozens The dozen selected for the bet.
  * @param stake The amount of stake placed on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the placed bet.
  */
-export function calcDozens(dozens: Dozens, stake: stake, number: number): number {
+export function calcDozens(dozens: Dozens, 
+                           stake: stake, 
+                           number: number): number {
     // To match the indexes of the dozens.
     dozens -= 3;
     
@@ -632,4 +648,3 @@ export function calcDozens(dozens: Dozens, stake: stake, number: number): number
         }
     } 
 }
-

@@ -1,8 +1,7 @@
-import { readUserInput } from "../../../userInput/readUserInput";
+import { readUserInput } from "../../../Utilities/userInput/readUserInput";
 import { createBlackjackDeck, Card, 
          dealInitialCards, showHand, Deck} from "../Deck/Deck";
-import { Person, createPerson} from "../../../Player/Player";
-
+import { Person, createPerson} from "../../../Utilities/Player/Player";
 
 /**
  * Calculates the total value of a hand in Blackjack, taking into account the 
@@ -77,11 +76,11 @@ export async function playerTurn(deck: Array<Card>, player: Person, originalBet:
       playerTotal = calculateHandValue(player.hand);
       break;
     } else if (hitOrStand === "1") {
-      player.hand.push(deck.pop()!);
-      console.log("You drew a card.");
-      playerTotal = calculateHandValue(player.hand);
+        player.hand.push(deck.pop()!);
+        console.log("You drew a card.");
+        playerTotal = calculateHandValue(player.hand);
     } else if (hitOrStand === "2") {
-      break; // Player chooses to stand
+        break; 
     }
   }
 

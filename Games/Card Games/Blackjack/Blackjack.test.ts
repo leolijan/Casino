@@ -1,17 +1,14 @@
 // Blackjack.test.ts
+import { calculateHandValue, checkForBlackjack, getBet,
+         playerTurn, dealerTurn, startGame } from './Blackjack';
+import { readUserInput } from '../../../Utilities/userInput/readUserInput';
 import {
-  calculateHandValue, checkForBlackjack, getBet, playerTurn, dealerTurn, startGame
-} from './Blackjack';
-import { readUserInput } from '../../../userInput/readUserInput';
-import {
-  Card, createBlackjackDeck, showHand, dealInitialCards
+  Card, createBlackjackDeck
 } from '../Deck/Deck';
-import { Person } from '../../../Player/Player';
+import { Person } from '../../../Utilities/Player/Player';
 
-// Utility function to create Card objects
 const createCard = (value: number, suit: string): Card => ({ value, suit });
 
-// Setting up a mock player according to the Person type
 const mockPlayer: Person = {
   name: "Test Player",
   password: "dummyPassword",
@@ -20,6 +17,7 @@ const mockPlayer: Person = {
 };
 
 describe("Blackjack Functionality", () => {
+  
   describe("calculateHandValue", () => {
     test("correctly calculates hand value without Aces", () => {
       const hand = [createCard(2, "Hearts"), createCard(10, "Spades")];
@@ -28,14 +26,18 @@ describe("Blackjack Functionality", () => {
 
     test("adjusts Ace value to prevent bust", () => {
       const hand = [
-        createCard(14, "Hearts"), createCard(9, "Spades"), createCard(5, "Clubs")
+        createCard(14, "Hearts"), 
+        createCard(9, "Spades"), 
+        createCard(5, "Clubs")
       ];
       expect(calculateHandValue(hand)).toBe(15);
     });
 
     test("adjusts Ace value to prevent bust", () => {
       const hand = [
-        createCard(13, "Hearts"), createCard(9, "Spades"), createCard(5, "Clubs")
+        createCard(13, "Hearts"), 
+        createCard(9, "Spades"), 
+        createCard(5, "Clubs")
       ];
       expect(calculateHandValue(hand)).toBe(24);
     });
@@ -43,12 +45,16 @@ describe("Blackjack Functionality", () => {
 
   describe("checkForBlackjack", () => {
     test("returns true for blackjack hand", () => {
-      const hand = [createCard(14, "Hearts"), createCard(10, "Diamonds")];
+      const hand = [createCard(14, "Hearts"), 
+                    createCard(10, "Diamonds")];
+
       expect(checkForBlackjack(hand)).toBeTruthy();
     });
 
     test("returns false for non-blackjack hand", () => {
-      const hand = [createCard(8, "Clubs"), createCard(9, "Hearts")];
+      const hand = [createCard(8, "Clubs"), 
+                    createCard(9, "Hearts")];
+
       expect(checkForBlackjack(hand)).toBeFalsy();
     });
   });
@@ -71,7 +77,9 @@ describe("Blackjack Game Mechanics", () => {
   describe("playerTurn", () => {
     beforeEach(() => {
       jest.clearAllMocks();
-      mockPlayer.hand = [createCard(8, "Hearts"), createCard(6, "Spades")];
+      mockPlayer.hand = [createCard(8, "Hearts"), 
+                         createCard(6, "Spades")];
+
       mockPlayer.balance = 1000;
       (readUserInput as jest.Mock).mockClear();
     });
@@ -124,12 +132,10 @@ describe("Blackjack Game Mechanics", () => {
   
 });
 
-// Mocking readUserInput and Deck module
-jest.mock('../../../userInput/readUserInput', () => ({
+jest.mock('../../../Utilities/userInput/readUserInput', () => ({
   readUserInput: jest.fn(),
 }));
 
-// Adjusting the jest.mock('../Deck/Deck') call to include dealInitialCards
 jest.mock('../Deck/Deck', () => ({
   createBlackjackDeck: jest.fn(() => [
     { value: 10, suit: 'Hearts' }, // Simulate a simplified deck
@@ -185,7 +191,6 @@ describe("startGame function", () => {
     expect(mockPlayer.balance).toBeGreaterThan(1000);
   });
 });
-
 
 describe("startGame - Outcomes", () => {
   beforeEach(() => {

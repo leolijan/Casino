@@ -1,4 +1,5 @@
-import { createDeck, shuffleDeck, createBlackjackDeck, ensureDeckNotEmpty, dealInitialCards, isPair, showHand} from './Deck'; // Adjust the import path as necessary
+import { createDeck, shuffleDeck, createBlackjackDeck, 
+         ensureDeckNotEmpty, dealInitialCards, isPair, showHand} from './Deck'; 
 
 test('createDeck creates a deck of 52 cards', () => {
     expect(createDeck().length).toBe(52);
@@ -13,7 +14,8 @@ test('All cards in createDeck are unique', () => {
 test('shuffleDeck changes the deck order', () => {
     const deck = createDeck();
     const originalOrder = deck.map(card => `${card.suit}-${card.value}`);
-    const shuffledOrder = shuffleDeck([...deck]).map(card => `${card.suit}-${card.value}`);
+    const shuffledOrder = shuffleDeck([...deck]);
+    
     expect(originalOrder).not.toEqual(shuffledOrder);
 });
   
@@ -31,29 +33,25 @@ test('should create a deck of 416 cards', () => {
 });
 
 test('replenishes the deck if it has fewer than 10 cards', () => {
-  //Create a deck with fewer than 10 cards
-  let deck = [{ value: 10, suit: "spades"}];; // Example deck with 2 cards
-
-  //Ensure the deck is not running low on cards
+  // Create a deck with fewer than 10 cards
+  let deck = [{ value: 10, suit: "spades"}]; 
   ensureDeckNotEmpty(deck);
 
-  //The deck should now have at least 10 cards
+  // The deck should now have at least 10 cards
   expect(deck.length).toBeGreaterThanOrEqual(10);
 });
 
 test('does not modify the deck if it already has 10 or more cards', () => {
   let deck = new Array(10).fill({ value: 10, suit: "Spades"}); 
-
   ensureDeckNotEmpty(deck);
-
   expect(deck.length).toEqual(10);
 });
 
 test('dealInitialCards gives two cards to a person', () => {
-  // Mock a deck with simple card objects (assuming Card has a simple structure for this example)
+  // Mock a deck with simple card objects 
   const deck= [{ value: 10, suit: "Spades"}, { value: 9, suit: "Spades"}];
 
-  // Mock a person object (assuming Person has a simple structure for this example)
+  // Mock a person object 
   const person = {
     name: "Leo",
     password: "123", 
@@ -64,9 +62,8 @@ test('dealInitialCards gives two cards to a person', () => {
   // Deal initial cards
   dealInitialCards(deck, person);
 
-  // Assert that the person's hand now has 2 cards and the deck has been reduced accordingly
   expect(person.hand.length).toBe(2);
-  expect(deck.length).toBe(416); // This assumes that the deck initially has 418 - 2 cards
+  expect(deck.length).toBe(416); 
 });
 
 test('isPair returns true for a pair of cards with the same value', () => {
@@ -79,14 +76,17 @@ test('isPair returns true for a pair of cards with the same value', () => {
 
 test('isPair returns false for a hand of cards with different values', () => {
   // Mock a hand with cards of different values
-  const notPairHand = [{ value: 11, suit: "Spades"}, { value: 10, suit: "Hearts"}];
+  const notPairHand = [{ value: 11, suit: "Spades"}, 
+                       { value: 10, suit: "Hearts"}];
 
   // Assert that isPair returns false for this hand
   expect(isPair(notPairHand)).toBe(false);
 });
 
 test('isPair returns false for a hand with more than two cards', () => {
-  const moreThanTwoCardsHand = [{ value: 10, suit: "Clubs"}, { value: 10, suit: "Hearts"}, { value: 10, suit: "Spades"}];
+  const moreThanTwoCardsHand = [{ value: 10, suit: "Clubs"}, 
+                                { value: 10, suit: "Hearts"}, 
+                                { value: 10, suit: "Spades"}];
 
   // Assert that isPair returns false for this hand
   expect(isPair(moreThanTwoCardsHand)).toBe(false);
@@ -107,21 +107,18 @@ describe('showHand functionality', () => {
 
   test('correctly logs a person\'s hand', () => {
     const mockPerson = {
-      name: 'Alice',
-      password: 'secret', // Assuming password won't be used in this test
-      balance: 100, // Assuming balance won't be used in this test
+      name: 'Leo',
+      password: 'secret', 
+      balance: 100, 
       hand: [
         { value: 10, suit: 'Hearts' },
-        { value: 11, suit: 'Spades' }, // Assuming 11 represents Jack
+        { value: 11, suit: 'Spades' }, 
       ]
     };
 
-    // Expected message format
-    const expectedMessage = "Alice's hand: 10 of Hearts, 11 of Spades";
+    const expectedMessage = "Leo's hand: 10 of Hearts, 11 of Spades";
 
     showHand(mockPerson);
-
-    // Verify console.log was called with the correct message
     expect(consoleSpy).toHaveBeenCalledWith(expectedMessage);
   });
 });

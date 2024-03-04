@@ -1,10 +1,10 @@
-import { Person } from "../../../Player/Player";
+import { Person } from "../../../Utilities/Player/Player";
 export type Card = { value: number; suit: string };
 export type Deck = Array<Card>; 
 
 /**
  * Creates and returns a shuffled deck of cards.
- * @returns {Deck} A deck of shuffled cards.
+ * @returns A deck of shuffled cards.
  */
 export function createDeck(): Deck {
     const suits: Array<string> = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
@@ -22,8 +22,8 @@ export function createDeck(): Deck {
 
 /**
  * Shuffles the given deck of cards.
- * @param {Deck} cards - The deck of cards to be shuffled.
- * @returns {Deck} The shuffled deck of cards.
+ * @param cards - The deck of cards to be shuffled.
+ * @returns The shuffled deck of cards.
  */
 export function shuffleDeck(cards: Deck): Deck {
     for (let i = cards.length - 1; i > 0; i--) {
@@ -57,10 +57,10 @@ export function createBlackjackDeck(): Deck {
 }
 
 /**
- * Ensures the deck is not running low on cards. If the deck has fewer than 10 cards,
- * a new shuffled deck is created and added to the existing deck to replenish it.
- *
- * @param {Array<Card>} deck - The current deck of cards.
+ * Ensures the deck is not running low on cards. If the deck has fewer 
+ * than 10 cards, a new shuffled deck is created and added to the 
+ * existing deck to replenish it.
+ * @param deck - The current deck of cards.
  */
 export function ensureDeckNotEmpty(deck: Array<Card>): void {
     if (deck.length < 10) {
@@ -73,12 +73,15 @@ export function ensureDeckNotEmpty(deck: Array<Card>): void {
  * Deals two initial cards from the deck to a person's hand.
  * This function assumes that the deck has at least two cards.
  *
- * @param {Array<Card>} deck - The deck of cards to deal from.
- * @param {Person} person - The person receiving the initial cards.
+ * @param deck - The deck of cards to deal from.
+ * @param person - The person receiving the initial cards.
  */
 export function dealInitialCards(deck: Array<Card>, person: Person): void {
-    ensureDeckNotEmpty(deck); // Ensures the deck is not empty
-    person.hand.push(deck.pop()!, deck.pop()!); // Adds two cards to the person's hand
+    // Ensures the deck is not empty
+    ensureDeckNotEmpty(deck); 
+
+    // Adds two cards to the person's hand
+    person.hand.push(deck.pop()!, deck.pop()!); 
   }
   
 /**
@@ -87,8 +90,8 @@ export function dealInitialCards(deck: Array<Card>, person: Person): void {
  * @example
  * isPair(hand); // returns true
  *
- * @param {Array<Card>} hand - The hand to check for a pair.
- * @returns {boolean} - Returns true if the hand is a pair; otherwise, false.
+ * @param hand - The hand to check for a pair.
+ * @returns - Returns true if the hand is a pair; otherwise, false.
  */
 export function isPair(hand: Array<Card>): boolean {
     if (hand.length !== 2) return false;
@@ -98,10 +101,12 @@ export function isPair(hand: Array<Card>): boolean {
 /**
  * Prints a summary of a person's hand to the console.
  *
- * @param {Person} person - The person whose hand will be displayed.
+ * @param person - The person whose hand will be displayed.
  */
 export function showHand(person: Person): void {
     // Building the string representation of the hand
-    const handRepresentation = person.hand.map(card=> `${card.value} of ${card.suit}`).join(', ');
-    console.log(`${person.name}'s hand: ${handRepresentation}`);
+    const hand = person.hand.map(card => 
+                                    `${card.value} of ${card.suit}`).join(', ');
+                                    
+    console.log(`${person.name}'s hand: ${hand}`);
 }
