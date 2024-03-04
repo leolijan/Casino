@@ -32,11 +32,14 @@ export async function readUserInput(prompt: string,
 
 /**
  * Asynchronously reads user input from the console with a specified prompt.
- * This version is simplified and does not include checks for maximum input length or specific exit commands.
- * It's designed to provide a basic interface for user input in console applications.
+ * This version is simplified and does not include checks for maximum input 
+ * length or specific exit commands.
+ * It's designed to provide a basic interface for user input 
+ * in console applications.
  * 
  * @example
- * readUserInputBasic("Please enter your name: ").then(name => console.log(`Hello, ${name}!`));
+ * readUserInputBasic("Please enter your name: ").then(name => 
+ * console.log(`Hello, ${name}!`));
  *
  * @param prompt The message displayed to the user before waiting for input.
  * @returns The user input as a string.

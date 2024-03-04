@@ -1,4 +1,3 @@
-// Assuming the file name is readUserInput.test.ts
 import { readUserInput, readUserInputBasic, check } from './readUserInput';
 
 const mockQuestion = jest.fn();
@@ -19,7 +18,6 @@ jest.mock('process', () => ({
 describe('readUserInputBasic', () => {
     beforeEach(() => {
       jest.clearAllMocks();
-      // Resetting mock implementation specifically for readUserInputBasic before each test
       mockQuestion.mockImplementation((prompt, cb) => cb('user input'));
     });
 
@@ -32,9 +30,9 @@ describe('readUserInputBasic', () => {
 describe('readUserInput', () => {
   beforeEach(() => {
     jest.clearAllMocks();
-    // Reset mock implementation for readUserInput tests
-    mockQuestion.mockImplementationOnce((prompt, callback) => callback('4')) // Simulate invalid input
-                .mockImplementationOnce((prompt, callback) => callback('1')); // Then valid input
+    // First simulate invalid input, then valid input.
+    mockQuestion.mockImplementationOnce((prompt, callback) => callback('4')) 
+                .mockImplementationOnce((prompt, callback) => callback('1'));
   });
 
   test('should eventually return valid input after invalid input', async () => {
@@ -43,12 +41,12 @@ describe('readUserInput', () => {
         "2": "Register",
         "3": "Quit"
       };
-    const input = await readUserInput('Choose an option: ', Object.keys(menu_options).length);
+    const input = await readUserInput('Choose an option: ', 
+                                      Object.keys(menu_options).length);
     expect(input).toBe('1');
   });
 
   test('should log "WRONG INPUT" for invalid inputs', async () => {
-    // Set up the question mock to invoke the callback with an invalid answer
     mockQuestion.mockImplementationOnce((prompt, callback) => {
       callback('invalid'); // Simulate an answer that would fail the check
     }).mockImplementationOnce((prompt, callback) => {
@@ -58,26 +56,28 @@ describe('readUserInput', () => {
     // Spy on console.log to verify that "WRONG INPUT" is logged
     const consoleSpy = jest.spyOn(console, 'log');
 
-    // Execute readUserInput with a max value that 'invalid' would not satisfy
     await readUserInput('Enter a choice: ', 3);
 
     // Verify "WRONG INPUT" was logged
     expect(consoleSpy).toHaveBeenCalledWith("WRONG INPUT");
 
-    // Clean up
     consoleSpy.mockRestore();
   });
 });
 
 describe('check', () => {
-    const max = 3; // Example max value based on menu_options
+    const max = 3; 
   
-    test.each([1, 2, 3])('should return true for valid inputs within range', (input) => {
-      expect(check(input.toString(), max)).toBe(true);
+    test.each([1, 2, 3])('should return true for valid inputs within range', 
+                         (input) => {
+                                      expect(check(input.toString(), 
+                                                   max)).toBe(true);
     });
   
-    test.each([0, 4, -1, 100])('should return false for numeric inputs outside range', (input) => {
-      expect(check(input.toString(), max)).toBe(false);
+    test.each([0, 4, -1, 100])('should return false', 
+                               (input) => {
+                                           expect(check(input.toString(), 
+                                                        max)).toBe(false);
     });
   
     test.each(['a', '', ' ', 'one'])('should return false for non-numeric inputs', (input) => {

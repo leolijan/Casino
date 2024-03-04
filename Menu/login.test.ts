@@ -1,8 +1,8 @@
 import * as fs from 'fs';
 import * as bcrypt from 'bcrypt';
 import { loadUserData, saveUserData, login, newUser, AllUsers, insert_money, loggedIn, menu} from './login';
-import {readUserInput, readUserInputBasic} from '../userInput/readUserInput';
-import { Person, createPerson } from '../Player/Player';
+import {readUserInput, readUserInputBasic} from '../Utilities/userInput/readUserInput';
+import { Person, createPerson } from '../Utilities/Player/Player';
 import { startGame as startBlackjack } from '../Games/Card Games/Blackjack/Blackjack';
 import { startGame as startBaccarat } from '../Games/Card Games/Baccarat/Baccarat';
 import { startGame as startRoulette } from '../Games/Roulette/roulette';
@@ -18,7 +18,7 @@ jest.mock('bcrypt', () => ({
   hash: jest.fn().mockImplementation((password, saltRounds) => Promise.resolve('hashed_password')) // Mock hash to return 'hashed_password'
 }));
 
-jest.mock('../userInput/readUserinput', () => ({
+jest.mock('../Utilities/userInput/readUserInput', () => ({
   readUserInput: jest.fn(),
   readUserInputBasic: jest.fn()
 }));

@@ -1,21 +1,3 @@
 {
-  "1": {
-    "name": "1",
-    "password": "$2b$10$UBb8jR4N52MU8bVp8A3AdOM7l1Rk2ayP5o1/mB3YVnLYxtXVmiv5q",
-    "balance": 296,
-    "hand": [
-      {
-        "value": 7,
-        "suit": "Diamonds"
-      },
-      {
-        "value": 7,
-        "suit": "Spades"
-      },
-      {
-        "value": 9,
-        "suit": "Clubs"
-      }
-    ]
-  }
+  
 }

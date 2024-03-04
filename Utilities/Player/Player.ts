@@ -1,4 +1,4 @@
-import { Card } from "../Games/Card Games/Deck/Deck"
+import { Card } from "../../Games/Card Games/Deck/Deck"
 
 export type Person = {
     name: string,

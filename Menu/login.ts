@@ -1,12 +1,12 @@
 import * as bcrypt from 'bcrypt';
 import * as fs from 'fs';
-import { Person } from '../Player/Player';
+import { Person } from '../Utilities/Player/Player';
 import { startGame as startBaccarat } from '../Games/Card Games/Baccarat/Baccarat';
 import { startGame as startBlackjack } from '../Games/Card Games/Blackjack/Blackjack';
 import { startGame as startRoulette } from '../Games/Roulette/roulette';
-import { readUserInput, readUserInputBasic } from '../userInput/readUserInput';
-import { splashScreen, printOptions } from '../lib/visuals/visuals';
-import { isValidPassword } from '../lib/Password/Password';
+import { readUserInput, readUserInputBasic } from '../Utilities/userInput/readUserInput';
+import { splashScreen, printOptions } from '../Utilities/visuals/visuals';
+import { isValidPassword } from '../Utilities/Password/Password';
 
 export type AllUsers = { [username: string]: Person };
 
@@ -46,48 +46,76 @@ export function saveUserData(filePath: string, allUsers : AllUsers): void {
 
   
 /**
- * Handles the main menu for a logged-in user, allowing them to select a game to play, add money, or log out.
- * Depending on the user's choice, it will call the corresponding game start function or the insert_money function.
+ * Handles the main menu for a logged-in user, allowing them to select a game 
+ * to play, add money, or log out.
+ * Depending on the user's choice, it will call the corresponding game 
+ * start function or the insert_money function.
  *
  * @param user The username of the currently logged-in user.
  */
-export async function loggedIn(user: string, allUsers : AllUsers): Promise<void> {
-  const options: {[key: string]: string} = {
-      "1": "Blackjack",
-      "2": "Baccarat",
-      "3": "Roulette",
-      "4": "Add Money",
-      "5": "Log Out"
-  };
-  
-  printOptions(options);
+export async function loggedIn(user: string, 
+                               allUsers : AllUsers): Promise<void> {
 
-  const choice: string = await readUserInput("Option: ", 5);
+  const currentUser = allUsers[user];
 
-  console.log(); // Add a newline for better formatting
-  
-  if (choice === "1") {
-      await startBlackjack(allUsers[user]);
-  } else if (choice === "2") {
-      await startBaccarat(allUsers[user]);
-  } else if (choice === "3") {
-      await startRoulette(allUsers[user]);
-  } else if (choice === "4") {
-      await insert_money(user, allUsers); // Call insert_money here
-  } else if (choice === "5") {
+  if(currentUser.balance<=0){
+    const options: {[key: string]: string} = {
+        "1": "Add Money",
+        "2": "Log Out"
+    };
+    
+    printOptions(options);
+
+    const choice: string = await readUserInput("Option: ", 2);
+
+    console.log(); // Add a newline for better formatting
+
+    if(choice==="1"){
+      await insert_money(user,allUsers);
+    }else{
       console.log("Logging out...");
       return await menu(allUsers) // Exit the loggedIn function to log out
+    }
+  }else{
+    const options: {[key: string]: string} = {
+        "1": "Blackjack",
+        "2": "Baccarat",
+        "3": "Roulette",
+        "4": "Add Money",
+        "5": "Log Out"
+    };
+    
+    printOptions(options);
+
+    const choice: string = await readUserInput("Option: ", 5);
+
+    console.log(); // Add a newline for better formatting
+    
+    if (choice === "1") {
+        await startBlackjack(currentUser);
+    } else if (choice === "2") {
+        await startBaccarat(currentUser);
+    } else if (choice === "3") {
+        await startRoulette(currentUser);
+    } else if (choice === "4") {
+        await insert_money(user, allUsers); // Call insert_money here
+    } else {
+        console.log("Logging out...");
+        return await menu(allUsers) // Exit the loggedIn function to log out
+    }
   }
-  await loggedIn(user, allUsers); // Re-display the logged-in menu options
+  await loggedIn(user,allUsers);
 }
 
 /**
- * Prompts the user to insert money into their account. The user can select a predefined amount or enter a custom amount.
+ * Prompts the user to insert money into their account. The user can select a 
+ * predefined amount or enter a custom amount.
  * If the entered amount is valid, it is added to the user's balance.
  *
  * @param username The username of the currently logged-in user.
  */
-export async function insert_money(username: string, allUsers : AllUsers): Promise<void> {
+export async function insert_money(username: string, 
+                                   allUsers : AllUsers): Promise<void> {
   console.log("Select the amount of money to insert:");
   const moneyOptions: { [key: string]: string } = {
     "1": "100",
@@ -109,7 +137,8 @@ export async function insert_money(username: string, allUsers : AllUsers): Promi
 
   let amount: number = 0;
   if (choice === "5") {
-    const customAmountStr: string = await readUserInputBasic("Enter your custom amount: ");
+    const message : string = "Enter your custom amount: "
+    const customAmountStr: string = await readUserInputBasic(message);
     amount = parseFloat(customAmountStr);
     if (isNaN(amount) || amount <= 0) {
       console.log("Invalid amount.");
@@ -128,7 +157,8 @@ export async function insert_money(username: string, allUsers : AllUsers): Promi
   
 
 /**
- * Handles the login process, allowing a user to attempt to log in with a username and password.
+ * Handles the login process, allowing a user to attempt to log in 
+ * with a username and password.
  * Limits the number of attempts to prevent brute force attacks.
  */
 export async function login(allUsers : AllUsers): Promise<void> {
@@ -141,7 +171,8 @@ export async function login(allUsers : AllUsers): Promise<void> {
     const submittedPassword: string = await readUserInputBasic("Password: ");
     
     if (allUsers[username]) {
-      const match: boolean = await bcrypt.compare(submittedPassword, allUsers[username].password);
+      const match: boolean = await bcrypt.compare(submittedPassword, 
+                                                  allUsers[username].password);
       
       if (match) {
         console.log(`Welcome ${username}`);
@@ -160,7 +191,8 @@ export async function login(allUsers : AllUsers): Promise<void> {
 }
   
 /**
- * Allows a new user to register by choosing a username and a password. It checks if the password meets
+ * Allows a new user to register by choosing a username and a password. 
+ * It checks if the password meets
  * the required security standards and if the username is not already taken.
  */
 export async function newUser(allUsers : AllUsers): Promise<void> {
@@ -199,8 +231,10 @@ export async function newUser(allUsers : AllUsers): Promise<void> {
 }
   
 /**
- * Displays the main menu of the application, allowing users to login, register, or quit the program.
- * It handles user input and redirects to the appropriate function based on the user's choice.
+ * Displays the main menu of the application, allowing users to login, register, 
+ * or quit the program.
+ * It handles user input and redirects to the 
+ * appropriate function based on the user's choice.
  */
 export async function menu(allUsers : AllUsers): Promise<void> {
   splashScreen();
@@ -215,12 +249,12 @@ export async function menu(allUsers : AllUsers): Promise<void> {
 
   const user_input: string = await readUserInput("Option: ", 3);
   console.log(); // Add a newline for better formatting
-
+  
   if (user_input === "1") {
     await login(allUsers);
   } else if (user_input === "2") {
     await newUser(allUsers);
-    await login(allUsers); // Assume newUser logs the user in automatically after registration
+    await login(allUsers);
   } else if (user_input === "3") {
     console.log("Exiting program...");
     saveUserData(textfile, allUsers); // Save data only when exiting the program
@@ -229,7 +263,8 @@ export async function menu(allUsers : AllUsers): Promise<void> {
 }
   
 /**
- * The main entry point of the application. It initializes the application by loading user data from a file
+ * The main entry point of the application. 
+ * It initializes the application by loading user data from a file
  * and then displays the main menu to the user.
  */
 async function main(allUsers : AllUsers = {}): Promise<void> {

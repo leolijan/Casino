@@ -1,4 +1,4 @@
-import { createPerson } from '../Player/Player';
+import { createPerson } from './Player';
 
 
 test('createPerson creates a person with correct name, password, and balance', () => {
