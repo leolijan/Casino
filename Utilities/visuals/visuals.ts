@@ -34,3 +34,19 @@ export function printOptions(options: { [key: string]: string }): void {
     console.log(`${key}) ${value}`);
   }
 }
+
+/**
+ * Outputs a specified number of empty lines to the console.
+ *
+ * @example
+ * printEmptyLines(3);
+ * // Prints 3 empty lines to the console
+ *
+ * @param count The number of empty lines to print.
+ * @returns void. Outputs empty lines to the console.
+ */
+export function printEmptyLines(count: number): void {
+  for (let i = 0; i < count; i++) {
+    console.log();
+  }
+}

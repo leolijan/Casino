@@ -1,4 +1,4 @@
-import { splashScreen, printOptions } from './visuals';
+import { splashScreen, printOptions, printEmptyLines} from './visuals';
 
 describe('splashScreen', () => {
   beforeEach(() => {
@@ -34,4 +34,14 @@ describe('printOptions', () => {
     });
   });
 });
-  
+
+describe('printEmptyLines', () => {
+  test('prints the correct number of empty lines', () => {
+    const count = 3;
+    console.log = jest.fn(); // Mock console.log
+
+    printEmptyLines(count);
+
+    expect(console.log).toHaveBeenCalledTimes(count); 
+  });
+});
