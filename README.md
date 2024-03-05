@@ -5,6 +5,10 @@ Different utility files are used for all of these four major files mentioned.
 In addition, built-in modules such as "fs" and "readline" are also used to 
 handle flat files and user input. 
 
+# Installation of bcrypt
+Write in the terminal "npm install bcrypt" then write 
+"npm install @types/bcrypt --save-dev". If you still have problems running the program, write "npm  uninstall bcrypt" and then "npm install bcrypt".
+
 # Startup
 To start the casino program all of the TypeScript files needs to be compiled
 to Javascript. This can be done by using the tool Node.js. Then use the
