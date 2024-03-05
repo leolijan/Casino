@@ -13,6 +13,7 @@ Write in the terminal "npm install bcrypt" then write
 To start the casino program all of the TypeScript files needs to be compiled
 to Javascript. This can be done by using the tool Node.js. Then use the
 TypeScript compiler "tsc" to compile the TypeScript files. 
+The file where the the programm is started is called login.ts, found in Menu.
 
 # Tests
 There are test cases to every code file that is used within the program. These
