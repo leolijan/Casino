@@ -40,15 +40,13 @@ export function loadUserData(filePath: string, allUsers: AllUsers): void {
 
 /**
  * Saves the provided allUsers object's current state to a JSON file.
- *
+ * 
  * @example
  * saveUserData("path/to/userData.json", allUsers);
  * // Saves allUsers to userData.json
  *
  * @param filePath Path where user data will be saved.
  * @param allUsersObj Object containing user data.
- *
- * @returns void. Logs an error message on failure.
  * 
  * @precondition The filePath must point to a valid, accessible JSON file.
  */
@@ -64,7 +62,7 @@ export function saveUserData(filePath: string, allUsers: AllUsers): void {
 
 /**
  * Presents the main menu for a logged-in user, allowing game selection, 
- * balance top-up, or logout.
+ * inserting money, or logout.
  *
  * @example
  * // Assuming user "TestUser" is logged in with a positive balance if balance 
@@ -229,8 +227,7 @@ export async function newUser(allUsers: AllUsers): Promise<void> {
 
 /**
  * Displays the main menu of the application, allowing users to login, register, 
- * or quit the program.
- * It handles user input and redirects to the 
+ * or quit the program. It handles user input and redirects to the 
  * appropriate function based on the user's choice.
  * @param allUsers Object containing existing user information.
  */

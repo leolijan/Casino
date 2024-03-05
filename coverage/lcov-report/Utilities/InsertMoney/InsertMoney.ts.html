@@ -122,16 +122,8 @@
 <a name='L57'></a><a href='#L57'>57</a>
 <a name='L58'></a><a href='#L58'>58</a>
 <a name='L59'></a><a href='#L59'>59</a>
-<a name='L60'></a><a href='#L60'>60</a>
-<a name='L61'></a><a href='#L61'>61</a>
-<a name='L62'></a><a href='#L62'>62</a>
-<a name='L63'></a><a href='#L63'>63</a>
-<a name='L64'></a><a href='#L64'>64</a>
-<a name='L65'></a><a href='#L65'>65</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
+<a name='L60'></a><a href='#L60'>60</a></td><td class="line-coverage quiet"><span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-yes">2x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -153,8 +145,6 @@
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-yes">5x</span>
 <span class="cline-any cline-yes">5x</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
@@ -198,8 +188,8 @@ import { AllUsers } from "../../Menu/login";
 &nbsp;
 /**
  * Allows the user to add funds to their account by selecting a predefined 
- * amount or entering a custom amount.
- * Validates the entered amount before updating the user's balance.
+ * amount or entering a custom amount. Validates the entered amount 
+ * before updating the user's balance.
  *
  * @example
  * // Assuming the user selects to add a predefined amount of $200
@@ -209,52 +199,47 @@ import { AllUsers } from "../../Menu/login";
  * @param username The username of the currently logged-in user.
  * @param allUsers The collection of all user data, 
  * used to update the user's balance.
- *
- * @returns void. Updates the user's balance if a 
- * valid amount is entered or selected.
  */
 export async function insertMoney(username: string, 
-    allUsers: AllUsers): Promise&lt;void&gt; {
-console.log("Select the amount of money to insert:");
-const moneyOptions: { [key: string]: string } = {
-"1": "100",
-"2": "200",
-"3": "500",
-"4": "1000",
-"5": "Enter a custom amount",
-"6": "exit"
-};
+                                  allUsers: AllUsers): Promise&lt;void&gt; {
+    console.log("Select the amount of money to insert:");
+    const Options: { [key: string]: string } = { "1": "100",
+                                                 "2": "200",
+                                                 "3": "500",
+                                                 "4": "1000",
+                                                 "5": "Enter a custom amount",
+                                                 "6": "exit" };
 &nbsp;
-printOptions(moneyOptions);
+    printOptions(Options);
 &nbsp;
-const choice: string = await readUserInput("Option : ", 6);
+    const choice: string = await readUserInput("Option : ", 6);
 &nbsp;
-if (choice === "6") {
-console.log("Exiting money insertion.");
-return; // Exits the function early
-} else {}
+    if (choice === "6") {
+        console.log("Exiting money insertion.");
+        return; // Exits the function early
+    } else {}
 &nbsp;
-let amount: number = 0;
-if (choice === "5") {
-const message : string = "Enter your custom amount: "
-const customAmountStr: string = await readUserInputBasic(message);
-amount = parseFloat(customAmountStr);
+    let amount: number = 0;
+    if (choice === "5") {
+        const message : string = "Enter your custom amount: "
+        const customAmountStr: string = await readUserInputBasic(message);
+        amount = parseFloat(customAmountStr);
 &nbsp;
-if (isNaN(amount) || amount &lt;= 0) {
-console.log("Invalid amount.");
-return;
-} else {}
+        if (isNaN(amount) || amount &lt;= 0) {
+            console.log("Invalid amount.");
+            return;
+        } else {}
 &nbsp;
-} else if (moneyOptions.hasOwnProperty(choice)) {
-amount = parseFloat(moneyOptions[choice]);
-} else {
-console.log("Invalid option selected.");
-return;
-}
+    } else if (Options.hasOwnProperty(choice)) {
+        amount = parseFloat(Options[choice]);
+    } else {
+        console.log("Invalid option selected.");
+        return;
+    }
 &nbsp;
-allUsers[username].balance += amount;
-console.log(`$${amount} has been added to your account. ` + 
-`Your new balance is $${allUsers[username].balance}.`);
+    allUsers[username].balance += amount;
+    console.log(`$${amount} has been added to your account. ` + 
+    `Your new balance is $${allUsers[username].balance}.`);
 }</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -262,7 +247,7 @@ console.log(`$${amount} has been added to your account. ` +
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2024-03-05T11:43:23.225Z
+                at 2024-03-05T12:01:29.170Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

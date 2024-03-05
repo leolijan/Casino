@@ -1,6 +1,7 @@
 /**
- * Validates a password based on specific criteria: at least one uppercase letter,
- * one special character, and a minimum length of 8 characters.
+ * Validates a password based on specific criteria: 
+ * at least one uppercase letter, one special character, 
+ * and a minimum length of 8 characters.
  *
  * @example
  * isValidPassword("Password123!"); // Returns true

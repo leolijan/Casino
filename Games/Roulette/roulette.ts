@@ -621,7 +621,7 @@ export function calcStreet(index: number,
  * @param stake The amount of money staked on the bet.
  * @param number The winning number of the roulette spin.
  * @returns The payout for the placed bet if one of the corner numbers is 
- * the winning number, otherwise 0.
+ *          the winning number, otherwise 0.
  */
 export function calcCorner(bet: Array<number>, 
                            stake: stake,
@@ -643,11 +643,11 @@ export function calcCorner(bet: Array<number>,
  * within the double street, otherwise 0
  *
  * @param indexes An array of two indexes, each pointing to a set of three 
- * consecutive numbers (a "street") in the roulette table layout.
+ *                consecutive numbers (a "street") in the roulette table layout.
  * @param stake The amount of money staked on the bet.
  * @param number The winning number of the roulette spin.
  * @returns The payout for the bet if one of the double street's numbers is the 
- * winning number, otherwise 0.
+ *          winning number, otherwise 0.
  */
 export function calcDoubleStreet(indexes: Array<number>, 
                                  stake: stake, 
@@ -668,7 +668,7 @@ export function calcDoubleStreet(indexes: Array<number>,
  * matches the bet's color selection.
  *
  * @example
- * // Assuming a bet is placed on red with a $100 stake, 
+ * // If a bet is placed on red with a $100 stake, 
  * and the winning number is in the red numbers array
  * const payout = calcRedOrBlack(Color.Red, 100, 3); // 3 is a red number
  * // Returns $200 if 3 is red, otherwise $0
@@ -677,7 +677,7 @@ export function calcDoubleStreet(indexes: Array<number>,
  * @param stake The amount of money staked on the bet.
  * @param number The winning number in the roulette game.
  * @returns The payout for the bet if the winning number 
- * matches the selected color, otherwise returns 0.
+ *          matches the chosen color, otherwise returns 0.
  */
 export function calcRedOrBlack(redOrBlack: Color, 
                                stake: number, 
@@ -694,7 +694,7 @@ export function calcRedOrBlack(redOrBlack: Color,
 /**
  * Calculates the payout for a bet placed on either even or odd numbers 
  * in roulette, with special consideration for the number 0, 
- * which is neither even nor odd.
+ * which is neither even or odd.
  *
  * @example
  * // Assuming a bet on even numbers with a $100 stake, 
@@ -707,9 +707,7 @@ export function calcRedOrBlack(redOrBlack: Color,
  * @param stake The amount of money staked on the bet.
  * @param number The winning number of the roulette spin. 
  * The number 0 is considered neither even nor odd, resulting in a $0 payout.
- * @returns The payout for the placed bet if it wins, 
- * otherwise 0. Winning criteria are based on the number's 
- * parity matching the bet type.
+ * @returns The payout for the placed bet if it wins, otherwise 0. 
  */
 export function calcEvenOrOdd(evenOrOdd: EvenOdd, 
                               stake: number, 
@@ -731,7 +729,7 @@ export function calcEvenOrOdd(evenOrOdd: EvenOdd,
  * high (19-36) range of numbers in roulette.
  *
  * @example
- * // Assuming a bet is placed on the low range with a $100 stake, 
+ * // If a bet is placed on the low range with a $100 stake, 
  * and the winning number is 5
  * const payout = calcLowOrHigh(LowHigh.Low, 100, 5);
  * // Returns $200 if the winning number is within the bet range, otherwise $0
@@ -740,9 +738,8 @@ export function calcEvenOrOdd(evenOrOdd: EvenOdd,
  * indicating whether the bet is on the low (1-18) or high (19-36) range.
  * @param stake The amount of money staked on the bet.
  * @param number The winning number of the roulette spin. 
- * The number 0 is considered neither low nor high, resulting in a $0 payout.
- * @returns The payout for the bet if the winning number falls 
- * within the selected range, otherwise 0.
+ * @returns The payout for the bet if the winning number is 
+ *          within the chosen range, otherwise 0.
  */
 export function calcLowOrHigh(lowOrHigh: LowHigh, 
                               stake: stake, 
@@ -769,7 +766,7 @@ export function calcLowOrHigh(lowOrHigh: LowHigh,
  * columns in roulette. Each column consists of 12 numbers.
  *
  * @example
- * // Assuming a bet is placed on the first column with a $100 stake, 
+ * // If a bet is placed on the first column with a $100 stake, 
  * and the winning number is in the first column
  * const payout = calcColumns(1, 100, 3); 
  * // Returns $300 if the winning number is in the selected column, otherwise $0
@@ -778,9 +775,8 @@ export function calcLowOrHigh(lowOrHigh: LowHigh,
  * index (1, 2, or 3 corresponding to the three columns).
  * @param stake The amount of money staked on the bet.
  * @param number The winning number of the roulette spin. 
- * The function checks if this number is part of the selected column.
  * @returns The payout for the placed bet if the winning number 
- * falls within the selected column, otherwise 0.
+ *          is within the chosen column, otherwise 0.
  */
 export function calcColumns(column: Columns, 
                             stake: stake, 
@@ -799,17 +795,17 @@ export function calcColumns(column: Columns,
  * three dozens in roulette.
  *
  * @example
- * // Assuming a bet is placed on the first dozen with a $100 stake, 
+ * // If a bet is placed on the first dozen with a $100 stake, 
  * and the winning number falls within the first dozen
  * const payout = calcDozens(1, 100, 4);
- * // Returns $300 if the winning number is within the first dozen, otherwise $0
+ * // Returns $300 if the winning number is within the first dozen, otherwise $0.
  *
  * @param dozens The dozen selected for the bet, with values 1, 2, or 
  * 3 representing the first, second, or third dozen, respectively.
  * @param stake The amount of money staked on the bet.
  * @param number The winning number of the roulette spin.
- * @returns The payout for the bet if the winning number falls within 
- * the selected dozen, otherwise 0.
+ * @returns The payout for the bet if the winning number is within 
+ *          the chosen dozen, otherwise 0.
  */
 export function calcDozens(dozens: Dozens, 
                            stake: stake, 
