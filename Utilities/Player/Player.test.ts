@@ -3,7 +3,7 @@ import { createPerson } from './Player';
 
 test('createPerson creates a person with correct name, password, and balance', 
      () => {
-  const name = 'John Doe';
+  const name = 'TestUser';
   const password = 'password123';
   const balance = 1000;
 
