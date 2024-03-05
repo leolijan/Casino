@@ -303,6 +303,7 @@ describe("startGame - Outcomes", () => {
     await startGame(mockPlayer);
 
     expect(mockPlayer.balance).toBe(0);
-    expect(console.log).toHaveBeenCalledWith("You've run out of funds! Game over.");
+    const expectedMessage : string  = "You've run out of funds! Game over."
+    expect(console.log).toHaveBeenCalledWith(expectedMessage);
   });
 });

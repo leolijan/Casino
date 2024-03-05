@@ -5,15 +5,18 @@ import { Person, createPerson} from "../../../Utilities/Player/Player";
 
 
 /**
- * Calculates the total value of a hand in Blackjack, accounting for Aces as either 1 or 11.
- *
+ * Calculates the total value of a hand in Blackjack, 
+ * calculating Aces as either 1 or 11. 
  * @example
- * // Assuming hand contains an Ace (value 14), a King (value 13), and a 7
- * calculateHandValue([{value: 14}, {value: 13}, {value: 7}]);
+ * // If the hand contains an Ace (value 14), a King (value 13), and a 7
+ * calculateHandValue([{value: 14, suit: "Spades"}, 
+ *                     {value: 13, suit: "Diamonds"}, 
+ *                     {value: 7, suit: "Clubs"}]);
  * // Returns 18, as Ace is counted as 1 to avoid busting
  *
- * @param hand Array of Card objects representing the hand.
- * @returns The total value of the hand, adjusting Aces to avoid busting if possible.
+ * @param hand The hand represented as an Array of type Card.
+ * @returns The total value of the hand, adjusting Aces to avoid 
+ * busting if possible.
  */
 export function calculateHandValue(hand: Array<Card>): number {
   let total: number = 0;
@@ -47,14 +50,15 @@ export function calculateHandValue(hand: Array<Card>): number {
 
 
 /**
- * Determines if a hand qualifies as a blackjack (total value of 21 with exactly two cards).
+ * Determines if a hand qualifies as a blackjack, also called natural
+ * (total value of 21 from the first two cards).
  *
  * @example
- * // Assuming hand contains an Ace (value 14) and a King (value 13)
- * checkForBlackjack([{value: 14}, {value: 13}]);
+ * // If the hand contains an Ace (value 14) and a King (value 13)
+ * checkForBlackjack([{value: 14, suit: "Hearts"}, {value: 13, suit: "Clubs"}]);
  * // Returns true
  *
- * @param hand Array of Card objects representing the hand.
+ * @param hand The hand represented as an Array of type Card.
  * @returns True if the hand is a blackjack, false otherwise.
  */
 export function checkForBlackjack(hand: Array<Card>): boolean {
@@ -64,17 +68,19 @@ export function checkForBlackjack(hand: Array<Card>): boolean {
 
 
 /**
- * Manages the player's actions during their turn in Blackjack, offering options to hit, stand, or double down.
+ * Manages the player's actions during their turn in Blackjack, 
+ * where a player can either choose to hit, stand, or double down.
  *
  * @example
- * // Assuming a deck, a player, and an initial bet are defined
  * const turnOutcome = await playerTurn(deck, player, 100);
- * // turnOutcome indicates if the player's turn ended due to blackjack, bust, or if they stood
+ * // turnOutcome indicates if the player's turn ended due to blackjack, 
+ * bust, or if they stood
  *
  * @param deck The current deck of cards.
- * @param player A Person object representing the player.
+ * @param player The player represented as a Person object.
  * @param originalBet The current bet amount placed by the player.
- * @returns False if the player's turn ends due to blackjack or bust, true if the player stands.
+ * @returns False if the player's turn ends due to blackjack or bust, 
+ * true if the player stands.
  */
 export async function playerTurn(deck: Array<Card>, 
                                  player: Person, 
@@ -86,12 +92,11 @@ export async function playerTurn(deck: Array<Card>,
 
   while (playerTotal < 21) {
     console.log(`Your total is ${playerTotal}.`);
-    const prompt: string = "Hit (1), stand (2), or double down (3)? " +
-                           "(Current balance: $" + player.balance + ")";
+    const prompt: string = "Hit (1), stand (2), or double down (3)?\n";
     const hitOrStand: string = await readUserInput(prompt, 3);
 
     if (hitOrStand === "3" && !doubledDown && 
-        player.hand.length === 2 && player.balance >= bet * 2) {
+        player.hand.length === 2 && player.balance >= bet * 2 ) { 
 
       player.balance -= bet; 
       bet *= 2; 
@@ -122,15 +127,15 @@ export async function playerTurn(deck: Array<Card>,
 
 
 /**
- * Manages the dealer's turn in Blackjack, drawing cards until the hand's total is at least 17.
+ * Manages the dealer's turn in Blackjack, 
+ * drawing cards until the hand's total is at least 17.
  *
  * @example
- * // Assuming deck and dealer are defined, with the dealer's hand initially visible
  * const dealerTotal = await dealerTurn(deck, dealer);
  * // Dealer's hand is automatically managed according to Blackjack rules
  *
  * @param deck The deck of cards used in the game.
- * @param dealer A Person object representing the dealer.
+ * @param dealer The dealer represented as a Person object.
  * @returns The total value of the dealer's hand at the end of their turn.
  */
 export async function dealerTurn(deck: Array<Card>, 
@@ -163,17 +168,16 @@ export async function dealerTurn(deck: Array<Card>,
  * Prompts the player to place a bet within their available balance.
  *
  * @example
- * // Assuming player has a balance defined
  * const betAmount = await getBet(player);
  * // Player is prompted for a bet amount, ensuring it's within their balance
  *
- * @param player The player making the bet, containing their balance.
- * @returns The amount bet by the player, validated to be within their balance.
+ * @param player The player making the bet.
+ * @returns The bet amount by the player.
  */
 export async function getBet(player: Person): Promise<number> {
   let bet: number = 0;
   const prompt: string = 
-                `You have $${player.balance}. How much would you like to bet? `;
+                `You have $${player.balance}. How much would you like to bet? \n`;
 
   // readUserInput handles invalid inputs
   const betString: string = await readUserInput(prompt, player.balance); 
@@ -183,16 +187,14 @@ export async function getBet(player: Person): Promise<number> {
 }
 
 /**
- * Initiates and manages a game session of Blackjack for the player.
+ * Initiates and manages the Blackjack game for the player.
  *
  * @example
- * // Assuming a player object is already defined
  * await startGame(player);
- * // Engages the player in a session of Blackjack, handling initial bets, card dealing, and decisions.
+ * // Engages the player in a session of Blackjack, handling initial bets, 
+ * card dealing, and decisions.
  *
- * @param player The player participating in the game, represented as a Person object.
- *
- * @returns void. Manages the game flow, including dealing cards, taking player actions, and settling bets, with an option to replay.
+ * @param player The player represented as a Person object.
  */
 export async function startGame(player: Person): Promise<void> {
   let deck: Deck;
@@ -223,7 +225,7 @@ export async function startGame(player: Person): Promise<void> {
       
     } else if (checkForBlackjack(player.hand)) {
       console.log("Blackjack! You win 1.5x your bet.");
-      player.balance += bet * 1.5;
+      player.balance += Math.floor(bet * 1.5);
 
     } else {
       let playerTurnOutcome = await playerTurn(deck, player, bet);

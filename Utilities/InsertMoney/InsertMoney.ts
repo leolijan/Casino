@@ -4,7 +4,8 @@ import { AllUsers } from "../../Menu/login";
 
 
 /**
- * Allows the user to add funds to their account by selecting a predefined amount or entering a custom amount.
+ * Allows the user to add funds to their account by selecting a predefined 
+ * amount or entering a custom amount.
  * Validates the entered amount before updating the user's balance.
  *
  * @example
@@ -13,9 +14,11 @@ import { AllUsers } from "../../Menu/login";
  * // User's balance is updated by $200
  *
  * @param username The username of the currently logged-in user.
- * @param allUsers The collection of all user data, used to update the user's balance.
+ * @param allUsers The collection of all user data, 
+ * used to update the user's balance.
  *
- * @returns void. Updates the user's balance if a valid amount is entered or selected.
+ * @returns void. Updates the user's balance if a 
+ * valid amount is entered or selected.
  */
 export async function insertMoney(username: string, 
     allUsers: AllUsers): Promise<void> {

@@ -357,6 +357,5 @@ describe("Baccarat startGame function", () => {
     const expectedMessage : string = "You've run out of funds! Game over.";
     expect(console.log).toHaveBeenCalledWith(expectedMessage);
   });
-
 });
 

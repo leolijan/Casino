@@ -13,23 +13,24 @@ import {readUserInput} from '../../Utilities/userInput/readUserInput';
 
 describe('spin', () => {
     test('returns a number between 0 and 36', () => {
-        // Large number of iterations for statistical significance
+        // Large number of iterations for statistical significance.
         const iterations = 10000; 
         const results = [];
 
         for (let i = 0; i < iterations; i++) {
         results.push(spin());
         }
-        // Verify all results are within the expected range
+        // Verify all results are within the expected range.
         const ResultsWithinRange = results.every(num => num >= 0 && num <= 36);
 
         expect(ResultsWithinRange).toBe(true);
 
         const uniqueResults = new Set(results);
-        // Ensure multiple unique results
+        
+        // Ensure multiple unique results.
         expect(uniqueResults.size).toBeGreaterThan(1); 
-        expect(Math.min(...results)).toBe(0); // Check for 0 in results
-        expect(Math.max(...results)).toBe(36); // Check for 36 in results
+        expect(Math.min(...results)).toBe(0); // Check for 0 in results.
+        expect(Math.max(...results)).toBe(36); // Check for 36 in results.
     });
 });
 
@@ -725,6 +726,7 @@ describe('addBetAmount', () => {
     });
 });
 
+
 describe('buildABet', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -755,6 +757,7 @@ describe('buildABet', () => {
         expect(bet[1]).toEqual(stake);
     });
 });
+
 
 describe('playerMove', () => {
     let person: Person;

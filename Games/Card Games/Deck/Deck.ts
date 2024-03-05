@@ -9,7 +9,9 @@ export type Deck = Array<Card>;
  * const deck = createDeck();
  * // deck now contains a shuffled 52-card deck
  *
- * @returns A deck of shuffled cards, including 13 cards of each suit (Hearts, Diamonds, Clubs, Spades), with values ranging from 2 to 14 (Ace represented as 14).
+ * @returns A deck of shuffled cards, including 13 cards of each suit 
+ * (Hearts, Diamonds, Clubs, Spades), with values ranging from 2 to 14 
+ * (Ace represented as 14).
  */
 export function createDeck(): Deck {
     const suits: Array<string> = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
@@ -29,7 +31,6 @@ export function createDeck(): Deck {
  * Shuffles a given deck of cards using the Fisher-Yates shuffle algorithm.
  *
  * @example
- * const deck = createBlackjackDeck(); // Assuming this creates an unshuffled deck
  * const shuffledDeck = shuffleDeck(deck);
  * // shuffledDeck is now a randomly shuffled version of the original deck
  *
@@ -45,13 +46,15 @@ export function shuffleDeck(cards: Deck): Deck {
 }
 
 /**
- * Creates a shuffled deck of cards for Blackjack, consisting of 8 combined standard 52-card decks.
+ * Creates a shuffled deck of cards for Blackjack, 
+ * consisting of 8 combined standard 52-card decks.
  *
  * @example
  * const deck = createBlackjackDeck();
  * // deck now contains 416 shuffled cards suitable for Blackjack
  *
- * @returns A deck of cards, 8 times the size of a standard deck, shuffled for Blackjack.
+ * @returns A deck of cards, 8 times the size of a standard deck, 
+ * shuffled for Blackjack.
  */
 
 export function createBlackjackDeck(): Deck {
@@ -71,7 +74,8 @@ export function createBlackjackDeck(): Deck {
 }
 
 /**
- * Ensures the deck has sufficient cards for gameplay. If the deck has fewer than 10 cards, 
+ * Ensures the deck has sufficient cards for gameplay. 
+ * If the deck has fewer than 10 cards, 
  * a new shuffled deck is created and combined with the existing deck.
  *
  * @example
@@ -97,7 +101,8 @@ export function ensureDeckNotEmpty(deck: Array<Card>): void {
  * dealInitialCards(deck, person);
  * // Person's hand now contains two cards from the deck
  *
- * @param deck The deck of cards to deal from, assumed to have at least two cards.
+ * @param deck The deck of cards to deal from, assumed to have at 
+ * least two cards.
  * @param person The person receiving the initial two cards into their hand.
  * @returns void. The person's hand is updated with two cards from the deck.
  */
@@ -124,12 +129,13 @@ export function isPair(hand: Array<Card>): boolean {
 }
 
 /**
- * Allows a user to add money to their account by selecting a predefined amount or entering a custom one.
+ * Allows a user to add money to their account by selecting a predefined amount 
+ * or entering a custom one.
  *
  * @example
  * // User chooses to add $100 or enters a custom amount
- * await insertMoney("johnDoe", allUsers);
- * // The chosen amount is added to johnDoe's account balance
+ * await insertMoney("TestUser", allUsers);
+ * // The chosen amount is added to TestUsers account balance
  *
  * @param username The username of the currently logged-in user.
  * @param allUsers The collection of all users' data.

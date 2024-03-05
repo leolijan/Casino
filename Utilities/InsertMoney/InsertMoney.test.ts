@@ -13,12 +13,16 @@ jest.mock("../userInput/readUserInput", () => ({
     beforeEach(() => {
       jest.clearAllMocks();
       allUsers = {
-        testUser: { balance: 1000, name: 'Test User', password: 'test', hand: [] }
+        testUser: { balance: 1000, 
+                    name: 'Test User', 
+                    password: 'test', 
+                    hand: [] }
       };
     });
   
     test('successfully inserts predefined money amount', async () => {
       jest.mocked(readUserInput).mockResolvedValue('1'); 
+
       await insertMoney('testUser', allUsers);
       expect(allUsers.testUser.balance).toBe(1100);
     });
@@ -35,18 +39,21 @@ jest.mock("../userInput/readUserInput", () => ({
     test('handles invalid custom amount', async () => {
       jest.mocked(readUserInput).mockResolvedValue('5'); 
       jest.mocked(readUserInputBasic).mockResolvedValue('-100'); 
+
       await insertMoney('testUser', allUsers);
       expect(allUsers.testUser.balance).toBe(1000);//should remain unchanged
     });
     
     test('exits without inserting money', async () => {
       jest.mocked(readUserInput).mockResolvedValue('6');//Choosing to exit
+
       await insertMoney('testUser', allUsers);
       expect(allUsers.testUser.balance).toBe(1000);
     });
     
     test('handles selecting an invalid option', async () => {
       jest.mocked(readUserInput).mockResolvedValue('7'); 
+      
       await insertMoney('testUser', allUsers);
       expect(allUsers.testUser.balance).toBe(1000); 
     });

@@ -11,7 +11,8 @@ import { insertMoney } from '../Utilities/InsertMoney/InsertMoney';
 
 export type AllUsers = { [username: string]: Person };
 
-const textfile: string = "../user_information.json"; //the json file
+//The JSON file all user infromation is stored in.
+const textfile: string = "../user_information.json"; 
 
 /**
  * Loads user data from a JSON file into an AllUsers object.
@@ -24,8 +25,6 @@ const textfile: string = "../user_information.json"; //the json file
  * @param allUsers The object to load the user data into.
  *
  * @precondition The filePath must point to a valid, accessible JSON file.
- *
- * @returns void
  */
 export function loadUserData(filePath: string, allUsers: AllUsers): void {
   try {
@@ -50,6 +49,8 @@ export function loadUserData(filePath: string, allUsers: AllUsers): void {
  * @param allUsersObj Object containing user data.
  *
  * @returns void. Logs an error message on failure.
+ * 
+ * @precondition The filePath must point to a valid, accessible JSON file.
  */
 export function saveUserData(filePath: string, allUsers: AllUsers): void {
   try {
@@ -60,18 +61,19 @@ export function saveUserData(filePath: string, allUsers: AllUsers): void {
   }
 }
 
+
 /**
- * Presents the main menu for a logged-in user, allowing game selection, balance top-up, or logout.
+ * Presents the main menu for a logged-in user, allowing game selection, 
+ * balance top-up, or logout.
  *
  * @example
- * // Assuming user "JohnDoe" is logged in with a positive balance
- * await loggedIn("JohnDoe", allUsers);
+ * // Assuming user "TestUser" is logged in with a positive balance if balance 
+ * // is not positive only two options come up, 1 : Add money, 2 : Log Out.
+ * await loggedIn("TestUser", allUsers);
  * // Presents game options or allows adding money/logging out
  *
  * @param user Username of the logged-in user.
  * @param allUsers Object containing all user data.
- *
- * @returns void. Function is recursive for continuous menu display until logout.
  */
 export async function loggedIn(user: string, 
                                allUsers : AllUsers): Promise<void> {
@@ -133,7 +135,8 @@ export async function loggedIn(user: string,
 
 /**
  * Manages the login process, allowing users to enter their credentials.
- * Limits login attempts to 3.
+ * Limits login attempts to 3. Redirects to the main menu after 
+ * maximum attempts. Directs to loggedIn if user succsesfully logs in.
  *
  * @example
  * // User initiates login process
@@ -141,8 +144,6 @@ export async function loggedIn(user: string,
  * // User is prompted for username and password up to 3 times
  *
  * @param allUsers Object containing user credentials.
- *
- * @returns void. Redirects to the main menu on success or after maximum attempts.
  */
 export async function login(allUsers: AllUsers): Promise<void> {
   let attempts: number = 0;
@@ -173,6 +174,7 @@ export async function login(allUsers: AllUsers): Promise<void> {
   setTimeout(async () => await menu(allUsers), 3000);
 }
   
+
 /**
  * Registers a new user with a username and password, ensuring password strength 
  * and username uniqueness.
@@ -180,11 +182,10 @@ export async function login(allUsers: AllUsers): Promise<void> {
  * @example
  * // User is prompted to register a new account
  * await newUser(allUsers);
- * // User enters a username and password, receives feedback, and may be registered
+ * // User enters a username and password, receives feedback, 
+ * and may be registered
  *
  * @param allUsers Object containing existing user information.
- *
- * @returns void. Continues prompting for credentials until registration is successful.
  */
 export async function newUser(allUsers: AllUsers): Promise<void> {
   while (true) {
@@ -225,11 +226,13 @@ export async function newUser(allUsers: AllUsers): Promise<void> {
   }
 }
   
+
 /**
  * Displays the main menu of the application, allowing users to login, register, 
  * or quit the program.
  * It handles user input and redirects to the 
  * appropriate function based on the user's choice.
+ * @param allUsers Object containing existing user information.
  */
 export async function menu(allUsers: AllUsers): Promise<void> {
   splashScreen();
@@ -258,7 +261,8 @@ export async function menu(allUsers: AllUsers): Promise<void> {
     process.exit();
   }
 }
-  
+
+
 /**
  * Displays the main menu, offering options to log in, register, or quit.
  *
@@ -268,13 +272,12 @@ export async function menu(allUsers: AllUsers): Promise<void> {
  * // User is presented with options and can navigate accordingly
  *
  * @param allUsers Object holding user data for login and registration.
- *
- * @returns void. Directs to other functions based on user choice or exits the program.
  */
 async function main(allUsers: AllUsers = {}): Promise<void> {
   loadUserData(textfile, allUsers);
   await menu(allUsers);
 }
+
 
 // Starting the game when running the file.
 main();
