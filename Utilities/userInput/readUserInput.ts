@@ -30,6 +30,7 @@ export async function readUserInput(prompt: string,
     return isValidInput ? userInput : readUserInput(prompt, max);
 }
 
+
 /**
  * Asynchronously reads user input from the console with a specified prompt.
  * This version is simplified and does not include checks for maximum input 

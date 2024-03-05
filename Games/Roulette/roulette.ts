@@ -199,7 +199,7 @@ export async function addBetAmount(person: Person): Promise<stake> {
 }
 
 /**
- * Guides the player through building a bet for the roulette game, 
+ * Guides the player to build a bet for the roulette game, 
  * including selecting the type of bet.
  *
  * @example

@@ -27,7 +27,6 @@ export function splashScreen(): void {
  *
  * @param options An object containing options where each key is an option number 
  * and each value is the description of the option.
- * @returns void. Lists all provided options to the console.
  */
 export function printOptions(options: { [key: string]: string }): void {
   for (const [key, value] of Object.entries(options)) {
@@ -43,7 +42,6 @@ export function printOptions(options: { [key: string]: string }): void {
  * // Prints 3 empty lines to the console
  *
  * @param count The number of empty lines to print.
- * @returns void. Outputs empty lines to the console.
  */
 export function printEmptyLines(count: number): void {
   for (let i = 0; i < count; i++) {

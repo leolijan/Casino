@@ -47,12 +47,12 @@ describe('newUser', () => {
 
   test('non-matching password and confirmation', async () => {
     jest.mocked(readUserInputBasic)
-      .mockResolvedValueOnce('anotherNewUsername') // Mock username input
-      .mockResolvedValueOnce('Valid$Password3') // Mock password input
-      .mockResolvedValueOnce('DifferentPassword') // Non-matching 
+      .mockResolvedValueOnce('anotherNewUsername') 
+      .mockResolvedValueOnce('Valid$Password3') 
+      .mockResolvedValueOnce('DifferentPassword') 
       .mockResolvedValueOnce('anotherNewUsername')
       .mockResolvedValueOnce('Valid$Password3') // Retry with the same password
-      .mockResolvedValueOnce('Valid$Password3'); // Confirm the valid password
+      .mockResolvedValueOnce('Valid$Password3'); 
   
     await newUser(allUsers);
   
@@ -84,10 +84,10 @@ describe('newUser', () => {
 
   test('password does not meet criteria', async () => {
     jest.mocked(readUserInputBasic)
-      .mockResolvedValueOnce('uniqueUsername') // Mock username input
+      .mockResolvedValueOnce('uniqueUsername')
       .mockResolvedValueOnce('short') // Invalid password attempt
       .mockResolvedValueOnce('short') // invalid password
-      .mockResolvedValueOnce('uniqueUsername') // Mock username input
+      .mockResolvedValueOnce('uniqueUsername') 
       .mockResolvedValueOnce('Valid$Password2') // Second attempt 
       .mockResolvedValueOnce('Valid$Password2'); // Confirm the valid password
   

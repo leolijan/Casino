@@ -2,6 +2,7 @@ import { Person } from "../../../Utilities/Player/Player";
 export type Card = { value: number; suit: string };
 export type Deck = Array<Card>; 
 
+
 /**
  * Generates a shuffled deck of cards suitable for card games.
  *
@@ -10,8 +11,8 @@ export type Deck = Array<Card>;
  * // deck now contains a shuffled 52-card deck
  *
  * @returns A deck of shuffled cards, including 13 cards of each suit 
- * (Hearts, Diamonds, Clubs, Spades), with values ranging from 2 to 14 
- * (Ace represented as 14).
+ *          (Hearts, Diamonds, Clubs, Spades), with values ranging from 2 to 14 
+ *          (Ace represented as 14).
  */
 export function createDeck(): Deck {
     const suits: Array<string> = ['Hearts', 'Diamonds', 'Clubs', 'Spades'];
@@ -26,6 +27,7 @@ export function createDeck(): Deck {
     }
     return shuffleDeck(cards);
 }
+
 
 /**
  * Shuffles a given deck of cards using the Fisher-Yates shuffle algorithm.

@@ -9,13 +9,13 @@ import { AllUsers } from "../../Menu/login";
  * before updating the user's balance.
  *
  * @example
- * // Assuming the user selects to add a predefined amount of $200
+ * // If the user adds a predefined amount of $200
  * await insertMoney("johnDoe", allUsers);
  * // User's balance is updated by $200
  *
  * @param username The username of the currently logged-in user.
  * @param allUsers The collection of all user data, 
- * used to update the user's balance.
+ *                 used to update the user's balance.
  */
 export async function insertMoney(username: string, 
                                   allUsers: AllUsers): Promise<void> {

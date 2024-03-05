@@ -2,18 +2,18 @@ import { isValidPassword } from './Password';
 
 describe('isValidPassword', () => {
   test.each([
-    ['Password@123', true], // Valid: meets all criteria
-    ['password@123', false], // Invalid: no uppercase letter
-    ['PASSWORD123', false], // Invalid: no special character
-    ['Pass@1', false], // Invalid: not long enough
-    ['Passw@rd', true], // Valid: meets all criteria
-    ['PASSWORD@', true], // Valid: meets all criteria
-    ['password@', false], // Invalid: no uppercase letter
-    ['PASSWORD!', true], // Valid: meets all criteria
-    ['passW@rd', true], // Valid: meets all criteria
-    ['12345678', false], // Invalid: no uppercase letter or special character
-    ['!@#$%^&*', false], // Invalid: no uppercase letter
-    ['Abcdefgh', false], // Invalid: no special character
+    ['Password@123', true],
+    ['password@123', false], 
+    ['PASSWORD123', false], 
+    ['Pass@1', false], 
+    ['Passw@rd', true], 
+    ['PASSWORD@', true], 
+    ['password@', false], 
+    ['PASSWORD!', true], 
+    ['passW@rd', true], 
+    ['12345678', false], 
+    ['!@#$%^&*', false], 
+    ['Abcdefgh', false], 
   ])('"%s" should be %s', (password, expected) => {
     expect(isValidPassword(password)).toBe(expected);
   });

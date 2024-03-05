@@ -194,6 +194,7 @@ describe('bankerHand', () => {
       { value: 5, suit: 'Diamonds' }
     ];
     await bankerHand(deck, banker, player);
+    
     expect(banker.hand.length).toBe(3);
   });
 });
@@ -304,7 +305,8 @@ describe("Baccarat startGame function", () => {
       hand: [],
     };
     jest.spyOn(console, 'log').mockImplementation();
-    (readUserInput as jest.Mock).mockImplementation(() => Promise.resolve("100"));
+    (readUserInput as jest.Mock)
+      .mockImplementation(() => Promise.resolve("100"));
   });
 
   test("completes a game cycle with player betting and making choices", 
