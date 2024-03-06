@@ -67,11 +67,6 @@ export function readUserInputBasic(prompt: string): Promise<string> {
  *          otherwise false.
  */
 export function check(answer: string, max: number): boolean {
-    for (let i = 1; i < max + 1; i++) {
-        if (answer === i.toString()) {
-            return true;
-        } else {}
-    }
-    return false;
+    return Number(answer) >= 1 && Number(answer) <= max;
 }
 
